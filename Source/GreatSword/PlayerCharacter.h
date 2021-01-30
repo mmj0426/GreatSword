@@ -33,9 +33,15 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 		UCameraComponent* Camera;
 
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UStaticMeshComponent* Weapon;
+
 	void MoveForward(float NewAxisValue);
 	void MoveRight(float NewAxisValue);
 	void LookUp(float NewAxisValue);
 	void Turn(float NewAxisValue);
+
+	void Run();
+	void Walk();
 
 };

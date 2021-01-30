@@ -2,6 +2,7 @@
 
 
 #include "PlayerCharacter.h"
+#include "GSAnimInstance.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -12,8 +13,10 @@ APlayerCharacter::APlayerCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
-	GetCapsuleComponent()->SetCapsuleHalfHeight(100.0f);
+	GetCapsuleComponent()->SetCapsuleHalfHeight(85.0f);
 	GetCapsuleComponent()->SetRelativeLocation(FVector(0.0f,0.0f,90.0f));
+
+	//SpringArm
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(RootComponent);
@@ -30,10 +33,52 @@ APlayerCharacter::APlayerCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
-	//GetCharacterMovement()->RotationRate = FRotator(0.0f,720.0f,0.0f);
+	GetCharacterMovement()->MaxWalkSpeed = 299.0f;
+
+	//Camera
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
+
+	//Skeletal Mesh
+
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
+	SM_Player(TEXT("/Game/GreatSword/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
+
+	if (SM_Player.Succeeded())
+	{
+		GetMesh()->SetSkeletalMesh(SM_Player.Object);
+	}
+
+	//Animation
+
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+
+	static ConstructorHelpers::FClassFinder<UAnimInstance>
+	Anim_Player(TEXT("/Game/Blueprints/Animations/AnimBP_PlayerCharacter.AnimBP_PlayerCharacter_C"));
+	
+	if (Anim_Player.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(Anim_Player.Class);
+	}
+
+	//Weapon
+
+	FName WeaponSocket(TEXT("Weapon_L"));
+	if(GetMesh()->DoesSocketExist(WeaponSocket))
+	{
+		Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+		static ConstructorHelpers::FObjectFinder<UStaticMesh>
+		SK_Weapon(TEXT("/Game/GreatSword/GreatSword/Weapon/GreatSword_02.GreatSword_02"));
+		
+		if (SK_Weapon.Succeeded())
+		{
+			Weapon->SetStaticMesh(SK_Weapon.Object);
+		}
+		
+		Weapon->SetupAttachment(GetMesh(),WeaponSocket);
+	}
+
 }
 
 // Called when the game starts or when spawned
@@ -59,6 +104,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"),this,&APlayerCharacter::MoveRight);
 	PlayerInputComponent->BindAxis(TEXT("LookUp"),this, &APlayerCharacter::LookUp);
 	PlayerInputComponent->BindAxis(TEXT("Turn"),this, &APlayerCharacter::Turn);
+
+	PlayerInputComponent->BindAction(TEXT("Run"),EInputEvent::IE_Released, this, &APlayerCharacter::Walk);
+	PlayerInputComponent->BindAction(TEXT("Run"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Run);
 }
 
 void APlayerCharacter::MoveForward(float NewAxisValue)
@@ -93,5 +141,13 @@ void APlayerCharacter::Turn(float NewAxisValue)
 	}
 }
 
+void APlayerCharacter::Walk()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 299.0f;
+}
 
+void APlayerCharacter::Run()
+{
+	GetCharacterMovement()->MaxWalkSpeed = 450.0f;
+}
 
