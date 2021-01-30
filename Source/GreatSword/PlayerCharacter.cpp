@@ -16,8 +16,21 @@ APlayerCharacter::APlayerCharacter()
 	GetCapsuleComponent()->SetRelativeLocation(FVector(0.0f,0.0f,90.0f));
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArm->TargetArmLength = 600.0f;
 	SpringArm->SetupAttachment(RootComponent);
+	SpringArm->SetRelativeRotation(FRotator::ZeroRotator);
+
+	SpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 60.0f), FRotator(-15.0f, 0.0f, 0.0f));
+	SpringArm->TargetArmLength = 600.0f;
+
+	SpringArm->bUsePawnControlRotation = true;
+	SpringArm->bInheritPitch = true;
+	SpringArm->bInheritRoll = true;
+	SpringArm->bInheritYaw = true;
+	SpringArm->bDoCollisionTest = true;
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
+	//GetCharacterMovement()->RotationRate = FRotator(0.0f,720.0f,0.0f);
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
@@ -44,6 +57,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"),this,&APlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis(TEXT("MoveRight"),this,&APlayerCharacter::MoveRight);
+	PlayerInputComponent->BindAxis(TEXT("LookUp"),this, &APlayerCharacter::LookUp);
+	PlayerInputComponent->BindAxis(TEXT("Turn"),this, &APlayerCharacter::Turn);
 }
 
 void APlayerCharacter::MoveForward(float NewAxisValue)
@@ -59,6 +74,22 @@ void APlayerCharacter::MoveRight(float NewAxisValue)
 	if (Controller != nullptr && NewAxisValue != 0.0f)
 	{
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
+	}
+}
+
+void APlayerCharacter::LookUp(float NewAxisValue)
+{
+	if (Controller != nullptr && NewAxisValue != 0.0f)
+	{
+		AddControllerPitchInput(NewAxisValue);
+	}
+}
+
+void APlayerCharacter::Turn(float NewAxisValue)
+{
+	if (Controller != nullptr && NewAxisValue != 0.0f)
+	{
+		AddControllerYawInput(NewAxisValue);
 	}
 }
 
