@@ -9,6 +9,10 @@
 /**
  * 
  */
+
+ DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
+ DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
+
 UCLASS()
 class GREATSWORD_API UGSAnimInstance : public UAnimInstance
 {
@@ -17,11 +21,29 @@ class GREATSWORD_API UGSAnimInstance : public UAnimInstance
 public : 
 	UGSAnimInstance();
 
+	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+
+	//Attack Combo
+	void PlayAttackMontage();
+
+	void JumpToAttackMontageSection(int32 NewSection);
+
+	FOnNextAttackCheckDelegate OnNextAttackCheck;
+	FOnAttackHitCheckDelegate OnAttackHitCheck;
+
 private : 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float CurrentPawnSpeed;
 
-public : 
-	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* AttackMontage;
+
+	UFUNCTION()
+	void AnimNotify_AttackHitCheck();
+
+	UFUNCTION()
+	void AnimNotify_NextAttackCheck();
+	
+	FName GetAttackMontageSectionName(int32 Section);
 
 };

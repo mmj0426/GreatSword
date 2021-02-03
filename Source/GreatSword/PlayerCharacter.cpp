@@ -33,7 +33,7 @@ APlayerCharacter::APlayerCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
-	GetCharacterMovement()->MaxWalkSpeed = 299.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 
 	//Camera
 
@@ -79,6 +79,29 @@ APlayerCharacter::APlayerCharacter()
 		Weapon->SetupAttachment(GetMesh(),WeaponSocket);
 	}
 
+	//Attack
+
+	IsAttacking = false;
+	MaxCombo = 4;
+	AttackEndComboState();
+
+}
+
+void APlayerCharacter::AttackStartComboState()
+{
+	CanNextCombo = true;
+	IsComboInputOn = false;
+
+	// 콤보 값이 0 ~ MaxCombo-1 사이인지 검사
+	GSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 0,MaxCombo -1));
+	CurrentCombo = FMath::Clamp<int32>(CurrentCombo+1, 1, MaxCombo);
+}
+
+void APlayerCharacter::AttackEndComboState()
+{
+	IsComboInputOn = false;
+	CanNextCombo = true;
+	CurrentCombo = 0;
 }
 
 // Called when the game starts or when spawned
@@ -95,6 +118,29 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 }
 
+void APlayerCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	GSAnim = Cast<UGSAnimInstance>(GetMesh()->GetAnimInstance());
+	GSCHECK(nullptr != GSAnim);
+	
+	//AnimInstance에 함수 등록 : OnMontageEnded
+	GSAnim->OnMontageEnded.AddDynamic(this, &APlayerCharacter::OnAttackMontageEnded);
+
+	GSAnim->OnNextAttackCheck.AddLambda([this]()->void
+		{
+			GSLOG(Warning, TEXT("On Next Attack Check"));
+			CanNextCombo = false;
+
+			if (IsComboInputOn)
+			{
+				AttackStartComboState();
+				GSAnim->JumpToAttackMontageSection(CurrentCombo);
+			}
+		});
+}
+
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -107,6 +153,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction(TEXT("Run"),EInputEvent::IE_Released, this, &APlayerCharacter::Walk);
 	PlayerInputComponent->BindAction(TEXT("Run"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Run);
+	PlayerInputComponent->BindAction(TEXT("Attack"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Attack);
 }
 
 void APlayerCharacter::MoveForward(float NewAxisValue)
@@ -143,7 +190,7 @@ void APlayerCharacter::Turn(float NewAxisValue)
 
 void APlayerCharacter::Walk()
 {
-	GetCharacterMovement()->MaxWalkSpeed = 299.0f;
+	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 }
 
 void APlayerCharacter::Run()
@@ -151,3 +198,30 @@ void APlayerCharacter::Run()
 	GetCharacterMovement()->MaxWalkSpeed = 450.0f;
 }
 
+void APlayerCharacter::Attack()
+{
+	if (IsAttacking)
+	{
+		GSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
+		if (CanNextCombo)
+		{
+			IsComboInputOn = true;
+		}
+	}
+	else
+	{
+		GSCHECK(CurrentCombo == 0);
+		AttackStartComboState();
+		GSAnim->PlayAttackMontage();
+		GSAnim->JumpToAttackMontageSection(CurrentCombo);
+		IsAttacking = true;
+	}
+}
+
+void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	GSCHECK(IsAttacking);
+	GSCHECK(CurrentCombo > 0);
+	IsAttacking = false;
+	AttackEndComboState();
+}

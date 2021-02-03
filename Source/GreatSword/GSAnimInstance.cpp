@@ -6,6 +6,13 @@
 UGSAnimInstance::UGSAnimInstance()
 {
 	CurrentPawnSpeed = 0.0f;
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>
+	Attack_Montage(TEXT("/Game/Blueprints/Animations/AnimMontage_AttackCombo.AnimMontage_AttackCombo"));
+	if (Attack_Montage.Succeeded())
+	{
+		AttackMontage = Attack_Montage.Object;
+	}
 }
 
 void UGSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -17,4 +24,32 @@ void UGSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		CurrentPawnSpeed = Pawn->GetVelocity().Size();
 	}
+}
+
+void UGSAnimInstance::PlayAttackMontage()
+{
+	GSLOG(Warning, TEXT("AnimInstance : Play Attack Montage"));
+	Montage_Play(AttackMontage, 1.0f);
+}
+
+void UGSAnimInstance::JumpToAttackMontageSection(int32 NewSection)
+{
+	GSCHECK(Montage_IsPlaying(AttackMontage));
+	Montage_JumpToSection(GetAttackMontageSectionName(NewSection),AttackMontage);
+}
+
+void UGSAnimInstance::AnimNotify_AttackHitCheck()
+{
+	OnAttackHitCheck.Broadcast();
+}
+
+void UGSAnimInstance::AnimNotify_NextAttackCheck()
+{
+	OnNextAttackCheck.Broadcast();
+}
+
+FName UGSAnimInstance::GetAttackMontageSectionName(int32 Section)
+{
+	GSCHECK(FMath::IsWithinInclusive<int32>(Section, 1, 4), NAME_None);
+	return FName(*FString::Printf(TEXT("Attack%d"),Section));
 }
