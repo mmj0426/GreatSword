@@ -69,7 +69,7 @@ private:
 
 	//Attack
 	UFUNCTION()
-		void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupeted);
+	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupeted);
 
 	void Attack();
 

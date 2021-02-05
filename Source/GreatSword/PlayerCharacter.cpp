@@ -64,7 +64,7 @@ APlayerCharacter::APlayerCharacter()
 
 	//Weapon
 
-	FName WeaponSocket(TEXT("Weapon_L"));
+	FName WeaponSocket(TEXT("Weapon_R"));
 	if(GetMesh()->DoesSocketExist(WeaponSocket))
 	{
 		Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
@@ -99,8 +99,8 @@ void APlayerCharacter::AttackStartComboState()
 
 void APlayerCharacter::AttackEndComboState()
 {
-	IsComboInputOn = false;
 	CanNextCombo = true;
+	IsComboInputOn = false;
 	CurrentCombo = 0;
 }
 
