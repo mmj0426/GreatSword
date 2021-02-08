@@ -10,8 +10,8 @@
  * 
  */
 
- DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
  DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
+ DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
 
 UCLASS()
 class GREATSWORD_API UGSAnimInstance : public UAnimInstance
@@ -28,12 +28,18 @@ public :
 
 	void JumpToAttackMontageSection(int32 NewSection);
 
-	FOnNextAttackCheckDelegate OnNextAttackCheck;
 	FOnAttackHitCheckDelegate OnAttackHitCheck;
+	FOnNextAttackCheckDelegate OnNextAttackCheck;
 
 private : 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float CurrentPawnSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = ture))
+		bool IsParrying;
+
+
+	// Attack
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* AttackMontage;

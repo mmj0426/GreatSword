@@ -64,19 +64,19 @@ APlayerCharacter::APlayerCharacter()
 
 	//Weapon
 
-	FName WeaponSocket(TEXT("Weapon_R"));
-	if(GetMesh()->DoesSocketExist(WeaponSocket))
+	FName WeaponSocket(TEXT("Weapon"));
+	if (GetMesh()->DoesSocketExist(WeaponSocket))
 	{
 		Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
 		static ConstructorHelpers::FObjectFinder<UStaticMesh>
-		SK_Weapon(TEXT("/Game/GreatSword/GreatSword/Weapon/GreatSword_02.GreatSword_02"));
-		
+			SK_Weapon(TEXT("/Game/GreatSword/GreatSword/Weapon/GreatSword_02.GreatSword_02"));
+
 		if (SK_Weapon.Succeeded())
 		{
 			Weapon->SetStaticMesh(SK_Weapon.Object);
 		}
-		
-		Weapon->SetupAttachment(GetMesh(),WeaponSocket);
+
+		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
 	}
 
 	//Attack
@@ -84,6 +84,10 @@ APlayerCharacter::APlayerCharacter()
 	IsAttacking = false;
 	MaxCombo = 4;
 	AttackEndComboState();
+
+	// Evade
+
+	IsParrying = false;
 
 }
 
@@ -154,6 +158,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("Run"),EInputEvent::IE_Released, this, &APlayerCharacter::Walk);
 	PlayerInputComponent->BindAction(TEXT("Run"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Run);
 	PlayerInputComponent->BindAction(TEXT("Attack"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Attack);
+	PlayerInputComponent->BindAction(TEXT("Evade"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Parrying);
+	PlayerInputComponent->BindAction(TEXT("Evade"), EInputEvent::IE_Released, this, &APlayerCharacter::EndParrying);
 }
 
 void APlayerCharacter::MoveForward(float NewAxisValue)
@@ -224,4 +230,14 @@ void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterru
 	GSCHECK(CurrentCombo > 0);
 	IsAttacking = false;
 	AttackEndComboState();
+}
+
+void APlayerCharacter::Parrying()
+{
+	IsParrying = true;
+}
+
+void APlayerCharacter::EndParrying()
+{
+	IsParrying = false;
 }

@@ -56,6 +56,10 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 MaxCombo;
 
+	// Evade
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
+	bool IsParrying;
+
 private:
 
 	//Movement
@@ -77,5 +81,11 @@ private:
 	void AttackStartComboState();
 	void AttackEndComboState();
 
+	//Evade
+	void Parrying();
+	void EndParrying();
 
+public : 
+	bool GetIsParrying() const { return IsParrying;}
+	
 };

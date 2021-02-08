@@ -2,6 +2,7 @@
 
 
 #include "GSAnimInstance.h"
+#include "PlayerCharacter.h"
 
 UGSAnimInstance::UGSAnimInstance()
 {
@@ -19,10 +20,11 @@ void UGSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
-	auto Pawn = TryGetPawnOwner();
-	if (::IsValid(Pawn))
+	APlayerCharacter* const Player = Cast<APlayerCharacter>(TryGetPawnOwner());
+	if (::IsValid(TryGetPawnOwner()))
 	{
-		CurrentPawnSpeed = Pawn->GetVelocity().Size();
+		CurrentPawnSpeed = TryGetPawnOwner()->GetVelocity().Size();
+		IsParrying = Player->GetIsParrying();
 	}
 }
 
