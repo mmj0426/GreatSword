@@ -14,6 +14,22 @@ UGSAnimInstance::UGSAnimInstance()
 	{
 		AttackMontage = Attack_Montage.Object;
 	}
+
+	// Parrying
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>
+	Parrying_Montage(TEXT("/Game/Blueprints/Animations/AnimMontage_Parrying.AnimMontage_Parrying"));
+	if (Parrying_Montage.Succeeded())
+	{
+		ParryingMontage = Parrying_Montage.Object;
+	}
+
+	// Dodge
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>
+	Dodge_Montage(TEXT("/Game/Blueprints/Animations/AnimMontage_Dodge.AnimMontage_Dodge"));
+	if (Dodge_Montage.Succeeded())
+	{
+		DodgeMontage = Dodge_Montage.Object;
+	}
 }
 
 void UGSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -24,7 +40,9 @@ void UGSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (::IsValid(TryGetPawnOwner()))
 	{
 		CurrentPawnSpeed = TryGetPawnOwner()->GetVelocity().Size();
-		IsParrying = Player->GetIsParrying();
+
+		//IsParrying = Player->GetIsParrying();
+		//IsDodge = Player->GetIsDodge();
 	}
 }
 
@@ -54,4 +72,32 @@ FName UGSAnimInstance::GetAttackMontageSectionName(int32 Section)
 {
 	GSCHECK(FMath::IsWithinInclusive<int32>(Section, 1, 4), NAME_None);
 	return FName(*FString::Printf(TEXT("Attack%d"),Section));
+}
+
+//!< Legacy
+//! 
+//void UGSAnimInstance::AnimNotify_ParryingEnd()
+//{
+//	OnParryingEnd.Broadcast();
+//}
+//
+//void UGSAnimInstance::AnimNotify_DodgeEnd()
+//{
+//	OnDodgeEnd.Broadcast();
+//}
+
+void UGSAnimInstance::PlayParryingMontage()
+{
+	if (!Montage_IsPlaying(ParryingMontage))
+	{
+		Montage_Play(ParryingMontage, 1.0f);
+	}
+}
+
+void UGSAnimInstance::PlayDodgeMontage()
+{
+	if (!Montage_IsPlaying(DodgeMontage))
+	{
+		Montage_Play(DodgeMontage, 1.0f);
+	}
 }

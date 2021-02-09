@@ -57,8 +57,14 @@ private:
 	int32 MaxCombo;
 
 	// Evade
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-	bool IsParrying;
+
+	//!< Legacy
+	
+	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
+	//bool IsParrying;
+
+	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
+	//bool IsDodge;
 
 private:
 
@@ -82,10 +88,12 @@ private:
 	void AttackEndComboState();
 
 	//Evade
-	void Parrying();
-	void EndParrying();
+	void Evade();
 
 public : 
-	bool GetIsParrying() const { return IsParrying;}
+
+	//!< Legacy
+	//bool GetIsParrying() const { return IsParrying;}
+	//bool GetIsDodge() const{return IsDodge; }
 	
 };

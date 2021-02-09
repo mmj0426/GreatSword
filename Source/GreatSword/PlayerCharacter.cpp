@@ -87,7 +87,8 @@ APlayerCharacter::APlayerCharacter()
 
 	// Evade
 
-	IsParrying = false;
+	// !< Legacy
+	/*IsParrying = false;*/
 
 }
 
@@ -143,6 +144,20 @@ void APlayerCharacter::PostInitializeComponents()
 				GSAnim->JumpToAttackMontageSection(CurrentCombo);
 			}
 		});
+
+	// Parrying End Delegate
+
+	//GSAnim->OnParryingEnd.AddLambda([this]()->void
+	//	{
+	//		IsParrying = false;
+	//	}
+	//);
+
+	//// Dodge End Delegate
+	//GSAnim->OnDodgeEnd.AddLambda([this]()->void
+	//	{
+	//		IsDodge = false;
+	//	});
 }
 
 // Called to bind functionality to input
@@ -158,13 +173,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction(TEXT("Run"),EInputEvent::IE_Released, this, &APlayerCharacter::Walk);
 	PlayerInputComponent->BindAction(TEXT("Run"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Run);
 	PlayerInputComponent->BindAction(TEXT("Attack"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Attack);
-	PlayerInputComponent->BindAction(TEXT("Evade"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Parrying);
-	PlayerInputComponent->BindAction(TEXT("Evade"), EInputEvent::IE_Released, this, &APlayerCharacter::EndParrying);
+	PlayerInputComponent->BindAction(TEXT("Evade"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Evade);
 }
 
 void APlayerCharacter::MoveForward(float NewAxisValue)
 {
-	if (Controller != nullptr && NewAxisValue != 0.0f)
+	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
 	{
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
 	}
@@ -172,7 +186,7 @@ void APlayerCharacter::MoveForward(float NewAxisValue)
 
 void APlayerCharacter::MoveRight(float NewAxisValue)
 {
-	if (Controller != nullptr && NewAxisValue != 0.0f)
+	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
 	{
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
 	}
@@ -226,18 +240,22 @@ void APlayerCharacter::Attack()
 
 void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
-	GSCHECK(IsAttacking);
-	GSCHECK(CurrentCombo > 0);
+	//GSCHECK(IsAttacking);
+	//GSCHECK(CurrentCombo > 0);
 	IsAttacking = false;
 	AttackEndComboState();
 }
 
-void APlayerCharacter::Parrying()
-{
-	IsParrying = true;
-}
+void APlayerCharacter::Evade()
+{ 
+	
 
-void APlayerCharacter::EndParrying()
-{
-	IsParrying = false;
+	if (GetVelocity().IsZero())
+	{
+		GSAnim->PlayParryingMontage();
+	}
+	else
+	{
+		GSAnim->PlayDodgeMontage();
+	}
 }
