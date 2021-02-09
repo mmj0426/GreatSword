@@ -3,4 +3,6 @@
 #include "GreatSword.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, GreatSword, "GreatSword" );
+DEFINE_LOG_CATEGORY(GreatSword);
+
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, GreatSword, "GreatSword");
