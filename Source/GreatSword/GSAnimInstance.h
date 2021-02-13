@@ -12,6 +12,7 @@
 
  DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
  DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
+ DECLARE_MULTICAST_DELEGATE(FOnSmashCheckDelegate);
  DECLARE_MULTICAST_DELEGATE(FOnParryingEndDelegate);
  DECLARE_MULTICAST_DELEGATE(FOnDodgeEndDelegate);
 
@@ -28,16 +29,23 @@ public :
 	//Attack Combo
 	void PlayAttackMontage();
 
+	void PlaySmashMontage();
+
 	void JumpToAttackMontageSection(int32 NewSection);
+
+	void JumpToSmashMontageSection(int32 NewSection);
 
 	FOnAttackHitCheckDelegate OnAttackHitCheck;
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
+
+	FOnSmashCheckDelegate OnSmashCheck;
 
 	// Evade 
 	FOnParryingEndDelegate OnParryingEnd;
 	FOnDodgeEndDelegate OnDodgeEnd;
 
 	void PlayParryingMontage();
+
 	void PlayDodgeMontage();
 	
 
@@ -45,7 +53,7 @@ private :
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float CurrentPawnSpeed;
 
-	// !< Legacy
+	//!< Legacy
 
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
 	//bool IsParrying;
@@ -59,6 +67,9 @@ private :
 	UAnimMontage* AttackMontage;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* SmashMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* ParryingMontage;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
@@ -69,8 +80,13 @@ private :
 
 	UFUNCTION()
 	void AnimNotify_NextAttackCheck();
+
+	UFUNCTION()
+	void AnimNotify_SmashCheck();
 	
 	FName GetAttackMontageSectionName(int32 Section);
+
+	FName GetSmashMontageSectionName(int32 Section);
 
 	// Evade
 

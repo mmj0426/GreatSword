@@ -56,7 +56,12 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 MaxCombo;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsSmashInputOn;
+
 	// Evade
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsMoving;
 
 	//!< Legacy
 	
@@ -82,6 +87,7 @@ private:
 	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupeted);
 
 	void Attack();
+	void Smash();
 
 	//공격 속성 지정
 	void AttackStartComboState();

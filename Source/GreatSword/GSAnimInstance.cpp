@@ -8,11 +8,20 @@ UGSAnimInstance::UGSAnimInstance()
 {
 	CurrentPawnSpeed = 0.0f;
 
+	//Attack
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
 	Attack_Montage(TEXT("/Game/Blueprints/Animations/AnimMontage_AttackCombo.AnimMontage_AttackCombo"));
 	if (Attack_Montage.Succeeded())
 	{
 		AttackMontage = Attack_Montage.Object;
+	}
+
+	//Smash
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>
+	Smash_Montage(TEXT("/Game/Blueprints/Animations/AnimMontage_Smash.AnimMontage_Smash"));
+	if (Smash_Montage.Succeeded())
+	{
+		SmashMontage = Smash_Montage.Object;
 	}
 
 	// Parrying
@@ -48,14 +57,28 @@ void UGSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UGSAnimInstance::PlayAttackMontage()
 {
-	GSLOG(Warning, TEXT("AnimInstance : Play Attack Montage"));
+	GSCHECK(!Montage_IsPlaying(AttackMontage));
+	GSCHECK(!Montage_IsPlaying(SmashMontage));
 	Montage_Play(AttackMontage, 1.0f);
+}
+
+void UGSAnimInstance::PlaySmashMontage()
+{
+	GSLOG(Warning, TEXT("AnimInstance : PlaySmashMontage"));
+	GSCHECK(!Montage_IsPlaying(SmashMontage));
+	Montage_Play(SmashMontage,1.0f);
 }
 
 void UGSAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
 	GSCHECK(Montage_IsPlaying(AttackMontage));
 	Montage_JumpToSection(GetAttackMontageSectionName(NewSection),AttackMontage);
+}
+
+void UGSAnimInstance::JumpToSmashMontageSection(int32 NewSection)
+{
+	GSCHECK(Montage_IsPlaying(SmashMontage));
+	Montage_JumpToSection(GetSmashMontageSectionName(NewSection), SmashMontage);
 }
 
 void UGSAnimInstance::AnimNotify_AttackHitCheck()
@@ -68,10 +91,21 @@ void UGSAnimInstance::AnimNotify_NextAttackCheck()
 	OnNextAttackCheck.Broadcast();
 }
 
+void UGSAnimInstance::AnimNotify_SmashCheck()
+{
+	OnSmashCheck.Broadcast();
+}
+
 FName UGSAnimInstance::GetAttackMontageSectionName(int32 Section)
 {
 	GSCHECK(FMath::IsWithinInclusive<int32>(Section, 1, 4), NAME_None);
 	return FName(*FString::Printf(TEXT("Attack%d"),Section));
+}
+
+FName UGSAnimInstance::GetSmashMontageSectionName(int32 Section)
+{
+	GSCHECK(FMath::IsWithinInclusive<int32>(Section,2,4),NAME_None);
+	return FName(*FString::Printf(TEXT("Smash%d"),Section));
 }
 
 //!< Legacy
@@ -88,16 +122,14 @@ FName UGSAnimInstance::GetAttackMontageSectionName(int32 Section)
 
 void UGSAnimInstance::PlayParryingMontage()
 {
-	if (!Montage_IsPlaying(ParryingMontage))
-	{
-		Montage_Play(ParryingMontage, 1.0f);
-	}
+	GSCHECK(!Montage_IsPlaying(ParryingMontage));
+	Montage_Play(ParryingMontage, 1.0f);
 }
 
 void UGSAnimInstance::PlayDodgeMontage()
 {
-	if (!Montage_IsPlaying(DodgeMontage))
-	{
-		Montage_Play(DodgeMontage, 1.0f);
-	}
+	GSCHECK(!Montage_IsPlaying(DodgeMontage));
+	GSCHECK(!Montage_IsPlaying(AttackMontage));
+	GSCHECK(!Montage_IsPlaying(SmashMontage));
+	Montage_Play(DodgeMontage, 1.0f);
 }

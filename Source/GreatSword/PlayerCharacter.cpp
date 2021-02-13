@@ -97,6 +97,8 @@ void APlayerCharacter::AttackStartComboState()
 	CanNextCombo = true;
 	IsComboInputOn = false;
 
+	IsSmashInputOn = false;
+
 	// 콤보 값이 0 ~ MaxCombo-1 사이인지 검사
 	GSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 0,MaxCombo -1));
 	CurrentCombo = FMath::Clamp<int32>(CurrentCombo+1, 1, MaxCombo);
@@ -106,6 +108,9 @@ void APlayerCharacter::AttackEndComboState()
 {
 	CanNextCombo = true;
 	IsComboInputOn = false;
+
+	IsSmashInputOn = false;
+
 	CurrentCombo = 0;
 }
 
@@ -135,13 +140,24 @@ void APlayerCharacter::PostInitializeComponents()
 
 	GSAnim->OnNextAttackCheck.AddLambda([this]()->void
 		{
-			GSLOG(Warning, TEXT("On Next Attack Check"));
 			CanNextCombo = false;
 
 			if (IsComboInputOn)
 			{
 				AttackStartComboState();
 				GSAnim->JumpToAttackMontageSection(CurrentCombo);
+			}
+		});
+
+	GSAnim->OnSmashCheck.AddLambda([this]()->void
+		{
+
+			if (IsSmashInputOn)
+			{
+				GSLOG(Warning, TEXT("Smash Check"));
+				GSAnim->PlaySmashMontage();
+				GSAnim->JumpToSmashMontageSection(CurrentCombo);
+				IsAttacking = true;
 			}
 		});
 
@@ -172,7 +188,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	PlayerInputComponent->BindAction(TEXT("Run"),EInputEvent::IE_Released, this, &APlayerCharacter::Walk);
 	PlayerInputComponent->BindAction(TEXT("Run"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Run);
+
 	PlayerInputComponent->BindAction(TEXT("Attack"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Attack);
+	PlayerInputComponent->BindAction(TEXT("Smash"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Smash);
 	PlayerInputComponent->BindAction(TEXT("Evade"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Evade);
 }
 
@@ -182,13 +200,23 @@ void APlayerCharacter::MoveForward(float NewAxisValue)
 	{
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
 	}
+
+	if (NewAxisValue == 0)
+	{
+		IsMoving = false;
+	}
 }
 
 void APlayerCharacter::MoveRight(float NewAxisValue)
-{
+{	
 	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
 	{
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
+	}
+
+	if (NewAxisValue == 0)
+	{
+		IsMoving = false;
 	}
 }
 
@@ -238,24 +266,32 @@ void APlayerCharacter::Attack()
 	}
 }
 
+void APlayerCharacter::Smash()
+{
+	if(IsAttacking)
+	{
+		GSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
+		IsSmashInputOn = true;
+	}
+}
+
 void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	//GSCHECK(IsAttacking);
 	//GSCHECK(CurrentCombo > 0);
+	GSLOG(Warning,TEXT("MontageEnded"));
 	IsAttacking = false;
 	AttackEndComboState();
 }
 
 void APlayerCharacter::Evade()
 { 
-	
-
 	if (GetVelocity().IsZero())
 	{
 		GSAnim->PlayParryingMontage();
 	}
 	else
 	{
-		GSAnim->PlayDodgeMontage();
+		GSAnim->PlayDodgeMontage();		
 	}
 }
