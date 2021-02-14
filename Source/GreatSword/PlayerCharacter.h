@@ -60,8 +60,11 @@ private:
 	bool IsSmashInputOn;
 
 	// Evade
+	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	//bool IsMoving;
+
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	bool IsMoving;
+	FVector MoveValue;
 
 	//!< Legacy
 	

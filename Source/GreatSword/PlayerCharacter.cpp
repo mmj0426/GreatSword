@@ -196,27 +196,21 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 void APlayerCharacter::MoveForward(float NewAxisValue)
 {
+	MoveValue.X = NewAxisValue;
 	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
 	{
+		MoveValue.X = NewAxisValue;
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
-	}
-
-	if (NewAxisValue == 0)
-	{
-		IsMoving = false;
 	}
 }
 
 void APlayerCharacter::MoveRight(float NewAxisValue)
 {	
+	MoveValue.Y = NewAxisValue;
 	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
 	{
+		MoveValue.Y = NewAxisValue;
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
-	}
-
-	if (NewAxisValue == 0)
-	{
-		IsMoving = false;
 	}
 }
 
@@ -279,14 +273,13 @@ void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterru
 {
 	//GSCHECK(IsAttacking);
 	//GSCHECK(CurrentCombo > 0);
-	GSLOG(Warning,TEXT("MontageEnded"));
 	IsAttacking = false;
 	AttackEndComboState();
 }
 
 void APlayerCharacter::Evade()
 { 
-	if (GetVelocity().IsZero())
+	if (MoveValue.IsZero())
 	{
 		GSAnim->PlayParryingMontage();
 	}

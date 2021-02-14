@@ -57,28 +57,34 @@ void UGSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UGSAnimInstance::PlayAttackMontage()
 {
-	GSCHECK(!Montage_IsPlaying(AttackMontage));
-	GSCHECK(!Montage_IsPlaying(SmashMontage));
-	Montage_Play(AttackMontage, 1.0f);
+	if ((!Montage_IsPlaying(AttackMontage)) && (!Montage_IsPlaying(SmashMontage)))
+	{
+		Montage_Play(AttackMontage, 1.0f);
+	}
 }
 
 void UGSAnimInstance::PlaySmashMontage()
 {
-	GSLOG(Warning, TEXT("AnimInstance : PlaySmashMontage"));
-	GSCHECK(!Montage_IsPlaying(SmashMontage));
-	Montage_Play(SmashMontage,1.0f);
+	if (!Montage_IsPlaying(SmashMontage))
+	{
+		Montage_Play(SmashMontage,1.0f);
+	}
 }
 
 void UGSAnimInstance::JumpToAttackMontageSection(int32 NewSection)
 {
-	GSCHECK(Montage_IsPlaying(AttackMontage));
-	Montage_JumpToSection(GetAttackMontageSectionName(NewSection),AttackMontage);
+	if (Montage_IsPlaying(AttackMontage))
+	{
+		Montage_JumpToSection(GetAttackMontageSectionName(NewSection),AttackMontage);
+	}
 }
 
 void UGSAnimInstance::JumpToSmashMontageSection(int32 NewSection)
 {
-	GSCHECK(Montage_IsPlaying(SmashMontage));
-	Montage_JumpToSection(GetSmashMontageSectionName(NewSection), SmashMontage);
+	if (Montage_IsPlaying(SmashMontage))
+	{
+		Montage_JumpToSection(GetSmashMontageSectionName(NewSection), SmashMontage);
+	}
 }
 
 void UGSAnimInstance::AnimNotify_AttackHitCheck()
@@ -122,14 +128,16 @@ FName UGSAnimInstance::GetSmashMontageSectionName(int32 Section)
 
 void UGSAnimInstance::PlayParryingMontage()
 {
-	GSCHECK(!Montage_IsPlaying(ParryingMontage));
-	Montage_Play(ParryingMontage, 1.0f);
+	if (!Montage_IsPlaying(ParryingMontage))
+	{
+		Montage_Play(ParryingMontage, 1.0f);
+	}
 }
 
 void UGSAnimInstance::PlayDodgeMontage()
 {
-	GSCHECK(!Montage_IsPlaying(DodgeMontage));
-	GSCHECK(!Montage_IsPlaying(AttackMontage));
-	GSCHECK(!Montage_IsPlaying(SmashMontage));
-	Montage_Play(DodgeMontage, 1.0f);
+	if ((!Montage_IsPlaying(DodgeMontage)) && (!Montage_IsPlaying(AttackMontage)) && (!Montage_IsPlaying(SmashMontage)))
+	{
+		Montage_Play(DodgeMontage, 1.0f);
+	}
 }
