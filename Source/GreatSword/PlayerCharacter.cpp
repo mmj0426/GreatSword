@@ -94,24 +94,24 @@ APlayerCharacter::APlayerCharacter()
 
 void APlayerCharacter::AttackStartComboState()
 {
-	CanNextCombo = true;
-	IsComboInputOn = false;
-
-	IsSmashInputOn = false;
+	bLMDown = false;
+	bRMDown = false;
 
 	// 콤보 값이 0 ~ MaxCombo-1 사이인지 검사
-	GSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 0,MaxCombo -1));
-	CurrentCombo = FMath::Clamp<int32>(CurrentCombo+1, 1, MaxCombo);
+	//GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 0,MaxCombo -1));
+	AttackComboIndex = FMath::Clamp<int32>(AttackComboIndex+1, 1, MaxCombo);
+
+	GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, GSAnim->GetMaxSection() - 1));
+	SmashIndex = FMath::Clamp<int32>(SmashIndex+1 , 1, GSAnim->GetMaxSection());
 }
 
 void APlayerCharacter::AttackEndComboState()
 {
-	CanNextCombo = true;
-	IsComboInputOn = false;
+	bLMDown = false;
+	bRMDown = false;
 
-	IsSmashInputOn = false;
-
-	CurrentCombo = 0;
+	AttackComboIndex = 0;
+	SmashIndex = 0;
 }
 
 // Called when the game starts or when spawned
@@ -125,7 +125,6 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -134,22 +133,38 @@ void APlayerCharacter::PostInitializeComponents()
 
 	GSAnim = Cast<UGSAnimInstance>(GetMesh()->GetAnimInstance());
 	GSCHECK(nullptr != GSAnim);
-	
-	//AnimInstance에 함수 등록 : OnMontageEnded
-	GSAnim->OnMontageEnded.AddDynamic(this, &APlayerCharacter::OnAttackMontageEnded);
 
+	GSAnim->OnMontageEnded.AddDynamic(this,&APlayerCharacter::OnAttackMontageEnded);
+
+	// Delegate 함수 등록
 	GSAnim->OnNextAttackCheck.AddLambda([this]()->void
 		{
-			CanNextCombo = false;
-
-			if (IsComboInputOn)
+			if (bLMDown)
 			{
 				AttackStartComboState();
-				GSAnim->JumpToAttackMontageSection(CurrentCombo);
+				SmashIndex = 0;
+				GSAnim->PlayAttackMontage(AttackComboIndex);
 			}
+			//else
+			//{
+			//	IsAttacking = false;
+			//	AttackEndComboState();
+			//}
 		});
 
 	GSAnim->OnSmashCheck.AddLambda([this]()->void
+		{
+			if (bRMDown)
+			{
+				AttackStartComboState();
+				
+				GSAnim->JumpToSmashMontageSection(SmashIndex);
+			}
+		});
+		
+
+	//! < Legacy
+	/*GSAnim->OnSmashCheck.AddLambda([this]()->void
 		{
 
 			if (IsSmashInputOn)
@@ -159,7 +174,7 @@ void APlayerCharacter::PostInitializeComponents()
 				GSAnim->JumpToSmashMontageSection(CurrentCombo);
 				IsAttacking = true;
 			}
-		});
+		});*/
 
 	// Parrying End Delegate
 
@@ -169,7 +184,8 @@ void APlayerCharacter::PostInitializeComponents()
 	//	}
 	//);
 
-	//// Dodge End Delegate
+	//! < Dodge End Delegate
+	//! 
 	//GSAnim->OnDodgeEnd.AddLambda([this]()->void
 	//	{
 	//		IsDodge = false;
@@ -244,18 +260,14 @@ void APlayerCharacter::Attack()
 {
 	if (IsAttacking)
 	{
-		GSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
-		if (CanNextCombo)
-		{
-			IsComboInputOn = true;
-		}
+		GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 1, MaxCombo));
+		bLMDown = true;
 	}
 	else
 	{
-		GSCHECK(CurrentCombo == 0);
+		GSCHECK(AttackComboIndex == 0);
 		AttackStartComboState();
-		GSAnim->PlayAttackMontage();
-		GSAnim->JumpToAttackMontageSection(CurrentCombo);
+		GSAnim->PlayAttackMontage(AttackComboIndex);
 		IsAttacking = true;
 	}
 }
@@ -264,16 +276,30 @@ void APlayerCharacter::Smash()
 {
 	if(IsAttacking)
 	{
-		GSCHECK(FMath::IsWithinInclusive<int32>(CurrentCombo, 1, MaxCombo));
-		IsSmashInputOn = true;
+		//GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 1, GSAnim->GetMaxSection()));
+		bRMDown = true;
+		GSAnim->SetCurrentCombo(GSAnim->GetCurrentCombo()+1);
 	}
+	//else
+	//{
+	//	GSCHECK(SmashIndex == 0);
+	//	AttackStartComboState();
+	//	GSLOG(Error, TEXT("%i"), SmashIndex);
+	//	GSAnim->JumpToSmashMontageSection(SmashIndex);
+	//	IsAttacking = true;
+	//}
 }
 
-void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 {
-	//GSCHECK(IsAttacking);
-	//GSCHECK(CurrentCombo > 0);
+	//if (GSAnim->GetCurrentCombo() >= GSAnim->GetMaxSection())
+	//{
+	//	IsAttacking = false;
+	//	GSLOG(Warning, TEXT("CurrentCombo : %i , MaxSection : %i"),GSAnim->GetCurrentCombo(), GSAnim->GetMaxSection());
+	//	AttackEndComboState();
+	//}
 	IsAttacking = false;
+	GSLOG(Warning, TEXT("CurrentCombo : %i , MaxSection : %i"), GSAnim->GetCurrentCombo(), GSAnim->GetMaxSection());
 	AttackEndComboState();
 }
 

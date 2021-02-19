@@ -28,15 +28,19 @@ public:
 	virtual void PostInitializeComponents() override;
 
 private:
+	// Camera 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 	USpringArmComponent* SpringArm;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 	UCameraComponent* Camera;
 
+
+	// Weapon
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 	UStaticMeshComponent* Weapon;
 
+	// AnimInstance
 	UPROPERTY()
 	class UGSAnimInstance* GSAnim;
 
@@ -45,19 +49,19 @@ private:
 	bool IsAttacking;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	bool CanNextCombo;
+	bool bLMDown;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	bool IsComboInputOn;
+	bool bRMDown;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	int32 CurrentCombo;
+	int32 AttackComboIndex;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 SmashIndex;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 MaxCombo;
-
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	bool IsSmashInputOn;
 
 	// Evade
 	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
@@ -100,6 +104,8 @@ private:
 	void Evade();
 
 public : 
+
+	bool GetIsAttacking() const { return IsAttacking; }
 
 	//!< Legacy
 	//bool GetIsParrying() const { return IsParrying;}

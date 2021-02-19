@@ -4,6 +4,8 @@
 
 #include "GreatSword.h"
 #include "Animation/AnimInstance.h"
+#include "Containers/Array.h"
+
 #include "GSAnimInstance.generated.h"
 
 /**
@@ -12,7 +14,8 @@
 
  DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
  DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
- DECLARE_MULTICAST_DELEGATE(FOnSmashCheckDelegate);
+ DECLARE_MULTICAST_DELEGATE(FOnSmashCheck);
+
  DECLARE_MULTICAST_DELEGATE(FOnParryingEndDelegate);
  DECLARE_MULTICAST_DELEGATE(FOnDodgeEndDelegate);
 
@@ -27,31 +30,28 @@ public :
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 	//Attack Combo
-	void PlayAttackMontage();
-
-	void PlaySmashMontage();
-
-	void JumpToAttackMontageSection(int32 NewSection);
+	void PlayAttackMontage(int32 NextCombo);
 
 	void JumpToSmashMontageSection(int32 NewSection);
 
 	FOnAttackHitCheckDelegate OnAttackHitCheck;
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
-
-	FOnSmashCheckDelegate OnSmashCheck;
+	FOnSmashCheck OnSmashCheck;
 
 	// Evade 
-	FOnParryingEndDelegate OnParryingEnd;
-	FOnDodgeEndDelegate OnDodgeEnd;
-
 	void PlayParryingMontage();
 
 	void PlayDodgeMontage();
 	
+	FOnParryingEndDelegate OnParryingEnd;
+	FOnDodgeEndDelegate OnDodgeEnd;
 
 private : 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float CurrentPawnSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	bool IsAttacking;
 
 	//!< Legacy
 
@@ -64,10 +64,30 @@ private :
 	// Attack
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* AttackMontage;
+	UAnimMontage* AttackMontage_01;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* SmashMontage;
+	UAnimMontage* AttackMontage_02;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* AttackMontage_03;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* AttackMontage_04;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	TArray<UAnimMontage*> AttackMontageArray;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* CurrentAttackMontage;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 CurrentCombo;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 MaxSection;
+
+	// Evade
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* ParryingMontage;
@@ -84,8 +104,6 @@ private :
 	UFUNCTION()
 	void AnimNotify_SmashCheck();
 	
-	FName GetAttackMontageSectionName(int32 Section);
-
 	FName GetSmashMontageSectionName(int32 Section);
 
 	// Evade
@@ -97,4 +115,9 @@ private :
 	//UFUNCTION()
 	//void AnimNotify_DodgeEnd();
 
+public : 
+	int32 GetCurrentCombo() const { return CurrentCombo;}
+	void SetCurrentCombo(int32 NewCurrentCombo) { CurrentCombo = NewCurrentCombo; }
+
+	int32 GetMaxSection() const { return MaxSection; }
 };
