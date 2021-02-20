@@ -98,11 +98,8 @@ void APlayerCharacter::AttackStartComboState()
 	bRMDown = false;
 
 	// 콤보 값이 0 ~ MaxCombo-1 사이인지 검사
-	//GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 0,MaxCombo -1));
+	GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 0,MaxCombo -1));
 	AttackComboIndex = FMath::Clamp<int32>(AttackComboIndex+1, 1, MaxCombo);
-
-	GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, GSAnim->GetMaxSection() - 1));
-	SmashIndex = FMath::Clamp<int32>(SmashIndex+1 , 1, GSAnim->GetMaxSection());
 }
 
 void APlayerCharacter::AttackEndComboState()
@@ -145,20 +142,29 @@ void APlayerCharacter::PostInitializeComponents()
 				SmashIndex = 0;
 				GSAnim->PlayAttackMontage(AttackComboIndex);
 			}
-			//else
-			//{
-			//	IsAttacking = false;
-			//	AttackEndComboState();
-			//}
+			else
+			{
+				IsAttacking = false;
+				AttackEndComboState();
+			}
 		});
 
 	GSAnim->OnSmashCheck.AddLambda([this]()->void
 		{
 			if (bRMDown)
 			{
-				AttackStartComboState();
+				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, GSAnim->GetMaxSection() - 1));
+				SmashIndex = FMath::Clamp<int32>(SmashIndex + 1, 1, GSAnim->GetMaxSection());
 				
+				GSLOG(Error, TEXT("Smash Index : %i"), SmashIndex);
+
+				bRMDown = false;
 				GSAnim->JumpToSmashMontageSection(SmashIndex);
+			}
+			else
+			{
+				IsAttacking = false;
+				AttackEndComboState();
 			}
 		});
 		
@@ -280,27 +286,27 @@ void APlayerCharacter::Smash()
 		bRMDown = true;
 		GSAnim->SetCurrentCombo(GSAnim->GetCurrentCombo()+1);
 	}
-	//else
-	//{
-	//	GSCHECK(SmashIndex == 0);
-	//	AttackStartComboState();
-	//	GSLOG(Error, TEXT("%i"), SmashIndex);
-	//	GSAnim->JumpToSmashMontageSection(SmashIndex);
-	//	IsAttacking = true;
-	//}
+	else
+	{
+		GSCHECK(SmashIndex == 0);
+		GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, GSAnim->GetMaxSection() - 1));
+
+		SmashIndex = FMath::Clamp<int32>(SmashIndex + 1, 1, GSAnim->GetMaxSection());
+
+		GSLOG(Error, TEXT("%i"), SmashIndex);
+		GSAnim->JumpToSmashMontageSection(SmashIndex);
+		IsAttacking = true;
+	}
 }
 
 void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 {
-	//if (GSAnim->GetCurrentCombo() >= GSAnim->GetMaxSection())
-	//{
-	//	IsAttacking = false;
-	//	GSLOG(Warning, TEXT("CurrentCombo : %i , MaxSection : %i"),GSAnim->GetCurrentCombo(), GSAnim->GetMaxSection());
-	//	AttackEndComboState();
-	//}
-	IsAttacking = false;
-	GSLOG(Warning, TEXT("CurrentCombo : %i , MaxSection : %i"), GSAnim->GetCurrentCombo(), GSAnim->GetMaxSection());
-	AttackEndComboState();
+	if (GSAnim->GetCurrentCombo() >= GSAnim->GetMaxSection())
+	{
+		IsAttacking = false;
+		GSLOG(Warning, TEXT("CurrentCombo : %i , MaxSection : %i"),GSAnim->GetCurrentCombo(), GSAnim->GetMaxSection());
+		AttackEndComboState();
+	}
 }
 
 void APlayerCharacter::Evade()
