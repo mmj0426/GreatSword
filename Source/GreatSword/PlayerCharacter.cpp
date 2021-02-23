@@ -142,6 +142,7 @@ void APlayerCharacter::PostInitializeComponents()
 			{
 				AttackStartComboState();
 				SmashIndex = 0;
+				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 				GSAnim->PlayAttackMontage(AttackComboIndex);
 			}
 			//else
@@ -165,6 +166,7 @@ void APlayerCharacter::PostInitializeComponents()
 				bRMDown = false;
 				IsAttacking = true;
 				GSAnim->SetCurrentCombo(GSAnim->GetCurrentCombo() + 1);
+				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 				GSAnim->JumpToSmashMontageSection(SmashIndex);
 			}
 			else
@@ -277,6 +279,7 @@ void APlayerCharacter::Attack()
 	{
 		GSCHECK(AttackComboIndex == 0);
 		AttackStartComboState();
+		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 		GSAnim->PlayAttackMontage(AttackComboIndex);
 		IsAttacking = true;
 	}
