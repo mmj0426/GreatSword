@@ -37,7 +37,7 @@ private:
 
 
 	// Weapon
-	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* Weapon;
 
 	// AnimInstance
