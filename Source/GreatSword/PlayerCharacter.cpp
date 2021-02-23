@@ -11,7 +11,7 @@ APlayerCharacter::APlayerCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	bUseControllerRotationYaw = false;
 
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bOrientRotationToMovement  = true;
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(85.0f);
 	GetCapsuleComponent()->SetRelativeLocation(FVector(0.0f,0.0f,90.0f));
@@ -227,7 +227,6 @@ void APlayerCharacter::MoveForward(float NewAxisValue)
 	MoveValue.X = NewAxisValue;
 	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
 	{
-		MoveValue.X = NewAxisValue;
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
 	}
 }
@@ -237,7 +236,6 @@ void APlayerCharacter::MoveRight(float NewAxisValue)
 	MoveValue.Y = NewAxisValue;
 	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
 	{
-		MoveValue.Y = NewAxisValue;
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
 	}
 }
@@ -294,17 +292,18 @@ void APlayerCharacter::Smash()
 		//bRMDown = true;
 		//GSAnim->SetCurrentCombo(GSAnim->GetCurrentCombo()+1);
 	}
-	else
-	{
-		//GSCHECK(SmashIndex == 0);
-		//GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, GSAnim->GetMaxSection()-1));
+	//! <Legacy
+	//else
+	//{
+	//	GSCHECK(SmashIndex == 0);
+	//	GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, GSAnim->GetMaxSection()-1));
 
-		//SmashIndex = FMath::Clamp<int32>(SmashIndex + 1, 1, GSAnim->GetMaxSection());
+	//	SmashIndex = FMath::Clamp<int32>(SmashIndex + 1, 1, GSAnim->GetMaxSection());
 
-		//GSLOG(Error, TEXT("%i"), SmashIndex);
-		////GSAnim->JumpToSmashMontageSection(SmashIndex);
-		////IsAttacking = true;
-	}
+	//	GSLOG(Error, TEXT("%i"), SmashIndex);
+	//	//GSAnim->JumpToSmashMontageSection(SmashIndex);
+	//	//IsAttacking = true;
+	//}
 }
 
 void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupeted)
@@ -325,6 +324,24 @@ void APlayerCharacter::Evade()
 	}
 	else
 	{
+		// 캐릭터 입력값으로 회전 코드 들어가야함
+		if (MoveValue.X == 1)
+		{
+			SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+		}
+		if (MoveValue.X == -1)
+		{
+			SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw-180, 0.0f));
+		}
+		if (MoveValue.Y == 1)
+		{
+			SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw+90, 0.0f));
+		}
+		if (MoveValue.Y == -1)
+		{
+			SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 90, 0.0f));
+		}
+
 		GSAnim->PlayDodgeMontage();		
 	}
 }
