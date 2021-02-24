@@ -70,8 +70,8 @@ void UGSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		CurrentPawnSpeed = TryGetPawnOwner()->GetVelocity().Size();
 		IsAttacking = Player->GetIsAttacking();
 
-		//IsParrying = Player->GetIsParrying();
-		//IsDodge = Player->GetIsDodge();
+		IsParrying = Player->GetIsParrying();
+		IsDodge = Player->GetIsDodge();
 	}
 }
 
@@ -142,7 +142,7 @@ void UGSAnimInstance::PlayParryingMontage()
 
 void UGSAnimInstance::PlayDodgeMontage()
 {
-	if ((!Montage_IsPlaying(DodgeMontage)) && !IsAttacking)
+	if ((!Montage_IsPlaying(DodgeMontage)))
 	{
 		Montage_Play(DodgeMontage, 1.0f);
 	}

@@ -69,14 +69,13 @@ private:
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	FVector MoveValue;
-
-	//!< Legacy
 	
-	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-	//bool IsParrying;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
+	bool IsParrying;
 
-	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-	//bool IsDodge;
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
+	bool IsDodge;
+
 
 private:
 
@@ -108,7 +107,7 @@ public :
 	bool GetIsAttacking() const { return IsAttacking; }
 
 	//!< Legacy
-	//bool GetIsParrying() const { return IsParrying;}
-	//bool GetIsDodge() const{return IsDodge; }
+	bool GetIsParrying() const { return IsParrying;}
+	bool GetIsDodge() const{return IsDodge; }
 	
 };

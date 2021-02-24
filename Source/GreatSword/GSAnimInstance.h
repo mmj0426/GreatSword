@@ -55,11 +55,11 @@ private :
 
 	//!< Legacy
 
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-	//bool IsParrying;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
+	bool IsParrying;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-	//bool IsDodge;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
+	bool IsDodge;
 
 	// Attack
 

@@ -155,13 +155,13 @@ void APlayerCharacter::PostInitializeComponents()
 
 	GSAnim->OnSmashCheck.AddLambda([this]()->void
 		{
-			GSLOG(Error, TEXT("OnSmashCheck Lambda"));
+			//GSLOG(Error, TEXT("OnSmashCheck Lambda"));
 			if (bRMDown)
 			{
 				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, GSAnim->GetMaxSection()-1));
 				SmashIndex = FMath::Clamp<int32>(SmashIndex+1, 1, GSAnim->GetMaxSection());
 				
-				GSLOG(Error, TEXT("Smash Index : %i"), SmashIndex);
+				//GSLOG(Error, TEXT("Smash Index : %i"), SmashIndex);
 
 				bRMDown = false;
 				IsAttacking = true;
@@ -311,6 +311,9 @@ void APlayerCharacter::Smash()
 
 void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 {
+	IsParrying = false;
+	IsDodge = false;
+
 	if (GSAnim->GetCurrentCombo() >= GSAnim->GetMaxSection())
 	{
 		IsAttacking = false;
@@ -321,30 +324,37 @@ void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterru
 
 void APlayerCharacter::Evade()
 { 
-	if (MoveValue.IsZero())
+	if (!IsAttacking)
 	{
-		GSAnim->PlayParryingMontage();
-	}
-	else
-	{
-		// 캐릭터 입력값으로 회전 코드 들어가야함
-		if (MoveValue.X == 1)
+		if (MoveValue.IsZero() && !IsDodge)
 		{
-			SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+			IsParrying = true;
+			GSAnim->PlayParryingMontage();
 		}
-		if (MoveValue.X == -1)
+		else if (!MoveValue.IsZero() && !IsParrying)
 		{
-			SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw-180, 0.0f));
-		}
-		if (MoveValue.Y == 1)
-		{
-			SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw+90, 0.0f));
-		}
-		if (MoveValue.Y == -1)
-		{
-			SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 90, 0.0f));
-		}
+			IsDodge = true; 
 
-		GSAnim->PlayDodgeMontage();		
+			// 구르기 시 W,A,S,D 키 값에 따라 방향 회전
+			if (MoveValue.X == 1)
+			{
+				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+			}
+			if (MoveValue.X == -1)
+			{
+				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 180, 0.0f));
+			}
+			if (MoveValue.Y == 1)
+			{
+				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw + 90, 0.0f));
+			}
+			if (MoveValue.Y == -1)
+			{
+				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 90, 0.0f));
+			}
+
+			GSAnim->PlayDodgeMontage();
+		}
 	}
+
 }
