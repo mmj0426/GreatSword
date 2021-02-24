@@ -27,6 +27,10 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents() override;
 
+	// Weapon
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = true))
+	UStaticMeshComponent* Weapon;
+
 private:
 	// Camera 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
@@ -34,11 +38,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 	UCameraComponent* Camera;
-
-
-	// Weapon
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = true))
-	UStaticMeshComponent* Weapon;
 
 	// AnimInstance
 	UPROPERTY()
@@ -94,6 +93,7 @@ private:
 
 	void Attack();
 	void Smash();
+	void AttackCheck();
 
 	//공격 속성 지정
 	void AttackStartComboState();

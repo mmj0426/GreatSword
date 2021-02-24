@@ -55,7 +55,7 @@ APlayerCharacter::APlayerCharacter()
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
 	static ConstructorHelpers::FClassFinder<UAnimInstance>
-	Anim_Player(TEXT("/Game/Blueprints/Animations/AnimBP_PlayerCharacter.AnimBP_PlayerCharacter_C"));
+	Anim_Player(TEXT("/Game/Blueprints/Player/Animation/AnimBP_PlayerCharacter.AnimBP_PlayerCharacter_C"));
 	
 	if (Anim_Player.Succeeded())
 	{
@@ -122,6 +122,7 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//GSLOG(Warning, TEXT("P : %d, D : %d"), IsParrying, IsDodge);
 	/*GSLOG(Warning, TEXT("SmashIndex : %i"),SmashIndex);*/
 	//GSLOG(Warning, TEXT("IsAttacking : %d"),IsAttacking);
 }
@@ -135,6 +136,7 @@ void APlayerCharacter::PostInitializeComponents()
 
 	GSAnim->OnMontageEnded.AddDynamic(this,&APlayerCharacter::OnAttackMontageEnded);
 
+	GSAnim->OnAttackHitCheck.AddUObject(this, &APlayerCharacter::AttackCheck);
 	// Delegate 함수 등록
 	GSAnim->OnNextAttackCheck.AddLambda([this]()->void
 		{
@@ -175,6 +177,7 @@ void APlayerCharacter::PostInitializeComponents()
 				AttackEndComboState();
 			}
 		});
+
 		
 
 	//! < Legacy
@@ -317,7 +320,7 @@ void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterru
 	if (GSAnim->GetCurrentCombo() >= GSAnim->GetMaxSection())
 	{
 		IsAttacking = false;
-		GSLOG(Error, TEXT("CurrentCombo : %i , MaxSection : %i"),GSAnim->GetCurrentCombo(), GSAnim->GetMaxSection());
+		//GSLOG(Error, TEXT("CurrentCombo : %i , MaxSection : %i"),GSAnim->GetCurrentCombo(), GSAnim->GetMaxSection());
 		AttackEndComboState();
 	}
 }
@@ -331,7 +334,7 @@ void APlayerCharacter::Evade()
 			IsParrying = true;
 			GSAnim->PlayParryingMontage();
 		}
-		else if (!MoveValue.IsZero() && !IsParrying)
+		else if (!MoveValue.IsZero() && !IsParrying && !IsDodge)
 		{
 			IsDodge = true; 
 
@@ -357,4 +360,9 @@ void APlayerCharacter::Evade()
 		}
 	}
 
+}
+
+void APlayerCharacter::AttackCheck()
+{
+	
 }

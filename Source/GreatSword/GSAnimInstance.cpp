@@ -11,28 +11,28 @@ UGSAnimInstance::UGSAnimInstance()
 
 	//Attack
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
-		Attack_Montage_01(TEXT("/Game/Blueprints/Animations/Attack/AnimMontage_Attack1.AnimMontage_Attack1"));
+		Attack_Montage_01(TEXT("/Game/Blueprints/Player/Animation/Attack/AnimMontage_Attack1.AnimMontage_Attack1"));
 	if (Attack_Montage_01.Succeeded())
 	{
 		AttackMontage_01 = Attack_Montage_01.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
-		Attack_Montage_02(TEXT("/Game/Blueprints/Animations/Attack/AnimMontage_Attack2.AnimMontage_Attack2"));
+		Attack_Montage_02(TEXT("/Game/Blueprints/Player/Animation/Attack/AnimMontage_Attack2.AnimMontage_Attack2"));
 	if (Attack_Montage_02.Succeeded())
 	{
 		AttackMontage_02 = Attack_Montage_02.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
-		Attack_Montage_03(TEXT("/Game/Blueprints/Animations/Attack/AnimMontage_Attack3.AnimMontage_Attack3"));
+		Attack_Montage_03(TEXT("/Game/Blueprints/Player/Animation/Attack/AnimMontage_Attack3.AnimMontage_Attack3"));
 	if (Attack_Montage_03.Succeeded())
 	{
 		AttackMontage_03 = Attack_Montage_03.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
-		Attack_Montage_04(TEXT("/Game/Blueprints/Animations/Attack/AnimMontage_Attack4.AnimMontage_Attack4"));
+		Attack_Montage_04(TEXT("/Game/Blueprints/Player/Animation/Attack/AnimMontage_Attack4.AnimMontage_Attack4"));
 	if (Attack_Montage_04.Succeeded())
 	{
 		AttackMontage_04 = Attack_Montage_04.Object;
@@ -45,7 +45,7 @@ UGSAnimInstance::UGSAnimInstance()
 
 	// Parrying
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
-		Parrying_Montage(TEXT("/Game/Blueprints/Animations/AnimMontage_Parrying.AnimMontage_Parrying"));
+		Parrying_Montage(TEXT("/Game/Blueprints/Player/Animation/Evade/AnimMontage_Parrying.AnimMontage_Parrying"));
 	if (Parrying_Montage.Succeeded())
 	{
 		ParryingMontage = Parrying_Montage.Object;
@@ -53,7 +53,7 @@ UGSAnimInstance::UGSAnimInstance()
 
 	// Dodge
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
-		Dodge_Montage(TEXT("/Game/Blueprints/Animations/AnimMontage_Dodge.AnimMontage_Dodge"));
+		Dodge_Montage(TEXT("/Game/Blueprints/Player/Animation/Evade/AnimMontage_Dodge.AnimMontage_Dodge"));
 	if (Dodge_Montage.Succeeded())
 	{
 		DodgeMontage = Dodge_Montage.Object;
@@ -77,7 +77,7 @@ void UGSAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UGSAnimInstance::PlayAttackMontage(int32 NextCombo)
 {
-	GSLOG(Warning, TEXT("PlayAttackMontage : %i"), NextCombo);
+	//GSLOG(Warning, TEXT("PlayAttackMontage : %i"), NextCombo);
 
 	CurrentCombo = 1;
 	MaxSection = AttackMontageArray[NextCombo-1]->CompositeSections.Num();
@@ -144,6 +144,7 @@ void UGSAnimInstance::PlayDodgeMontage()
 {
 	if ((!Montage_IsPlaying(DodgeMontage)))
 	{
+		GSLOG(Warning, TEXT("DodgeAnimation"));
 		Montage_Play(DodgeMontage, 1.0f);
 	}
 }
