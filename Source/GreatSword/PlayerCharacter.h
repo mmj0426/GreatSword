@@ -28,7 +28,7 @@ public:
 	virtual void PostInitializeComponents() override;
 
 	// Weapon
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = true))
 	UStaticMeshComponent* Weapon;
 
 private:

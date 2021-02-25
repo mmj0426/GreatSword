@@ -116,6 +116,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Weapon->SetCollisionProfileName("Weapon");
 }
 
 // Called every frame
@@ -359,7 +360,6 @@ void APlayerCharacter::Evade()
 			GSAnim->PlayDodgeMontage();
 		}
 	}
-
 }
 
 void APlayerCharacter::AttackCheck()

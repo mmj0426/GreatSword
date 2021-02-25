@@ -7,7 +7,7 @@
 AGM_GreatSword::AGM_GreatSword()
 {
 	static ConstructorHelpers::FClassFinder<ACharacter>
-	PlayerCharacter(TEXT("/Game/Blueprints/Player/BP_PlayerCharacter.BP_PlayerCharacter_C"));
+		PlayerCharacter(TEXT("/Game/Blueprints/Player/BP_PlayerCharacter.BP_PlayerCharacter_C"));
 
 	DefaultPawnClass = PlayerCharacter.Class;
 	PlayerControllerClass = APC_GreatSword::StaticClass();
