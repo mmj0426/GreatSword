@@ -411,4 +411,7 @@ void APlayerCharacter::AttackCheck()
 	{
 		GSLOG(Warning, TEXT("Hit Actor Name : %s"),*HitResult.Actor->GetName());
 	}
+
+	FDamageEvent DamageEvent;
+	HitResult.Actor->TakeDamage(20.0f,DamageEvent, GetController(), this);
 }
