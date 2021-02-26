@@ -3,6 +3,7 @@
 
 #include "PlayerCharacter.h"
 #include "GSAnimInstance.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -80,11 +81,15 @@ APlayerCharacter::APlayerCharacter()
 		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
 	}
 
-	//Attack
+	// Attack
 
 	IsAttacking = false;
 	MaxCombo = 4;
 	AttackEndComboState();
+
+	// Draw Debug
+	AttackRange = 200.0f;
+	AttackRadius = 50.0f;
 
 	// Evade
 
@@ -379,7 +384,30 @@ void APlayerCharacter::AttackCheck()
 	FCollisionShape::MakeSphere(50.0f),
 	Params);
 
-	if (bResult )
+	// Draw Debug
+	#if ENABLE_DRAW_DEBUG
+
+	FVector TraceVector = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + TraceVector * 0.5;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVector).ToQuat();
+	FColor DrawColor = bResult?FColor::Green : FColor::Red;
+	float DebugLifeTime = 5.0f;
+
+	DrawDebugCapsule(
+		GetWorld(),
+		Center,
+		HalfHeight,
+		AttackRadius,
+		CapsuleRot,
+		DrawColor,
+		false,
+		DebugLifeTime
+	);
+
+	#endif
+
+	if (bResult && HitResult.Actor.IsValid())
 	{
 		GSLOG(Warning, TEXT("Hit Actor Name : %s"),*HitResult.Actor->GetName());
 	}
