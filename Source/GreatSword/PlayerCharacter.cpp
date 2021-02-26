@@ -15,6 +15,7 @@ APlayerCharacter::APlayerCharacter()
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(85.0f);
 	GetCapsuleComponent()->SetRelativeLocation(FVector(0.0f,0.0f,90.0f));
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("PlayerCharacter"));
 
 	//SpringArm
 
@@ -364,5 +365,22 @@ void APlayerCharacter::Evade()
 
 void APlayerCharacter::AttackCheck()
 {
-	
+	// 충돌된 액터에 관련된 정보를 얻기 위한 구조체
+	FHitResult HitResult;
+	// 플레이어 자신은 탐색되지 않도록 하기위한 (무시할 액터 목록을 담은)구조체
+	FCollisionQueryParams Params(NAME_None, false, this);
+
+	bool bResult = GetWorld()->SweepSingleByChannel(
+	HitResult,
+	GetActorLocation(),
+	GetActorLocation() + GetActorForwardVector() * 200.0f,
+	FQuat::Identity,
+	ECollisionChannel::ECC_GameTraceChannel1,
+	FCollisionShape::MakeSphere(50.0f),
+	Params);
+
+	if (bResult )
+	{
+		GSLOG(Warning, TEXT("Hit Actor Name : %s"),*HitResult.Actor->GetName());
+	}
 }
