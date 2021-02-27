@@ -15,12 +15,16 @@ ABoss::ABoss()
 
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f,0.0f,-130.0f),FRotator(0.0f,-90.0f,0.0f));
 
+	MaxHP = 100.0f;
+
 }
 
 // Called when the game starts or when spawned
 void ABoss::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	CurrentHP = MaxHP;
 	
 }
 
@@ -38,3 +42,14 @@ void ABoss::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+
+float ABoss::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	CurrentHP -= Damage;
+
+	GSLOG(Warning, TEXT("Actor : %s, HP : %f"), *GetName(), CurrentHP);
+
+	return Damage;
+}
