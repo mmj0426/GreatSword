@@ -2,7 +2,9 @@
 
 
 #include "PlayerCharacter.h"
-#include "GSAnimInstance.h"
+#include "Player_AnimInstance.h"
+#include "PlayerCharacterStatComponent.h"
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -15,6 +17,7 @@ APlayerCharacter::APlayerCharacter()
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(85.0f);
 	GetCapsuleComponent()->SetRelativeLocation(FVector(0.0f,0.0f,90.0f));
+	GetCapsuleComponent()->SetCollisionProfileName(TEXT("PlayerCharacter"));
 
 	//SpringArm
 
@@ -79,11 +82,20 @@ APlayerCharacter::APlayerCharacter()
 		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
 	}
 
-	//Attack
+	// Attack
 
 	IsAttacking = false;
 	MaxCombo = 4;
 	AttackEndComboState();
+
+	// Draw Debug
+	AttackRange = 200.0f;
+	AttackRadius = 50.0f;
+
+	IsMoving = false;
+
+	// Character Stat
+	CharacterStat = CreateDefaultSubobject<UPlayerCharacterStatComponent>(TEXT("CharacterStat"));
 
 	// Evade
 
@@ -116,37 +128,33 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	Weapon->SetCollisionProfileName("Weapon");
 }
 
 // Called every frame
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//GSLOG(Warning, TEXT("P : %d, D : %d"), IsParrying, IsDodge);
-	/*GSLOG(Warning, TEXT("SmashIndex : %i"),SmashIndex);*/
-	//GSLOG(Warning, TEXT("IsAttacking : %d"),IsAttacking);
 }
 
 void APlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	GSAnim = Cast<UGSAnimInstance>(GetMesh()->GetAnimInstance());
-	GSCHECK(nullptr != GSAnim);
+	PlayerAnim = Cast<UPlayer_AnimInstance>(GetMesh()->GetAnimInstance());
+	GSCHECK(nullptr != PlayerAnim);
 
-	GSAnim->OnMontageEnded.AddDynamic(this,&APlayerCharacter::OnAttackMontageEnded);
+	PlayerAnim->OnMontageEnded.AddDynamic(this,&APlayerCharacter::OnAttackMontageEnded);
 
-	GSAnim->OnAttackHitCheck.AddUObject(this, &APlayerCharacter::AttackCheck);
+	PlayerAnim->OnAttackHitCheck.AddUObject(this, &APlayerCharacter::AttackCheck);
 	// Delegate 함수 등록
-	GSAnim->OnNextAttackCheck.AddLambda([this]()->void
+	PlayerAnim->OnNextAttackCheck.AddLambda([this]()->void
 		{
 			if (bLMDown)
 			{
 				AttackStartComboState();
 				SmashIndex = 0;
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-				GSAnim->PlayAttackMontage(AttackComboIndex);
+				PlayerAnim->PlayAttackMontage(AttackComboIndex);
 			}
 			//else
 			//{
@@ -156,21 +164,21 @@ void APlayerCharacter::PostInitializeComponents()
 			//}
 		});
 
-	GSAnim->OnSmashCheck.AddLambda([this]()->void
+	PlayerAnim->OnSmashCheck.AddLambda([this]()->void
 		{
 			//GSLOG(Error, TEXT("OnSmashCheck Lambda"));
 			if (bRMDown)
 			{
-				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, GSAnim->GetMaxSection()-1));
-				SmashIndex = FMath::Clamp<int32>(SmashIndex+1, 1, GSAnim->GetMaxSection());
+				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, PlayerAnim->GetMaxSection()-1));
+				SmashIndex = FMath::Clamp<int32>(SmashIndex+1, 1, PlayerAnim->GetMaxSection());
 				
 				//GSLOG(Error, TEXT("Smash Index : %i"), SmashIndex);
 
 				bRMDown = false;
 				IsAttacking = true;
-				GSAnim->SetCurrentCombo(GSAnim->GetCurrentCombo() + 1);
+				PlayerAnim->SetCurrentCombo(PlayerAnim->GetCurrentCombo() + 1);
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-				GSAnim->JumpToSmashMontageSection(SmashIndex);
+				PlayerAnim->JumpToSmashMontageSection(SmashIndex);
 			}
 			else
 			{
@@ -233,6 +241,7 @@ void APlayerCharacter::MoveForward(float NewAxisValue)
 	MoveValue.X = NewAxisValue;
 	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
 	{
+		IsMoving = true;
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
 	}
 }
@@ -242,6 +251,7 @@ void APlayerCharacter::MoveRight(float NewAxisValue)
 	MoveValue.Y = NewAxisValue;
 	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
 	{
+		IsMoving = true;
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
 	}
 }
@@ -284,7 +294,7 @@ void APlayerCharacter::Attack()
 		GSCHECK(AttackComboIndex == 0);
 		AttackStartComboState();
 		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-		GSAnim->PlayAttackMontage(AttackComboIndex);
+		PlayerAnim->PlayAttackMontage(AttackComboIndex);
 		IsAttacking = true;
 	}
 }
@@ -294,23 +304,7 @@ void APlayerCharacter::Smash()
 	if(IsAttacking)
 	{
 		bRMDown = true;
-
-		////GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 1, GSAnim->GetMaxSection()));
-		//bRMDown = true;
-		//GSAnim->SetCurrentCombo(GSAnim->GetCurrentCombo()+1);
 	}
-	//! <Legacy
-	//else
-	//{
-	//	GSCHECK(SmashIndex == 0);
-	//	GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, GSAnim->GetMaxSection()-1));
-
-	//	SmashIndex = FMath::Clamp<int32>(SmashIndex + 1, 1, GSAnim->GetMaxSection());
-
-	//	GSLOG(Error, TEXT("%i"), SmashIndex);
-	//	//GSAnim->JumpToSmashMontageSection(SmashIndex);
-	//	//IsAttacking = true;
-	//}
 }
 
 void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupeted)
@@ -318,7 +312,7 @@ void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterru
 	IsParrying = false;
 	IsDodge = false;
 
-	if (GSAnim->GetCurrentCombo() >= GSAnim->GetMaxSection())
+	if (PlayerAnim->GetCurrentCombo() >= PlayerAnim->GetMaxSection())
 	{
 		IsAttacking = false;
 		//GSLOG(Error, TEXT("CurrentCombo : %i , MaxSection : %i"),GSAnim->GetCurrentCombo(), GSAnim->GetMaxSection());
@@ -332,37 +326,89 @@ void APlayerCharacter::Evade()
 	{
 		if (MoveValue.IsZero() && !IsDodge)
 		{
-			IsParrying = true;
-			GSAnim->PlayParryingMontage();
+			Parrying();
 		}
 		else if (!MoveValue.IsZero() && !IsParrying && !IsDodge)
 		{
-			IsDodge = true; 
-
-			// 구르기 시 W,A,S,D 키 값에 따라 방향 회전
-			if (MoveValue.X == 1)
-			{
-				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-			}
-			if (MoveValue.X == -1)
-			{
-				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 180, 0.0f));
-			}
-			if (MoveValue.Y == 1)
-			{
-				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw + 90, 0.0f));
-			}
-			if (MoveValue.Y == -1)
-			{
-				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 90, 0.0f));
-			}
-
-			GSAnim->PlayDodgeMontage();
+			Dodge();
 		}
 	}
 }
 
+void APlayerCharacter::Parrying()
+{
+	IsParrying = true;
+	PlayerAnim->PlayParryingMontage();
+}
+
+void APlayerCharacter::Dodge()
+{
+	IsDodge = true;
+
+	// 구르기 시 W,A,S,D 키 값에 따라 방향 회전
+	if (MoveValue.X == 1)
+	{
+		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+	}
+	if (MoveValue.X == -1)
+	{
+		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 180, 0.0f));
+	}
+	if (MoveValue.Y == 1)
+	{
+		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw + 90, 0.0f));
+	}
+	if (MoveValue.Y == -1)
+	{
+		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 90, 0.0f));
+	}
+
+	PlayerAnim->PlayDodgeMontage();
+}
+
 void APlayerCharacter::AttackCheck()
 {
-	
+	// 충돌된 액터에 관련된 정보를 얻기 위한 구조체
+	FHitResult HitResult;
+	// 플레이어 자신은 탐색되지 않도록 하기위한 (무시할 액터 목록을 담은)구조체
+	FCollisionQueryParams Params(NAME_None, false, this);
+
+	bool bResult = GetWorld()->SweepSingleByChannel(
+	HitResult,
+	GetActorLocation(),
+	GetActorLocation() + GetActorForwardVector() * 200.0f,
+	FQuat::Identity,
+	ECollisionChannel::ECC_GameTraceChannel1,
+	FCollisionShape::MakeSphere(50.0f),
+	Params);
+
+	// Draw Debug
+	#if ENABLE_DRAW_DEBUG
+
+	FVector TraceVector = GetActorForwardVector() * AttackRange;
+	FVector Center = GetActorLocation() + TraceVector * 0.5;
+	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVector).ToQuat();
+	FColor DrawColor = bResult?FColor::Green : FColor::Red;
+	float DebugLifeTime = 5.0f;
+
+	DrawDebugCapsule(
+		GetWorld(),
+		Center,
+		HalfHeight,
+		AttackRadius,
+		CapsuleRot,
+		DrawColor,
+		false,
+		DebugLifeTime
+	);
+
+	#endif
+
+	if (bResult && HitResult.Actor.IsValid())
+	{
+		GSLOG(Warning, TEXT("Hit Actor Name : %s"),*HitResult.Actor->GetName());
+		UGameplayStatics::ApplyDamage(HitResult.GetActor(), 20.0f, NULL, GetController(), NULL);
+	}
+
 }

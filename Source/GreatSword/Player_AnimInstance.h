@@ -6,26 +6,26 @@
 #include "Animation/AnimInstance.h"
 #include "Containers/Array.h"
 
-#include "GSAnimInstance.generated.h"
+#include "Player_AnimInstance.generated.h"
 
 /**
- * 
+ *
  */
 
- DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
- DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
- DECLARE_MULTICAST_DELEGATE(FOnSmashCheck);
+DECLARE_MULTICAST_DELEGATE(FOnAttackHitCheckDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnNextAttackCheckDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnSmashCheck);
 
- DECLARE_MULTICAST_DELEGATE(FOnParryingEndDelegate);
- DECLARE_MULTICAST_DELEGATE(FOnDodgeEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnParryingEndDelegate);
+DECLARE_MULTICAST_DELEGATE(FOnDodgeEndDelegate);
 
 UCLASS()
-class GREATSWORD_API UGSAnimInstance : public UAnimInstance
+class GREATSWORD_API UPlayer_AnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
-	
-public : 
-	UGSAnimInstance();
+
+public:
+	UPlayer_AnimInstance();
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
@@ -42,68 +42,68 @@ public :
 	void PlayParryingMontage();
 
 	void PlayDodgeMontage();
-	
+
 	FOnParryingEndDelegate OnParryingEnd;
 	FOnDodgeEndDelegate OnDodgeEnd;
 
-private : 
+private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
-	float CurrentPawnSpeed;
+		float CurrentPawnSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
-	bool IsAttacking;
+		bool IsAttacking;
 
 	//!< Legacy
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-	bool IsParrying;
+		bool IsParrying;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-	bool IsDodge;
+		bool IsDodge;
 
 	// Attack
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* AttackMontage_01;
+		UAnimMontage* AttackMontage_01;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* AttackMontage_02;
+		UAnimMontage* AttackMontage_02;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* AttackMontage_03;
+		UAnimMontage* AttackMontage_03;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* AttackMontage_04;
+		UAnimMontage* AttackMontage_04;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	TArray<UAnimMontage*> AttackMontageArray;
+		TArray<UAnimMontage*> AttackMontageArray;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* CurrentAttackMontage;
+		UAnimMontage* CurrentAttackMontage;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	int32 CurrentCombo;
+		int32 CurrentCombo;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	int32 MaxSection;
+		int32 MaxSection;
 
 	// Evade
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* ParryingMontage;
+		UAnimMontage* ParryingMontage;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* DodgeMontage;
+		UAnimMontage* DodgeMontage;
 
 	UFUNCTION()
-	void AnimNotify_AttackHitCheck();
+		void AnimNotify_AttackHitCheck();
 
 	UFUNCTION()
-	void AnimNotify_NextAttackCheck();
+		void AnimNotify_NextAttackCheck();
 
 	UFUNCTION()
-	void AnimNotify_SmashCheck();
-	
+		void AnimNotify_SmashCheck();
+
 	FName GetSmashMontageSectionName(int32 Section);
 
 	// Evade
@@ -115,8 +115,8 @@ private :
 	//UFUNCTION()
 	//void AnimNotify_DodgeEnd();
 
-public : 
-	int32 GetCurrentCombo() const { return CurrentCombo;}
+public:
+	int32 GetCurrentCombo() const { return CurrentCombo; }
 	void SetCurrentCombo(int32 NewCurrentCombo) { CurrentCombo = NewCurrentCombo; }
 
 	int32 GetMaxSection() const { return MaxSection; }
