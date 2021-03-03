@@ -51,5 +51,13 @@ float ABoss::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEve
 
 	GSLOG(Warning, TEXT("Actor : %s, HP : %f"), *GetName(), CurrentHP);
 
+	if (CurrentHP <= 0)
+	{
+		//TODO : Boss Die
+		GSLOG(Warning, TEXT("Boss Die"));
+
+		return Damage;
+	}
+
 	return Damage;
 }

@@ -32,6 +32,9 @@ public:
 	UStaticMeshComponent* Weapon;
 
 private:
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	bool IsMoving;
+
 	// Camera 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
 	USpringArmComponent* SpringArm;
@@ -105,6 +108,8 @@ private:
 
 	//Evade
 	void Evade();
+	void Parrying();
+	void Dodge();
 
 public : 
 

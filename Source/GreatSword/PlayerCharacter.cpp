@@ -91,6 +91,8 @@ APlayerCharacter::APlayerCharacter()
 	AttackRange = 200.0f;
 	AttackRadius = 50.0f;
 
+	IsMoving = false;
+
 	// Evade
 
 	// !< Legacy
@@ -128,9 +130,6 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//GSLOG(Warning, TEXT("P : %d, D : %d"), IsParrying, IsDodge);
-	/*GSLOG(Warning, TEXT("SmashIndex : %i"),SmashIndex);*/
-	//GSLOG(Warning, TEXT("IsAttacking : %d"),IsAttacking);
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -238,6 +237,7 @@ void APlayerCharacter::MoveForward(float NewAxisValue)
 	MoveValue.X = NewAxisValue;
 	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
 	{
+		IsMoving = true;
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
 	}
 }
@@ -247,6 +247,7 @@ void APlayerCharacter::MoveRight(float NewAxisValue)
 	MoveValue.Y = NewAxisValue;
 	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
 	{
+		IsMoving = true;
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
 	}
 }
@@ -299,23 +300,7 @@ void APlayerCharacter::Smash()
 	if(IsAttacking)
 	{
 		bRMDown = true;
-
-		////GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 1, GSAnim->GetMaxSection()));
-		//bRMDown = true;
-		//GSAnim->SetCurrentCombo(GSAnim->GetCurrentCombo()+1);
 	}
-	//! <Legacy
-	//else
-	//{
-	//	GSCHECK(SmashIndex == 0);
-	//	GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, GSAnim->GetMaxSection()-1));
-
-	//	SmashIndex = FMath::Clamp<int32>(SmashIndex + 1, 1, GSAnim->GetMaxSection());
-
-	//	GSLOG(Error, TEXT("%i"), SmashIndex);
-	//	//GSAnim->JumpToSmashMontageSection(SmashIndex);
-	//	//IsAttacking = true;
-	//}
 }
 
 void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupeted)
@@ -337,35 +322,44 @@ void APlayerCharacter::Evade()
 	{
 		if (MoveValue.IsZero() && !IsDodge)
 		{
-			IsParrying = true;
-			GSAnim->PlayParryingMontage();
+			Parrying();
 		}
 		else if (!MoveValue.IsZero() && !IsParrying && !IsDodge)
 		{
-			IsDodge = true; 
-
-			// 구르기 시 W,A,S,D 키 값에 따라 방향 회전
-			if (MoveValue.X == 1)
-			{
-				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-			}
-			if (MoveValue.X == -1)
-			{
-				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 180, 0.0f));
-			}
-			if (MoveValue.Y == 1)
-			{
-				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw + 90, 0.0f));
-			}
-			if (MoveValue.Y == -1)
-			{
-				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 90, 0.0f));
-			}
-
-			GSAnim->PlayDodgeMontage();
+			Dodge();
 		}
 	}
+}
 
+void APlayerCharacter::Parrying()
+{
+	IsParrying = true;
+	GSAnim->PlayParryingMontage();
+}
+
+void APlayerCharacter::Dodge()
+{
+	IsDodge = true;
+
+	// 구르기 시 W,A,S,D 키 값에 따라 방향 회전
+	if (MoveValue.X == 1)
+	{
+		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+	}
+	if (MoveValue.X == -1)
+	{
+		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 180, 0.0f));
+	}
+	if (MoveValue.Y == 1)
+	{
+		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw + 90, 0.0f));
+	}
+	if (MoveValue.Y == -1)
+	{
+		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 90, 0.0f));
+	}
+
+	GSAnim->PlayDodgeMontage();
 }
 
 void APlayerCharacter::AttackCheck()
@@ -410,11 +404,7 @@ void APlayerCharacter::AttackCheck()
 	if (bResult && HitResult.Actor.IsValid())
 	{
 		GSLOG(Warning, TEXT("Hit Actor Name : %s"),*HitResult.Actor->GetName());
+		UGameplayStatics::ApplyDamage(HitResult.GetActor(), 20.0f, NULL, GetController(), NULL);
 	}
-
-	UGameplayStatics::ApplyDamage(HitResult.GetActor(), 20.0f, NULL, GetController(), NULL);
-
-	//FDamageEvent DamageEvent;
-	//HitResult.Actor->TakeDamage(20.0f,DamageEvent, GetController(), this);
 
 }
