@@ -2,6 +2,8 @@
 
 
 #include "Boss.h"
+#include "Boss_AnimInstance.h"
+#include "BossStatComponent.h"
 
 // Sets default values
 ABoss::ABoss()
@@ -17,6 +19,32 @@ ABoss::ABoss()
 
 	MaxHP = 100.0f;
 
+	// Animation
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+
+	static ConstructorHelpers::FClassFinder<UAnimInstance>
+		Boss_Anim(TEXT("/Game/Blueprints/Enemies/Animation/AnimBP_Boss.AnimBP_Boss_C"));
+
+	if (Boss_Anim.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(Boss_Anim.Class);
+	}
+
+	// Stat
+	BossStat = CreateDefaultSubobject<UBossStatComponent>(TEXT("BossStat"));
+}
+
+void ABoss::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	BossAnim = Cast<UBoss_AnimInstance>(GetMesh()->GetAnimInstance());
+
+	BossStat->OnBossHPIsZero.AddLambda([this]()->void
+		{
+			BossAnim->PlayDeathMontage();
+			SetActorEnableCollision(false);
+		});
 }
 
 // Called when the game starts or when spawned
@@ -47,17 +75,7 @@ float ABoss::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEve
 {
 	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	CurrentHP -= Damage;
-
-	GSLOG(Warning, TEXT("Actor : %s, HP : %f"), *GetName(), CurrentHP);
-
-	if (CurrentHP <= 0)
-	{
-		//TODO : Boss Die
-		GSLOG(Warning, TEXT("Boss Die"));
-
-		return Damage;
-	}
+	BossStat->SetDamage(Damage);
 
 	return Damage;
 }

@@ -13,8 +13,8 @@ UPlayerCharacterStatComponent::UPlayerCharacterStatComponent()
 	bWantsInitializeComponent = true;
 
 
-	MaxHP = 100;
-	MaxStamina = 100;
+	MaxHP = 100.0f;
+	MaxStamina = 100.0f;
 
 
 	// ...

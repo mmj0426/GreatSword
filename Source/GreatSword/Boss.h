@@ -26,13 +26,22 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void PostInitializeComponents()override;
+
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Boss)
 	float MaxHP;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
+	class UBossStatComponent* BossStat;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Boss, Meta = (AllowPrivateAccess = true))
 	float CurrentHP;
 
+private : 
+	// AnimInstance
+	UPROPERTY()
+	class UBoss_AnimInstance* BossAnim;
 };
