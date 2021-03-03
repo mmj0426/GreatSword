@@ -32,7 +32,7 @@ public:
 	float MaxHP;
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Boss)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Boss, Meta = (AllowPrivateAccess = true))
 	float CurrentHP;
 
 };

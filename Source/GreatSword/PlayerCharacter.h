@@ -28,23 +28,26 @@ public:
 	virtual void PostInitializeComponents() override;
 
 	// Weapon
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon)
 	UStaticMeshComponent* Weapon;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
+	class UPlayerCharacterStatComponent* CharacterStat;
 
 private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool IsMoving;
 
 	// Camera 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = true))
 	USpringArmComponent* SpringArm;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = true))
 	UCameraComponent* Camera;
 
 	// AnimInstance
 	UPROPERTY()
-	class UGSAnimInstance* GSAnim;
+	class UPlayer_AnimInstance* PlayerAnim;
 
 	//Attack
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))

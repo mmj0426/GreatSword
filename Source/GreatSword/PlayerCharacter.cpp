@@ -2,7 +2,8 @@
 
 
 #include "PlayerCharacter.h"
-#include "GSAnimInstance.h"
+#include "Player_AnimInstance.h"
+#include "PlayerCharacterStatComponent.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -93,6 +94,9 @@ APlayerCharacter::APlayerCharacter()
 
 	IsMoving = false;
 
+	// Character Stat
+	CharacterStat = CreateDefaultSubobject<UPlayerCharacterStatComponent>(TEXT("CharacterStat"));
+
 	// Evade
 
 	// !< Legacy
@@ -136,21 +140,21 @@ void APlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	GSAnim = Cast<UGSAnimInstance>(GetMesh()->GetAnimInstance());
-	GSCHECK(nullptr != GSAnim);
+	PlayerAnim = Cast<UPlayer_AnimInstance>(GetMesh()->GetAnimInstance());
+	GSCHECK(nullptr != PlayerAnim);
 
-	GSAnim->OnMontageEnded.AddDynamic(this,&APlayerCharacter::OnAttackMontageEnded);
+	PlayerAnim->OnMontageEnded.AddDynamic(this,&APlayerCharacter::OnAttackMontageEnded);
 
-	GSAnim->OnAttackHitCheck.AddUObject(this, &APlayerCharacter::AttackCheck);
+	PlayerAnim->OnAttackHitCheck.AddUObject(this, &APlayerCharacter::AttackCheck);
 	// Delegate 함수 등록
-	GSAnim->OnNextAttackCheck.AddLambda([this]()->void
+	PlayerAnim->OnNextAttackCheck.AddLambda([this]()->void
 		{
 			if (bLMDown)
 			{
 				AttackStartComboState();
 				SmashIndex = 0;
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-				GSAnim->PlayAttackMontage(AttackComboIndex);
+				PlayerAnim->PlayAttackMontage(AttackComboIndex);
 			}
 			//else
 			//{
@@ -160,21 +164,21 @@ void APlayerCharacter::PostInitializeComponents()
 			//}
 		});
 
-	GSAnim->OnSmashCheck.AddLambda([this]()->void
+	PlayerAnim->OnSmashCheck.AddLambda([this]()->void
 		{
 			//GSLOG(Error, TEXT("OnSmashCheck Lambda"));
 			if (bRMDown)
 			{
-				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, GSAnim->GetMaxSection()-1));
-				SmashIndex = FMath::Clamp<int32>(SmashIndex+1, 1, GSAnim->GetMaxSection());
+				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, PlayerAnim->GetMaxSection()-1));
+				SmashIndex = FMath::Clamp<int32>(SmashIndex+1, 1, PlayerAnim->GetMaxSection());
 				
 				//GSLOG(Error, TEXT("Smash Index : %i"), SmashIndex);
 
 				bRMDown = false;
 				IsAttacking = true;
-				GSAnim->SetCurrentCombo(GSAnim->GetCurrentCombo() + 1);
+				PlayerAnim->SetCurrentCombo(PlayerAnim->GetCurrentCombo() + 1);
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-				GSAnim->JumpToSmashMontageSection(SmashIndex);
+				PlayerAnim->JumpToSmashMontageSection(SmashIndex);
 			}
 			else
 			{
@@ -290,7 +294,7 @@ void APlayerCharacter::Attack()
 		GSCHECK(AttackComboIndex == 0);
 		AttackStartComboState();
 		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-		GSAnim->PlayAttackMontage(AttackComboIndex);
+		PlayerAnim->PlayAttackMontage(AttackComboIndex);
 		IsAttacking = true;
 	}
 }
@@ -308,7 +312,7 @@ void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterru
 	IsParrying = false;
 	IsDodge = false;
 
-	if (GSAnim->GetCurrentCombo() >= GSAnim->GetMaxSection())
+	if (PlayerAnim->GetCurrentCombo() >= PlayerAnim->GetMaxSection())
 	{
 		IsAttacking = false;
 		//GSLOG(Error, TEXT("CurrentCombo : %i , MaxSection : %i"),GSAnim->GetCurrentCombo(), GSAnim->GetMaxSection());
@@ -334,7 +338,7 @@ void APlayerCharacter::Evade()
 void APlayerCharacter::Parrying()
 {
 	IsParrying = true;
-	GSAnim->PlayParryingMontage();
+	PlayerAnim->PlayParryingMontage();
 }
 
 void APlayerCharacter::Dodge()
@@ -359,7 +363,7 @@ void APlayerCharacter::Dodge()
 		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 90, 0.0f));
 	}
 
-	GSAnim->PlayDodgeMontage();
+	PlayerAnim->PlayDodgeMontage();
 }
 
 void APlayerCharacter::AttackCheck()
