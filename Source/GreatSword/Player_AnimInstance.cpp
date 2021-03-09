@@ -3,6 +3,7 @@
 
 #include "Player_AnimInstance.h"
 #include "PlayerCharacter.h"
+#include "PlayerCharacterStatComponent.h"
 
 
 UPlayer_AnimInstance::UPlayer_AnimInstance()
@@ -99,6 +100,12 @@ void UPlayer_AnimInstance::JumpToSmashMontageSection(int32 NewSection)
 	}
 }
 
+FName UPlayer_AnimInstance::GetSmashMontageSectionName(int32 Section)
+{
+	GSCHECK(FMath::IsWithinInclusive<int32>(Section, 1, 2), NAME_None);
+	return FName(*FString::Printf(TEXT("Smash%d"), Section));
+}
+
 void UPlayer_AnimInstance::AnimNotify_AttackHitCheck()
 {
 	OnAttackHitCheck.Broadcast();
@@ -112,12 +119,6 @@ void UPlayer_AnimInstance::AnimNotify_NextAttackCheck()
 void UPlayer_AnimInstance::AnimNotify_SmashCheck()
 {
 	OnSmashCheck.Broadcast();
-}
-
-FName UPlayer_AnimInstance::GetSmashMontageSectionName(int32 Section)
-{
-	//GSCHECK(FMath::IsWithinInclusive<int32>(Section, 1, 4), NAME_None);
-	return FName(*FString::Printf(TEXT("Smash%d"), Section));
 }
 
 //!< Legacy

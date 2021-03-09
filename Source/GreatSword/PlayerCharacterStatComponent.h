@@ -36,5 +36,14 @@ private :
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float CurrentStamina;
+
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
+	float Damage;
 		
+
+public : 
+	
+	void SetDamage(float NewDamage) { Damage = NewDamage; }
+	float GetDamage(){ return Damage; }
+
 };

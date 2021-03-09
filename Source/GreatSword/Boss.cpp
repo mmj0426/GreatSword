@@ -39,6 +39,7 @@ void ABoss::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	BossAnim = Cast<UBoss_AnimInstance>(GetMesh()->GetAnimInstance());
+	GSCHECK(BossAnim != nullptr);
 
 	BossStat->OnBossHPIsZero.AddLambda([this]()->void
 		{

@@ -146,6 +146,7 @@ void APlayerCharacter::PostInitializeComponents()
 	PlayerAnim->OnMontageEnded.AddDynamic(this,&APlayerCharacter::OnAttackMontageEnded);
 
 	PlayerAnim->OnAttackHitCheck.AddUObject(this, &APlayerCharacter::AttackCheck);
+
 	// Delegate 함수 등록
 	PlayerAnim->OnNextAttackCheck.AddLambda([this]()->void
 		{
