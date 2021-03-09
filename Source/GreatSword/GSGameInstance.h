@@ -13,7 +13,11 @@ struct FGSCharacterData : public FTableRowBase
 	GENERATED_BODY()
 
 public : 
-	FGSCharacterData() : Section_1(0.0f), Section_2(0.0f), Section_3(0.0f) {}
+	FGSCharacterData() : AttackMontageNum(0),Section_1(0.0f), Section_2(0.0f), Section_3(0.0f) {}
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	int32 AttackMontageNum;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float Section_1;
@@ -33,4 +37,9 @@ class GREATSWORD_API UGSGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 	
+public : 
+	UGSGameInstance();
+	virtual void Init() override;
+	
+
 };

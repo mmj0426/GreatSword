@@ -3,3 +3,12 @@
 
 #include "GSGameInstance.h"
 
+UGSGameInstance::UGSGameInstance()
+{
+
+}
+
+void UGSGameInstance::Init()
+{
+
+}
