@@ -8,13 +8,12 @@
 #include "GSGameInstance.generated.h"
 
 USTRUCT(BlueprintType)
-struct FGSCharacterData : public FTableRowBase
+struct FPlayerATKRate : public FTableRowBase
 {
 	GENERATED_BODY()
 
 public : 
-	FGSCharacterData() : AttackMontageNum(0),Section_1(0.0f), Section_2(0.0f), Section_3(0.0f) {}
-
+	FPlayerATKRate() : AttackMontageNum(0),Section_1(0.0f), Section_2(0.0f), Section_3(0.0f) {}
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	int32 AttackMontageNum;
@@ -40,6 +39,10 @@ class GREATSWORD_API UGSGameInstance : public UGameInstance
 public : 
 	UGSGameInstance();
 	virtual void Init() override;
-	
+	float GetPlayerATKRateTable(int32 AnimMontageIndex, int32 SectionIndex) const;
+
+private : 
+	UPROPERTY()
+	class UDataTable* PlayerATKRateTable;
 
 };

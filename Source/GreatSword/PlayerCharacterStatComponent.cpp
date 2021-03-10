@@ -15,7 +15,7 @@ UPlayerCharacterStatComponent::UPlayerCharacterStatComponent()
 
 	MaxHP = 100.0f;
 	MaxStamina = 100.0f;
-
+	Damage = 100.0f;
 
 	// ...
 }

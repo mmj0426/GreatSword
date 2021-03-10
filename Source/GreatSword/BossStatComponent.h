@@ -24,7 +24,7 @@ protected:
 	virtual void InitializeComponent()override;
 
 public : 
-	void SetDamage(float NewDamage);
+	void SetHP(float NewDamage);
 
 	FOnBossHPIsZeroDelegate OnBossHPIsZero;
 
@@ -32,10 +32,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = Stat)
 	float MaxHP;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
 	float CurrentHP;
 
 };

@@ -87,6 +87,13 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		int32 MaxSection;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 CurrentAttackIndex;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 CurrentSectionIndex;
+
+
 	// Evade
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
@@ -120,4 +127,7 @@ public:
 	void SetCurrentCombo(int32 NewCurrentCombo) { CurrentCombo = NewCurrentCombo; }
 
 	int32 GetMaxSection() const { return MaxSection; }
+
+	int32 GetCurrentAttackIndex() const {return CurrentAttackIndex;}
+	int32 GetCurrentSectionIndex() const {return CurrentSectionIndex;}
 };

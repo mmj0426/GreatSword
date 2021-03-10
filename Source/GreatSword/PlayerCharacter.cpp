@@ -4,6 +4,7 @@
 #include "PlayerCharacter.h"
 #include "Player_AnimInstance.h"
 #include "PlayerCharacterStatComponent.h"
+#include "GSGameInstance.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -406,10 +407,15 @@ void APlayerCharacter::AttackCheck()
 
 	#endif
 
+	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	
 	if (bResult && HitResult.Actor.IsValid())
 	{
 		GSLOG(Warning, TEXT("Hit Actor Name : %s"),*HitResult.Actor->GetName());
-		UGameplayStatics::ApplyDamage(HitResult.GetActor(), 20.0f, NULL, GetController(), NULL);
+		float HitDamage =	CharacterStat->GetDamage() * (GSGameInstance->GetPlayerATKRateTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex()))/100.0f;
+
+		GSLOG(Warning, TEXT("Hit Damage : %f"),HitDamage);
+		UGameplayStatics::ApplyDamage(HitResult.GetActor(), HitDamage, NULL, GetController(), NULL);
 	}
 
 }

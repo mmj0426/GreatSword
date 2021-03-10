@@ -39,7 +39,7 @@ void UBossStatComponent::InitializeComponent()
 	CurrentHP = MaxHP;
 }
 
-void UBossStatComponent::SetDamage(float NewDamage)
+void UBossStatComponent::SetHP(float NewDamage)
 {
 	CurrentHP = FMath::Clamp<float>(CurrentHP-NewDamage, 0.0f,MaxHP);
 
