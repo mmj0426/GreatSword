@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "PC_GreatSword.h"
+#include "GSPlayerController.h"
 
-void APC_GreatSword::BeginPlay()
+void AGSPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 

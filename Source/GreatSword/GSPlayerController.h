@@ -4,16 +4,16 @@
 
 #include "GreatSword.h"
 #include "GameFramework/PlayerController.h"
-#include "PC_GreatSword.generated.h"
+#include "GSPlayerController.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GREATSWORD_API APC_GreatSword : public APlayerController
+class GREATSWORD_API AGSPlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
+
 protected:
 	virtual void BeginPlay() override;
 };
