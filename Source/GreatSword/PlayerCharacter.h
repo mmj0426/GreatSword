@@ -112,11 +112,11 @@ private:
 	void Parrying();
 	void Dodge();
 
+	void SetPlayerRotation();
+
 public : 
 
 	bool GetIsAttacking() const { return IsAttacking; }
-
-	//!< Legacy
 	bool GetIsParrying() const { return IsParrying;}
 	bool GetIsDodge() const{return IsDodge; }
 	

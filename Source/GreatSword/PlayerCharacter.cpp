@@ -347,25 +347,28 @@ void APlayerCharacter::Dodge()
 {
 	IsDodge = true;
 
-	// 구르기 시 W,A,S,D 키 값에 따라 방향 회전
-	if (MoveValue.X == 1)
-	{
-		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-	}
-	if (MoveValue.X == -1)
-	{
-		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 180, 0.0f));
-	}
-	if (MoveValue.Y == 1)
-	{
-		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw + 90, 0.0f));
-	}
-	if (MoveValue.Y == -1)
-	{
-		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw - 90, 0.0f));
-	}
+	SetPlayerRotation();
 
 	PlayerAnim->PlayDodgeMontage();
+}
+
+void APlayerCharacter::SetPlayerRotation()
+{	
+	int32 RotationRate = 0;
+	int32 MoveValueX = static_cast<int32>(MoveValue.X);
+	int32 MoveValueY = static_cast<int32>(MoveValue.Y);
+
+	if (MoveValueX != 0 && MoveValueY == 0)
+	{
+		RotationRate = (MoveValueX) < 0 ? 180.f : 0.f;
+	}
+	else
+	{
+		RotationRate = MoveValueY * (90 + -(MoveValueX * 45));
+	}
+
+	SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw + RotationRate, 0.0f));
+	
 }
 
 void APlayerCharacter::AttackCheck()

@@ -31,7 +31,6 @@ public:
 
 	//Attack Combo
 	void PlayAttackMontage(int32 NextCombo);
-
 	void JumpToSmashMontageSection(int32 NewSection);
 
 	FOnAttackHitCheckDelegate OnAttackHitCheck;
@@ -40,7 +39,6 @@ public:
 
 	// Evade 
 	void PlayParryingMontage();
-
 	void PlayDodgeMontage();
 
 	FOnParryingEndDelegate OnParryingEnd;
@@ -52,8 +50,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;
-
-	//!< Legacy
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
 		bool IsParrying;
@@ -124,10 +120,9 @@ private:
 
 public:
 	int32 GetCurrentCombo() const { return CurrentCombo; }
-	void SetCurrentCombo(int32 NewCurrentCombo) { CurrentCombo = NewCurrentCombo; }
-
 	int32 GetMaxSection() const { return MaxSection; }
-
 	int32 GetCurrentAttackIndex() const {return CurrentAttackIndex;}
 	int32 GetCurrentSectionIndex() const {return CurrentSectionIndex;}
+
+	void SetCurrentCombo(int32 NewCurrentCombo) { CurrentCombo = NewCurrentCombo; }
 };

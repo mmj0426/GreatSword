@@ -26,17 +26,17 @@ float UGSGameInstance::GetPlayerATKRateTable(int32 AnimMontageIndex, int32 Secti
 	switch (SectionIndex)
 	{
 	case 0 :
-		return Row->Section_1;
+		return Row->Section_0;
 
 	case 1 : 
-		return Row->Section_2;
+		return Row->Section_1;
 
 	case 2 : 
-		return Row->Section_3;
+		return Row->Section_2;
 
 	default:
-		GSLOG(Error, TEXT("Set Damage Rate Error"));
+		GSLOG(Error, TEXT("Error : Over the Section Index"));
 		break;
 	}
-	return 0.f;
+	return 0.0f;
 }
