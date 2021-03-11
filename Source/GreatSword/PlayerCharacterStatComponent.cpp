@@ -2,6 +2,7 @@
 
 
 #include "PlayerCharacterStatComponent.h"
+#include "Lightmass/LightmassImportanceVolume.h"
 
 // Sets default values for this component's properties
 UPlayerCharacterStatComponent::UPlayerCharacterStatComponent()
@@ -20,6 +21,24 @@ UPlayerCharacterStatComponent::UPlayerCharacterStatComponent()
 	// ...
 }
 
+
+void UPlayerCharacterStatComponent::PostInitProperties()
+{
+	Super::PostInitProperties();
+	
+	CurrentHP = MaxHP;
+	CurrentStamina = MaxStamina;
+}
+
+#if WITH_EDITOR
+void UPlayerCharacterStatComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	CurrentHP = MaxHP;
+	CurrentStamina = MaxStamina;
+}
+#endif
 
 // Called when the game starts
 void UPlayerCharacterStatComponent::BeginPlay()
@@ -41,7 +60,4 @@ void UPlayerCharacterStatComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-
-	CurrentHP = MaxHP;
-	CurrentStamina = MaxStamina;
 }

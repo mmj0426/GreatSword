@@ -45,6 +45,7 @@ public:
 	FOnDodgeEndDelegate OnDodgeEnd;
 
 private:
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		float CurrentPawnSpeed;
 
@@ -98,6 +99,7 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* DodgeMontage;
 
+	// Attack Notify
 	UFUNCTION()
 		void AnimNotify_AttackHitCheck();
 

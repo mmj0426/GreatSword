@@ -89,6 +89,9 @@ APlayerCharacter::APlayerCharacter()
 	MaxCombo = 4;
 	AttackEndComboState();
 
+	// Evade
+	IsParrying = false;
+
 	// Draw Debug
 	AttackRange = 200.0f;
 	AttackRadius = 50.0f;
@@ -98,10 +101,6 @@ APlayerCharacter::APlayerCharacter()
 	// Character Stat
 	CharacterStat = CreateDefaultSubobject<UPlayerCharacterStatComponent>(TEXT("CharacterStat"));
 
-	// Evade
-
-	// !< Legacy
-	/*IsParrying = false;*/
 
 }
 
@@ -145,7 +144,6 @@ void APlayerCharacter::PostInitializeComponents()
 	GSCHECK(nullptr != PlayerAnim);
 
 	PlayerAnim->OnMontageEnded.AddDynamic(this,&APlayerCharacter::OnAttackMontageEnded);
-
 	PlayerAnim->OnAttackHitCheck.AddUObject(this, &APlayerCharacter::AttackCheck);
 
 	// Delegate 함수 등록
@@ -317,7 +315,7 @@ void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterru
 	if (PlayerAnim->GetCurrentCombo() >= PlayerAnim->GetMaxSection())
 	{
 		IsAttacking = false;
-		//GSLOG(Error, TEXT("CurrentCombo : %i , MaxSection : %i"),GSAnim->GetCurrentCombo(), GSAnim->GetMaxSection());
+		GSLOG(Error, TEXT("CurrentCombo : %i , MaxSection : %i"),PlayerAnim->GetCurrentCombo(), PlayerAnim->GetMaxSection());
 		AttackEndComboState();
 	}
 }
@@ -360,7 +358,7 @@ void APlayerCharacter::SetPlayerRotation()
 
 	if (MoveValueX != 0 && MoveValueY == 0)
 	{
-		RotationRate = (MoveValueX) < 0 ? 180.f : 0.f;
+		RotationRate = (MoveValueX) < 0 ? 180 : 0;
 	}
 	else
 	{
@@ -415,9 +413,12 @@ void APlayerCharacter::AttackCheck()
 	if (bResult && HitResult.Actor.IsValid())
 	{
 		GSLOG(Warning, TEXT("Hit Actor Name : %s"),*HitResult.Actor->GetName());
+
+		// Player Stat에서 현재 진행중인 애니메이션 몽타주 인덱스와 섹션 인덱스를 통해 데미지 적용율을 가지고와 데미지를 계산함
 		float HitDamage =	CharacterStat->GetDamage() * (GSGameInstance->GetPlayerATKRateTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex()))/100.0f;
 
 		GSLOG(Warning, TEXT("Hit Damage : %f"),HitDamage);
+		//데미지 적용
 		UGameplayStatics::ApplyDamage(HitResult.GetActor(), HitDamage, NULL, GetController(), NULL);
 	}
 
