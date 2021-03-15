@@ -20,30 +20,28 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	virtual void InitializeComponent() override;
+	virtual void PostInitProperties() override;
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+
+public : 
+	UPROPERTY(EditAnywhere, Category = Stat)
+	float MaxHP;
+	UPROPERTY(EditAnywhere, Category = Stat)
+	float MaxStamina;
 
 private : 
-
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	UPROPERTY(EditDefaultsOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
-	float MaxHP;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float CurrentHP;
 
-	UPROPERTY(EditDefaultsOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
-	float MaxStamina;
-
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
 	float CurrentStamina;
-
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
-	float Damage;
 		
+	UPROPERTY(Transient, EditAnywhere, Category = Stat, Meta = (AllowPrivateAccess = true))
+	float Damage;
 
 public : 
-	
-	void SetDamage(float NewDamage) { Damage = NewDamage; }
-	float GetDamage(){ return Damage; }
+	float GetDamage()const{ return Damage; }
 
 };

@@ -76,7 +76,7 @@ float ABoss::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEve
 {
 	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	BossStat->SetDamage(Damage);
+	BossStat->SetHP(Damage);
 
 	return Damage;
 }

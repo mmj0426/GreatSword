@@ -80,8 +80,15 @@ void UPlayer_AnimInstance::PlayAttackMontage(int32 NextCombo)
 {
 	//GSLOG(Warning, TEXT("PlayAttackMontage : %i"), NextCombo);
 
-	CurrentCombo = 1;
-	MaxSection = AttackMontageArray[NextCombo - 1]->CompositeSections.Num();
+	CurrentCombo = 0;
+	
+	CurrentAttackIndex = NextCombo;
+	CurrentSectionIndex = 0;
+
+	//GSLOG(Warning, TEXT("CurrentAttackIndex : %d"), CurrentAttackIndex);
+	//GSLOG(Warning, TEXT("CurrentSection : %d"), CurrentSectionIndex);
+
+	MaxSection = AttackMontageArray[NextCombo - 1]->CompositeSections.Num()-1;
 
 	CurrentAttackMontage = AttackMontageArray[NextCombo - 1];
 
@@ -94,6 +101,9 @@ void UPlayer_AnimInstance::PlayAttackMontage(int32 NextCombo)
 
 void UPlayer_AnimInstance::JumpToSmashMontageSection(int32 NewSection)
 {
+	CurrentSectionIndex = NewSection;
+	//GSLOG(Warning, TEXT("CurrentSection : %d"),CurrentSectionIndex);
+
 	if (Montage_IsPlaying(CurrentAttackMontage))
 	{
 		Montage_JumpToSection(GetSmashMontageSectionName(NewSection), CurrentAttackMontage);

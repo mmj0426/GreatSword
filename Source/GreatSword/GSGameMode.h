@@ -4,15 +4,15 @@
 
 #include "GreatSword.h"
 #include "GameFramework/GameModeBase.h"
-#include "GM_GreatSword.generated.h"
+#include "GSGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GREATSWORD_API AGM_GreatSword : public AGameModeBase
+class GREATSWORD_API AGSGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-public : 
-	AGM_GreatSword();
+public:
+	AGSGameMode();
 };

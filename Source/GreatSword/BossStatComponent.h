@@ -22,9 +22,11 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	virtual void InitializeComponent()override;
+	virtual void PostInitProperties() override;
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
 public : 
-	void SetDamage(float NewDamage);
+	void SetHP(float NewDamage);
 
 	FOnBossHPIsZeroDelegate OnBossHPIsZero;
 
@@ -32,10 +34,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, Category = Stat)
 	float MaxHP;
 
-	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
 	float CurrentHP;
 
 };

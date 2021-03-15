@@ -11,10 +11,25 @@ UBossStatComponent::UBossStatComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 
-	MaxHP = 100.0f;
+	MaxHP = 1000.0f;
 	// ...
 }
 
+void UBossStatComponent::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	CurrentHP = MaxHP;
+}
+
+#if WITH_EDITOR
+void UBossStatComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	CurrentHP = MaxHP;
+}
+#endif
 
 // Called when the game starts
 void UBossStatComponent::BeginPlay()
@@ -36,10 +51,10 @@ void UBossStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void UBossStatComponent::InitializeComponent()
 {
-	CurrentHP = MaxHP;
+	
 }
 
-void UBossStatComponent::SetDamage(float NewDamage)
+void UBossStatComponent::SetHP(float NewDamage)
 {
 	CurrentHP = FMath::Clamp<float>(CurrentHP-NewDamage, 0.0f,MaxHP);
 

@@ -31,7 +31,6 @@ public:
 
 	//Attack Combo
 	void PlayAttackMontage(int32 NextCombo);
-
 	void JumpToSmashMontageSection(int32 NewSection);
 
 	FOnAttackHitCheckDelegate OnAttackHitCheck;
@@ -40,20 +39,18 @@ public:
 
 	// Evade 
 	void PlayParryingMontage();
-
 	void PlayDodgeMontage();
 
 	FOnParryingEndDelegate OnParryingEnd;
 	FOnDodgeEndDelegate OnDodgeEnd;
 
 private:
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		float CurrentPawnSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		bool IsAttacking;
-
-	//!< Legacy
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
 		bool IsParrying;
@@ -87,6 +84,13 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		int32 MaxSection;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 CurrentAttackIndex;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	int32 CurrentSectionIndex;
+
+
 	// Evade
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
@@ -95,6 +99,7 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* DodgeMontage;
 
+	// Attack Notify
 	UFUNCTION()
 		void AnimNotify_AttackHitCheck();
 
@@ -117,7 +122,9 @@ private:
 
 public:
 	int32 GetCurrentCombo() const { return CurrentCombo; }
-	void SetCurrentCombo(int32 NewCurrentCombo) { CurrentCombo = NewCurrentCombo; }
-
 	int32 GetMaxSection() const { return MaxSection; }
+	int32 GetCurrentAttackIndex() const {return CurrentAttackIndex;}
+	int32 GetCurrentSectionIndex() const {return CurrentSectionIndex;}
+
+	void SetCurrentCombo(int32 NewCurrentCombo) { CurrentCombo = NewCurrentCombo; }
 };

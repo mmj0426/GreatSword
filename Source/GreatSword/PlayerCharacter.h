@@ -25,6 +25,13 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents() override;
 
+	// Camera 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = true))
+		USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = true))
+		UCameraComponent* Camera;
+
 	// Weapon
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon)
 	UStaticMeshComponent* Weapon;
@@ -35,13 +42,6 @@ public:
 private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool IsMoving;
-
-	// Camera 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = true))
-	USpringArmComponent* SpringArm;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = true))
-	UCameraComponent* Camera;
 
 	// AnimInstance
 	UPROPERTY()
@@ -112,11 +112,11 @@ private:
 	void Parrying();
 	void Dodge();
 
+	void SetPlayerRotation();
+
 public : 
 
 	bool GetIsAttacking() const { return IsAttacking; }
-
-	//!< Legacy
 	bool GetIsParrying() const { return IsParrying;}
 	bool GetIsDodge() const{return IsDodge; }
 	
