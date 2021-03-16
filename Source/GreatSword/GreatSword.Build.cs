@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
+using System.IO;
 
 public class GreatSword : ModuleRules
 {
@@ -11,6 +12,18 @@ public class GreatSword : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
+
+		PrivateIncludePaths.AddRange(new string[]
+		{
+			Path.Combine(ModuleDirectory, "Private") 
+		});
+
+		PublicIncludePaths.AddRange(new string[]
+		{
+			Path.Combine(ModuleDirectory, "Public"),
+			Path.Combine(ModuleDirectory, "Public/Player"),
+			Path.Combine(ModuleDirectory, "Public/Boss")
+		});
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
