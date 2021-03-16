@@ -49,15 +49,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		float CurrentPawnSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
-		bool IsAttacking;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-		bool IsParrying;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-		bool IsDodge;
-
 	// Attack
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
@@ -85,10 +76,10 @@ private:
 		int32 MaxSection;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	int32 CurrentAttackIndex;
+		int32 CurrentAttackIndex;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	int32 CurrentSectionIndex;
+		int32 CurrentSectionIndex;
 
 
 	// Evade
@@ -113,12 +104,6 @@ private:
 
 	// Evade
 
-	//!< Legacy
-	//UFUNCTION()
-	//void AnimNotify_ParryingEnd();
-
-	//UFUNCTION()
-	//void AnimNotify_DodgeEnd();
 
 public:
 	int32 GetCurrentCombo() const { return CurrentCombo; }

@@ -4,6 +4,16 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+UENUM(Category = "State")
+enum class EPlayerState : uint8
+{
+	Idle,
+	Moving,
+	Attacking, 
+	Parrying,
+	Dodge
+};
+
 UCLASS(Blueprintable)
 class GREATSWORD_API APlayerCharacter : public ACharacter
 {
@@ -40,16 +50,19 @@ public:
 	class UPlayerCharacterStatComponent* CharacterStat;
 
 private:
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	bool IsMoving;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	EPlayerState CurrentState;
+
+	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	//bool IsMoving;
 
 	// AnimInstance
 	UPROPERTY()
 	class UPlayer_AnimInstance* PlayerAnim;
 
 	//Attack
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	bool IsAttacking;
+	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	//bool IsAttacking;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	bool bLMDown;
@@ -70,11 +83,11 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	FVector MoveValue;
 	
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-	bool IsParrying;
+	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
+	//bool IsParrying;
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-	bool IsDodge;
+	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
+	//bool IsDodge;
 
 	// Draw Debug
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
@@ -97,7 +110,7 @@ private:
 
 	//Attack
 	UFUNCTION()
-	void OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupeted);
+	void MontageEnded(UAnimMontage* Montage, bool bInterrupeted);
 
 	void Attack();
 	void Smash();
@@ -115,9 +128,7 @@ private:
 	void SetPlayerRotation();
 
 public : 
-
-	bool GetIsAttacking() const { return IsAttacking; }
-	bool GetIsParrying() const { return IsParrying;}
-	bool GetIsDodge() const{return IsDodge; }
 	
+	EPlayerState GetPlayerState() const { return CurrentState; }
+	bool CanEvade() const {	return (CurrentState != EPlayerState::Attacking) && (CurrentState != EPlayerState::Parrying) && (CurrentState != EPlayerState::Dodge);}
 };

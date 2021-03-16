@@ -22,7 +22,8 @@ public class GreatSword : ModuleRules
 		{
 			Path.Combine(ModuleDirectory, "Public"),
 			Path.Combine(ModuleDirectory, "Public/Player"),
-			Path.Combine(ModuleDirectory, "Public/Boss")
+			Path.Combine(ModuleDirectory, "Public/Boss"),
+			Path.Combine(ModuleDirectory, "Public/AnimNotifyState")
 		});
 
 		// Uncomment if you are using Slate UI

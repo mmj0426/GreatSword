@@ -44,6 +44,8 @@ UPlayer_AnimInstance::UPlayer_AnimInstance()
 	AttackMontageArray.Add(AttackMontage_03);
 	AttackMontageArray.Add(AttackMontage_04);
 
+
+
 	// Parrying
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
 		Parrying_Montage(TEXT("/Game/Blueprints/Player/Animation/Evade/AnimMontage_Parrying.AnimMontage_Parrying"));
@@ -69,10 +71,6 @@ void UPlayer_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (::IsValid(TryGetPawnOwner()))
 	{
 		CurrentPawnSpeed = TryGetPawnOwner()->GetVelocity().Size();
-		IsAttacking = Player->GetIsAttacking();
-
-		IsParrying = Player->GetIsParrying();
-		IsDodge = Player->GetIsDodge();
 	}
 }
 
@@ -130,18 +128,6 @@ void UPlayer_AnimInstance::AnimNotify_SmashCheck()
 {
 	OnSmashCheck.Broadcast();
 }
-
-//!< Legacy
-//! 
-//void UGSAnimInstance::AnimNotify_ParryingEnd()
-//{
-//	OnParryingEnd.Broadcast();
-//}
-//
-//void UGSAnimInstance::AnimNotify_DodgeEnd()
-//{
-//	OnDodgeEnd.Broadcast();
-//}
 
 void UPlayer_AnimInstance::PlayParryingMontage()
 {

@@ -85,18 +85,20 @@ APlayerCharacter::APlayerCharacter()
 
 	// Attack
 
-	IsAttacking = false;
+	CurrentState = EPlayerState::Idle;
+
+	//IsAttacking = false;
 	MaxCombo = 4;
 	AttackEndComboState();
 
 	// Evade
-	IsParrying = false;
+	//IsParrying = false;
 
 	// Draw Debug
 	AttackRange = 200.0f;
 	AttackRadius = 50.0f;
 
-	IsMoving = false;
+	//IsMoving = false;
 
 	// Character Stat
 	CharacterStat = CreateDefaultSubobject<UPlayerCharacterStatComponent>(TEXT("CharacterStat"));
@@ -143,7 +145,7 @@ void APlayerCharacter::PostInitializeComponents()
 	PlayerAnim = Cast<UPlayer_AnimInstance>(GetMesh()->GetAnimInstance());
 	GSCHECK(nullptr != PlayerAnim);
 
-	PlayerAnim->OnMontageEnded.AddDynamic(this,&APlayerCharacter::OnAttackMontageEnded);
+	PlayerAnim->OnMontageEnded.AddDynamic(this,&APlayerCharacter::MontageEnded);
 	PlayerAnim->OnAttackHitCheck.AddUObject(this, &APlayerCharacter::AttackCheck);
 
 	// Delegate 함수 등록
@@ -175,14 +177,14 @@ void APlayerCharacter::PostInitializeComponents()
 				//GSLOG(Error, TEXT("Smash Index : %i"), SmashIndex);
 
 				bRMDown = false;
-				IsAttacking = true;
+				CurrentState = EPlayerState::Attacking;
 				PlayerAnim->SetCurrentCombo(PlayerAnim->GetCurrentCombo() + 1);
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 				PlayerAnim->JumpToSmashMontageSection(SmashIndex);
 			}
 			else
 			{
-				IsAttacking = false;
+				CurrentState = EPlayerState::Idle;
 				AttackEndComboState();
 			}
 		});
@@ -239,9 +241,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 void APlayerCharacter::MoveForward(float NewAxisValue)
 {
 	MoveValue.X = NewAxisValue;
-	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
+	if (Controller != nullptr && NewAxisValue != 0.0f && (CurrentState != EPlayerState::Attacking))
 	{
-		IsMoving = true;
+		CurrentState = EPlayerState::Moving;
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
 	}
 }
@@ -249,9 +251,9 @@ void APlayerCharacter::MoveForward(float NewAxisValue)
 void APlayerCharacter::MoveRight(float NewAxisValue)
 {	
 	MoveValue.Y = NewAxisValue;
-	if (Controller != nullptr && NewAxisValue != 0.0f && !IsAttacking)
+	if (Controller != nullptr && NewAxisValue != 0.0f && (CurrentState != EPlayerState::Attacking))
 	{
-		IsMoving = true;
+		CurrentState = EPlayerState::Moving;
 		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
 	}
 }
@@ -284,7 +286,7 @@ void APlayerCharacter::Run()
 
 void APlayerCharacter::Attack()
 {
-	if (IsAttacking)
+	if (CurrentState == EPlayerState::Attacking)
 	{
 		GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 1, MaxCombo));
 		bLMDown = true;
@@ -295,55 +297,54 @@ void APlayerCharacter::Attack()
 		AttackStartComboState();
 		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 		PlayerAnim->PlayAttackMontage(AttackComboIndex);
-		IsAttacking = true;
+		CurrentState = EPlayerState::Attacking;
 	}
 }
 
 void APlayerCharacter::Smash()
 {
-	if(IsAttacking)
+	if(CurrentState == EPlayerState::Attacking)
 	{
 		bRMDown = true;
 	}
 }
 
-void APlayerCharacter::OnAttackMontageEnded(UAnimMontage* Montage, bool bInterrupeted)
+void APlayerCharacter::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 {
-	IsParrying = false;
-	IsDodge = false;
+	if (CurrentState != EPlayerState::Attacking)
+	{
+		CurrentState = EPlayerState::Idle;
+	}
 
 	if (PlayerAnim->GetCurrentCombo() >= PlayerAnim->GetMaxSection())
 	{
-		IsAttacking = false;
-		GSLOG(Error, TEXT("CurrentCombo : %i , MaxSection : %i"),PlayerAnim->GetCurrentCombo(), PlayerAnim->GetMaxSection());
+		CurrentState = EPlayerState::Idle;
+		//GSLOG(Error, TEXT("CurrentCombo : %i , MaxSection : %i"),PlayerAnim->GetCurrentCombo(), PlayerAnim->GetMaxSection());
 		AttackEndComboState();
 	}
 }
 
 void APlayerCharacter::Evade()
 { 
-	if (!IsAttacking)
+	if (MoveValue.IsZero() && CanEvade())
 	{
-		if (MoveValue.IsZero() && !IsDodge)
-		{
-			Parrying();
-		}
-		else if (!MoveValue.IsZero() && !IsParrying && !IsDodge)
-		{
-			Dodge();
-		}
+		Parrying();
+	}
+	else if (!MoveValue.IsZero() && CanEvade())
+	{
+		Dodge();
 	}
 }
 
 void APlayerCharacter::Parrying()
 {
-	IsParrying = true;
+	CurrentState = EPlayerState::Parrying;
 	PlayerAnim->PlayParryingMontage();
 }
 
 void APlayerCharacter::Dodge()
 {
-	IsDodge = true;
+	CurrentState = EPlayerState::Dodge;
 
 	SetPlayerRotation();
 
