@@ -6,6 +6,8 @@
 #include "Boss.h"
 #include "BossStatComponent.h"
 
+#include "UObject/ConstructorHelpers.h"
+
 UBoss_AnimInstance::UBoss_AnimInstance()
 {
 	CurrentPawnSpeed = 0.0f;

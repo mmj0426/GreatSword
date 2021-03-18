@@ -3,6 +3,8 @@
 
 #include "GSGameInstance.h"
 
+#include "UObject/ConstructorHelpers.h"
+
 UGSGameInstance::UGSGameInstance()
 {
 	FString PlayerATKRateDataPath = TEXT("/Game/GameData/DT_PlayerATKRate.DT_PlayerATKRate");

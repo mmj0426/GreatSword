@@ -5,6 +5,8 @@
 #include "PlayerCharacter.h"
 #include "PlayerCharacterStatComponent.h"
 
+#include "UObject/ConstructorHelpers.h"
+
 
 UPlayer_AnimInstance::UPlayer_AnimInstance()
 {

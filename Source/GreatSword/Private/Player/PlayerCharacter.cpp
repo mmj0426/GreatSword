@@ -5,8 +5,16 @@
 #include "Player_AnimInstance.h"
 #include "PlayerCharacterStatComponent.h"
 #include "GSGameInstance.h"
-#include "DrawDebugHelpers.h"
-#include "Components/MeshComponent.h"
+//#include "DrawDebugHelpers.h"
+
+#include "UObject/ConstructorHelpers.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Boss.h"
 
@@ -50,11 +58,11 @@ APlayerCharacter::APlayerCharacter()
 	//Skeletal Mesh
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
-	SM_Player(TEXT("/Game/GreatSword/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
+	SK_Player(TEXT("/Game/GreatSword/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
 
-	if (SM_Player.Succeeded())
+	if (SK_Player.Succeeded())
 	{
-		GetMesh()->SetSkeletalMesh(SM_Player.Object);
+		GetMesh()->SetSkeletalMesh(SK_Player.Object);
 	}
 
 	//Animation
@@ -69,30 +77,26 @@ APlayerCharacter::APlayerCharacter()
 		GetMesh()->SetAnimInstanceClass(Anim_Player.Class);
 	}
 
-	//Weapon
 
+	//Weapon
+	FName WeaponSocket(TEXT("Weapon"));
+
+	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(GetMesh(),WeaponSocket);
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>
+		SM_Weapon(TEXT("/Game/GreatSword/GreatSword/Weapon/GreatSword_02.GreatSword_02"));
+
+	if (SM_Weapon.Succeeded())
+	{
+		Weapon->SetStaticMesh(SM_Weapon.Object);
+	}
+	
 	WeaponCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponCollision"));
+	WeaponCollision->SetupAttachment(Weapon);
 	WeaponCollision->SetCollisionProfileName("Player_Weapon");
 
-	FName WeaponSocket(TEXT("Weapon"));
-	if (GetMesh()->DoesSocketExist(WeaponSocket))
-	{
-		Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
-		static ConstructorHelpers::FObjectFinder<UStaticMesh>
-			SK_Weapon(TEXT("/Game/GreatSword/GreatSword/Weapon/GreatSword_02.GreatSword_02"));
-
-		if (SK_Weapon.Succeeded())
-		{
-			Weapon->SetStaticMesh(SK_Weapon.Object);
-		}
-
-		WeaponCollision->SetupAttachment(Weapon);
-		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
-	}
-
-
 	// Attack
-
 	CurrentState = EPlayerState::Idle;
 
 	MaxCombo = 4;
@@ -173,7 +177,6 @@ void APlayerCharacter::PostInitializeComponents()
 			}
 		});
 }
-
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
