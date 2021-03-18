@@ -6,6 +6,12 @@
 #include "Animation/AnimInstance.h"
 #include "Boss_AnimInstance.generated.h"
 
+UENUM(Category = Animation)
+enum class EBossMontage : uint8
+{
+	Death
+};
+
 /**
  * 
  */
@@ -20,6 +26,7 @@ public :
 
 ;public : 
 	void PlayDeathMontage();
+
 
 private : 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))

@@ -4,7 +4,7 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
-UENUM(Category = "State")
+UENUM(Category = State)
 enum class EPlayerState : uint8
 {
 	Idle,
@@ -12,6 +12,15 @@ enum class EPlayerState : uint8
 	Attacking, 
 	Parrying,
 	Dodge
+};
+
+// 마우스 입력 값
+UENUM(Category = Attack)
+enum class EMouseControll : uint8
+{
+	None,
+	Left,
+	Right
 };
 
 UCLASS(Blueprintable)
@@ -23,23 +32,17 @@ public:
 	// Sets default values for this character's properties
 	APlayerCharacter();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents() override;
 
 	// Camera 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		USpringArmComponent* SpringArm;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 		UCameraComponent* Camera;
 
 	// Weapon
@@ -53,22 +56,26 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	EPlayerState CurrentState;
 
-	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	//bool IsMoving;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	EMouseControll CurrentMouseInput;
+
 
 	// AnimInstance
 	UPROPERTY()
 	class UPlayer_AnimInstance* PlayerAnim;
 
+	// Weapon
+
+	UPROPERTY(VisibleAnywhere, Category = Weapon)
+	UCapsuleComponent* WeaponCollision;
+
+	UFUNCTION()
+	void OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	//UFUNCTION()
+	//void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 	//Attack
-	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	//bool IsAttacking;
-
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	bool bLMDown;
-
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	bool bRMDown;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 AttackComboIndex;
@@ -79,15 +86,8 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 MaxCombo;
 
-	// Evade
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	FVector MoveValue;
-	
-	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-	//bool IsParrying;
-
-	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Evade, Meta = (AllowPrivateAccess = true))
-	//bool IsDodge;
 
 	// Draw Debug
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
