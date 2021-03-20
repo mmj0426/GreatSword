@@ -87,13 +87,16 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	FVector MoveValue;
 
+#pragma region Legacy - Draw Debug
+
 	// Draw Debug
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	float AttackRange;
+	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	//float AttackRange;
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	float AttackRadius;
+	//UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	//float AttackRadius;
 
+#pragma endregion
 
 private:
 
@@ -127,6 +130,7 @@ private:
 
 public : 
 	
+	int32 GetAttackComboIndex() const {return AttackComboIndex;}
 	EPlayerState GetPlayerState() const { return CurrentState; }
 	bool CanEvade() const {	return (CurrentState != EPlayerState::Attacking) && (CurrentState != EPlayerState::Parrying) && (CurrentState != EPlayerState::Dodge);}
 };

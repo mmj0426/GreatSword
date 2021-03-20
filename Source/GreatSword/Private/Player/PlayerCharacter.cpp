@@ -8,6 +8,7 @@
 //#include "DrawDebugHelpers.h"
 
 #include "UObject/ConstructorHelpers.h"
+#include "UObject/Class.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -103,8 +104,8 @@ APlayerCharacter::APlayerCharacter()
 	AttackEndComboState();
 
 	// Draw Debug
-	AttackRange = 200.0f;
-	AttackRadius = 50.0f;
+	//AttackRange = 200.0f;
+	//AttackRadius = 50.0f;
 
 	// Character Stat
 	CharacterStat = CreateDefaultSubobject<UPlayerCharacterStatComponent>(TEXT("CharacterStat"));
@@ -329,14 +330,11 @@ void APlayerCharacter::SetPlayerRotation()
 
 void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
 	auto HitResult = Cast<ABoss>(OtherActor);
 	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
 	if (HitResult != nullptr && CurrentState == EPlayerState::Attacking)
 	{
-		GSLOG(Error, TEXT("OnOverlap"));
-
 		// Player Stat에서 현재 진행중인 애니메이션 몽타주 인덱스와 섹션 인덱스를 통해 데미지 적용율을 가지고와 데미지를 계산함
 		float HitDamage = CharacterStat->GetDamage() * (GSGameInstance->GetPlayerATKRateTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex())) / 100.0f;
 

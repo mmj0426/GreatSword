@@ -29,6 +29,8 @@ public:
 
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
+	//void PlayMontage(EPlayerState playerState);
+
 	//Attack Combo
 	void PlayAttackMontage(int32 NextCombo);
 	void JumpToSmashMontageSection(int32 NewSection);
@@ -52,43 +54,54 @@ private:
 	// Attack
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		UAnimMontage* AttackMontage_01;
+	UAnimMontage* AttackMontage_01;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		UAnimMontage* AttackMontage_02;
+	UAnimMontage* AttackMontage_02;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		UAnimMontage* AttackMontage_03;
+	UAnimMontage* AttackMontage_03;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		UAnimMontage* AttackMontage_04;
+	UAnimMontage* AttackMontage_04;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		TArray<UAnimMontage*> AttackMontageArray;
+	UAnimMontage* CurrentAttackMontage;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		UAnimMontage* CurrentAttackMontage;
+	int32 CurrentCombo;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		int32 CurrentCombo;
+	int32 MaxSection;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		int32 MaxSection;
+	int32 CurrentAttackIndex;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		int32 CurrentAttackIndex;
-
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-		int32 CurrentSectionIndex;
+	int32 CurrentSectionIndex;
 
 
 	// Evade
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Parrying, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* ParryingMontage;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Dodge, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* DodgeMontage;
+
+	// Montage Array 
+
+	//UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	//TMap<EPlayerState, TArray<UAnimMontage*>> PlayerMontageMap;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+		TArray<UAnimMontage*> AttackMontageArray;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Parrying, Meta = (AllowPrivateAccess = true))
+		TArray<UAnimMontage*> ParryingMontageArray;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Dodge, Meta = (AllowPrivateAccess = true))
+		TArray<UAnimMontage*> DodgeMontageArray;
 
 	// Attack Notify
 	UFUNCTION()

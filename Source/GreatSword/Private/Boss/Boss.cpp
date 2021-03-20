@@ -46,6 +46,7 @@ void ABoss::PostInitializeComponents()
 
 	BossStat->OnBossHPIsZero.AddLambda([this]()->void
 		{
+			CurrentState = EBossState::Death;
 			BossAnim->PlayDeathMontage();
 			SetActorEnableCollision(false);
 		});

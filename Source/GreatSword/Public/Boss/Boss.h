@@ -4,7 +4,14 @@
 
 #include "GreatSword.h"
 #include "GameFramework/Character.h"
+
 #include "Boss.generated.h"
+
+UENUM(Category = BossState)
+enum class EBossState : uint8
+{
+	Death
+};
 
 UCLASS()
 class GREATSWORD_API ABoss : public ACharacter
@@ -44,4 +51,7 @@ private :
 	// AnimInstance
 	UPROPERTY()
 	class UBoss_AnimInstance* BossAnim;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	EBossState CurrentState;
 };

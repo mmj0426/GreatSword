@@ -6,6 +6,7 @@
 #include "PlayerCharacterStatComponent.h"
 
 #include "UObject/ConstructorHelpers.h"
+#include "UObject/Class.h"
 
 
 UPlayer_AnimInstance::UPlayer_AnimInstance()
@@ -46,7 +47,7 @@ UPlayer_AnimInstance::UPlayer_AnimInstance()
 	AttackMontageArray.Add(AttackMontage_03);
 	AttackMontageArray.Add(AttackMontage_04);
 
-
+	//PlayerMontageMap.Add(EPlayerState::Attacking, AttackMontageArray);
 
 	// Parrying
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
@@ -56,6 +57,9 @@ UPlayer_AnimInstance::UPlayer_AnimInstance()
 		ParryingMontage = Parrying_Montage.Object;
 	}
 
+	ParryingMontageArray.Add(ParryingMontage);
+	//PlayerMontageMap.Add(EPlayerState::Parrying, ParryingMontageArray);
+
 	// Dodge
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
 		Dodge_Montage(TEXT("/Game/Blueprints/Player/Animation/Evade/AnimMontage_Dodge.AnimMontage_Dodge"));
@@ -63,6 +67,9 @@ UPlayer_AnimInstance::UPlayer_AnimInstance()
 	{
 		DodgeMontage = Dodge_Montage.Object;
 	}
+
+	DodgeMontageArray.Add(DodgeMontage);
+	//PlayerMontageMap.Add(EPlayerState::Dodge, DodgeMontageArray);
 }
 
 void UPlayer_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -72,9 +79,28 @@ void UPlayer_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	APlayerCharacter* const Player = Cast<APlayerCharacter>(TryGetPawnOwner());
 	if (::IsValid(TryGetPawnOwner()))
 	{
-		CurrentPawnSpeed = TryGetPawnOwner()->GetVelocity().Size();
+		//CurrentPawnSpeed = TryGetPawnOwner()->GetVelocity().Size();
+		CurrentPawnSpeed = Player->GetVelocity().Size();
+		//CurrentAttackIndex = Player->GetAttackComboIndex();
 	}
 }
+
+//void UPlayer_AnimInstance::PlayMontage(EPlayerState playerState)
+//{
+//	TArray<UAnimMontage*> CurrentMontage = PlayerMontageMap[playerState];
+//
+//	if (playerState == EPlayerState::Attacking)
+//	{
+//		CurrentCombo = 0;
+//
+//		CurrentSectionIndex = 0;
+//
+//		MaxSection = AttackMontageArray[CurrentAttackIndex - 1]->CompositeSections.Num() - 1;
+//
+//		CurrentAttackMontage = AttackMontageArray[CurrentAttackIndex - 1];
+//	}
+//}
+
 
 void UPlayer_AnimInstance::PlayAttackMontage(int32 NextCombo)
 {
@@ -88,9 +114,9 @@ void UPlayer_AnimInstance::PlayAttackMontage(int32 NextCombo)
 	//GSLOG(Warning, TEXT("CurrentAttackIndex : %d"), CurrentAttackIndex);
 	//GSLOG(Warning, TEXT("CurrentSection : %d"), CurrentSectionIndex);
 
-	MaxSection = AttackMontageArray[NextCombo - 1]->CompositeSections.Num()-1;
+	MaxSection = AttackMontageArray[CurrentAttackIndex - 1]->CompositeSections.Num()-1;
 
-	CurrentAttackMontage = AttackMontageArray[NextCombo - 1];
+	CurrentAttackMontage = AttackMontageArray[CurrentAttackIndex - 1];
 
 	if (!Montage_IsPlaying((CurrentAttackMontage)))
 	{
@@ -98,6 +124,22 @@ void UPlayer_AnimInstance::PlayAttackMontage(int32 NextCombo)
 	}
 }
 
+
+void UPlayer_AnimInstance::PlayParryingMontage()
+{
+	if (!Montage_IsPlaying(ParryingMontage))
+	{
+		Montage_Play(ParryingMontage, 1.0f);
+	}
+}
+
+void UPlayer_AnimInstance::PlayDodgeMontage()
+{
+	if ((!Montage_IsPlaying(DodgeMontage)))
+	{
+		Montage_Play(DodgeMontage, 1.0f);
+	}
+}
 
 void UPlayer_AnimInstance::JumpToSmashMontageSection(int32 NewSection)
 {
@@ -129,20 +171,4 @@ void UPlayer_AnimInstance::AnimNotify_NextAttackCheck()
 void UPlayer_AnimInstance::AnimNotify_SmashCheck()
 {
 	OnSmashCheck.Broadcast();
-}
-
-void UPlayer_AnimInstance::PlayParryingMontage()
-{
-	if (!Montage_IsPlaying(ParryingMontage))
-	{
-		Montage_Play(ParryingMontage, 1.0f);
-	}
-}
-
-void UPlayer_AnimInstance::PlayDodgeMontage()
-{
-	if ((!Montage_IsPlaying(DodgeMontage)))
-	{
-		Montage_Play(DodgeMontage, 1.0f);
-	}
 }
