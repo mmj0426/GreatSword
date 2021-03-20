@@ -5,6 +5,9 @@
 #include "Boss_AnimInstance.h"
 #include "BossStatComponent.h"
 
+#include "UObject/ConstructorHelpers.h"
+#include "Components/CapsuleComponent.h"
+
 // Sets default values
 ABoss::ABoss()
 {
@@ -43,6 +46,7 @@ void ABoss::PostInitializeComponents()
 
 	BossStat->OnBossHPIsZero.AddLambda([this]()->void
 		{
+			CurrentState = EBossState::Death;
 			BossAnim->PlayDeathMontage();
 			SetActorEnableCollision(false);
 		});

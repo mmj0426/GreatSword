@@ -5,7 +5,19 @@
 #include "Player_AnimInstance.h"
 #include "PlayerCharacterStatComponent.h"
 #include "GSGameInstance.h"
-#include "DrawDebugHelpers.h"
+//#include "DrawDebugHelpers.h"
+
+#include "UObject/ConstructorHelpers.h"
+#include "UObject/Class.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+#include "Boss.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -47,11 +59,11 @@ APlayerCharacter::APlayerCharacter()
 	//Skeletal Mesh
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
-	SM_Player(TEXT("/Game/GreatSword/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
+	SK_Player(TEXT("/Game/GreatSword/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
 
-	if (SM_Player.Succeeded())
+	if (SK_Player.Succeeded())
 	{
-		GetMesh()->SetSkeletalMesh(SM_Player.Object);
+		GetMesh()->SetSkeletalMesh(SK_Player.Object);
 	}
 
 	//Animation
@@ -66,50 +78,42 @@ APlayerCharacter::APlayerCharacter()
 		GetMesh()->SetAnimInstanceClass(Anim_Player.Class);
 	}
 
+
 	//Weapon
-
 	FName WeaponSocket(TEXT("Weapon"));
-	if (GetMesh()->DoesSocketExist(WeaponSocket))
+
+	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+	Weapon->SetupAttachment(GetMesh(),WeaponSocket);
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>
+		SM_Weapon(TEXT("/Game/GreatSword/GreatSword/Weapon/GreatSword_02.GreatSword_02"));
+
+	if (SM_Weapon.Succeeded())
 	{
-		Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
-		static ConstructorHelpers::FObjectFinder<UStaticMesh>
-			SK_Weapon(TEXT("/Game/GreatSword/GreatSword/Weapon/GreatSword_02.GreatSword_02"));
-
-		if (SK_Weapon.Succeeded())
-		{
-			Weapon->SetStaticMesh(SK_Weapon.Object);
-		}
-
-		Weapon->SetupAttachment(GetMesh(), WeaponSocket);
+		Weapon->SetStaticMesh(SM_Weapon.Object);
 	}
+	
+	WeaponCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponCollision"));
+	WeaponCollision->SetupAttachment(Weapon);
+	WeaponCollision->SetCollisionProfileName("Player_Weapon");
 
 	// Attack
-
 	CurrentState = EPlayerState::Idle;
 
-	//IsAttacking = false;
 	MaxCombo = 4;
 	AttackEndComboState();
 
-	// Evade
-	//IsParrying = false;
-
 	// Draw Debug
-	AttackRange = 200.0f;
-	AttackRadius = 50.0f;
-
-	//IsMoving = false;
+	//AttackRange = 200.0f;
+	//AttackRadius = 50.0f;
 
 	// Character Stat
 	CharacterStat = CreateDefaultSubobject<UPlayerCharacterStatComponent>(TEXT("CharacterStat"));
-
-
 }
 
 void APlayerCharacter::AttackStartComboState()
 {
-	bLMDown = false;
-	bRMDown = false;
+	CurrentMouseInput = EMouseControll::None;
 
 	// 콤보 값이 0 ~ MaxCombo-1 사이인지 검사
 	GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 0,MaxCombo -1));
@@ -118,24 +122,10 @@ void APlayerCharacter::AttackStartComboState()
 
 void APlayerCharacter::AttackEndComboState()
 {
-	bLMDown = false;
-	bRMDown = false;
+	CurrentMouseInput = EMouseControll::None;
 
 	AttackComboIndex = 0;
 	SmashIndex = 0;
-}
-
-// Called when the game starts or when spawned
-void APlayerCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void APlayerCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -145,38 +135,37 @@ void APlayerCharacter::PostInitializeComponents()
 	PlayerAnim = Cast<UPlayer_AnimInstance>(GetMesh()->GetAnimInstance());
 	GSCHECK(nullptr != PlayerAnim);
 
+	//TODO : PlayerAnimMontage AttackHitCheck 노티파이 지우기
 	PlayerAnim->OnMontageEnded.AddDynamic(this,&APlayerCharacter::MontageEnded);
-	PlayerAnim->OnAttackHitCheck.AddUObject(this, &APlayerCharacter::AttackCheck);
+	//PlayerAnim->OnAttackHitCheck.AddUObject(this, &APlayerCharacter::AttackCheck);
 
-	// Delegate 함수 등록
+	WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapBegin);
+	//WeaponCollision->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapEnd);
+	 
+	// Combo Attack Delegate
 	PlayerAnim->OnNextAttackCheck.AddLambda([this]()->void
 		{
-			if (bLMDown)
+			if (CurrentMouseInput == EMouseControll::Left)
 			{
 				AttackStartComboState();
 				SmashIndex = 0;
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 				PlayerAnim->PlayAttackMontage(AttackComboIndex);
 			}
-			//else
-			//{
-			//	GSLOG(Warning, TEXT("NextCheck Else"));
-			//	IsAttacking = false;
-			//	AttackEndComboState();
-			//}
 		});
 
 	PlayerAnim->OnSmashCheck.AddLambda([this]()->void
 		{
 			//GSLOG(Error, TEXT("OnSmashCheck Lambda"));
-			if (bRMDown)
+			if (CurrentMouseInput == EMouseControll::Right)
 			{
 				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, PlayerAnim->GetMaxSection()-1));
 				SmashIndex = FMath::Clamp<int32>(SmashIndex+1, 1, PlayerAnim->GetMaxSection());
 				
 				//GSLOG(Error, TEXT("Smash Index : %i"), SmashIndex);
 
-				bRMDown = false;
+				CurrentMouseInput = EMouseControll::None;
+				///bRMDown = false;
 				CurrentState = EPlayerState::Attacking;
 				PlayerAnim->SetCurrentCombo(PlayerAnim->GetCurrentCombo() + 1);
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
@@ -188,38 +177,7 @@ void APlayerCharacter::PostInitializeComponents()
 				AttackEndComboState();
 			}
 		});
-
-		
-
-	//! < Legacy
-	/*GSAnim->OnSmashCheck.AddLambda([this]()->void
-		{
-
-			if (IsSmashInputOn)
-			{
-				GSLOG(Warning, TEXT("Smash Check"));
-				GSAnim->PlaySmashMontage();
-				GSAnim->JumpToSmashMontageSection(CurrentCombo);
-				IsAttacking = true;
-			}
-		});*/
-
-	// Parrying End Delegate
-
-	//GSAnim->OnParryingEnd.AddLambda([this]()->void
-	//	{
-	//		IsParrying = false;
-	//	}
-	//);
-
-	//! < Dodge End Delegate
-	//! 
-	//GSAnim->OnDodgeEnd.AddLambda([this]()->void
-	//	{
-	//		IsDodge = false;
-	//	});
 }
-
 // Called to bind functionality to input
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -289,7 +247,7 @@ void APlayerCharacter::Attack()
 	if (CurrentState == EPlayerState::Attacking)
 	{
 		GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 1, MaxCombo));
-		bLMDown = true;
+		CurrentMouseInput = EMouseControll::Left;
 	}
 	else
 	{
@@ -305,7 +263,7 @@ void APlayerCharacter::Smash()
 {
 	if(CurrentState == EPlayerState::Attacking)
 	{
-		bRMDown = true;
+		CurrentMouseInput = EMouseControll::Right;
 	}
 }
 
@@ -370,57 +328,82 @@ void APlayerCharacter::SetPlayerRotation()
 	
 }
 
-void APlayerCharacter::AttackCheck()
+void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// 충돌된 액터에 관련된 정보를 얻기 위한 구조체
-	FHitResult HitResult;
-	// 플레이어 자신은 탐색되지 않도록 하기위한 (무시할 액터 목록을 담은)구조체
-	FCollisionQueryParams Params(NAME_None, false, this);
-
-	bool bResult = GetWorld()->SweepSingleByChannel(
-	HitResult,
-	GetActorLocation(),
-	GetActorLocation() + GetActorForwardVector() * 200.0f,
-	FQuat::Identity,
-	ECollisionChannel::ECC_GameTraceChannel1,
-	FCollisionShape::MakeSphere(50.0f),
-	Params);
-
-	// Draw Debug
-	#if ENABLE_DRAW_DEBUG
-
-	FVector TraceVector = GetActorForwardVector() * AttackRange;
-	FVector Center = GetActorLocation() + TraceVector * 0.5;
-	float HalfHeight = AttackRange * 0.5f + AttackRadius;
-	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVector).ToQuat();
-	FColor DrawColor = bResult?FColor::Green : FColor::Red;
-	float DebugLifeTime = 5.0f;
-
-	DrawDebugCapsule(
-		GetWorld(),
-		Center,
-		HalfHeight,
-		AttackRadius,
-		CapsuleRot,
-		DrawColor,
-		false,
-		DebugLifeTime
-	);
-
-	#endif
-
+	auto HitResult = Cast<ABoss>(OtherActor);
 	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	
-	if (bResult && HitResult.Actor.IsValid())
+
+	if (HitResult != nullptr && CurrentState == EPlayerState::Attacking)
 	{
-		GSLOG(Warning, TEXT("Hit Actor Name : %s"),*HitResult.Actor->GetName());
-
 		// Player Stat에서 현재 진행중인 애니메이션 몽타주 인덱스와 섹션 인덱스를 통해 데미지 적용율을 가지고와 데미지를 계산함
-		float HitDamage =	CharacterStat->GetDamage() * (GSGameInstance->GetPlayerATKRateTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex()))/100.0f;
+		float HitDamage = CharacterStat->GetDamage() * (GSGameInstance->GetPlayerATKRateTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex())) / 100.0f;
 
-		GSLOG(Warning, TEXT("Hit Damage : %f"),HitDamage);
+		GSLOG(Warning, TEXT("Hit Damage : %f"), HitDamage);
 		//데미지 적용
-		UGameplayStatics::ApplyDamage(HitResult.GetActor(), HitDamage, NULL, GetController(), NULL);
+		UGameplayStatics::ApplyDamage(HitResult, HitDamage, NULL, GetController(), NULL);
 	}
-
 }
+
+#pragma region OverlapEnd
+//void APlayerCharacter::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+//{
+//
+//}
+#pragma endregion
+
+#pragma region TraceChannel AttackSystem AttackHitCheck Delegate
+//void APlayerCharacter::AttackCheck()
+//{
+//	// 충돌된 액터에 관련된 정보를 얻기 위한 구조체
+//	FHitResult HitResult;
+//	// 플레이어 자신은 탐색되지 않도록 하기위한 (무시할 액터 목록을 담은)구조체
+//	FCollisionQueryParams Params(NAME_None, false, this);
+//
+//	bool bResult = GetWorld()->SweepSingleByChannel(
+//	HitResult,
+//	GetActorLocation(),
+//	GetActorLocation() + GetActorForwardVector() * 200.0f,
+//	FQuat::Identity,
+//	ECollisionChannel::ECC_GameTraceChannel1,
+//	FCollisionShape::MakeSphere(50.0f),
+//	Params);
+//
+//	// Draw Debug
+//	#if ENABLE_DRAW_DEBUG
+//
+//	FVector TraceVector = GetActorForwardVector() * AttackRange;
+//	FVector Center = GetActorLocation() + TraceVector * 0.5;
+//	float HalfHeight = AttackRange * 0.5f + AttackRadius;
+//	FQuat CapsuleRot = FRotationMatrix::MakeFromZ(TraceVector).ToQuat();
+//	FColor DrawColor = bResult?FColor::Green : FColor::Red;
+//	float DebugLifeTime = 5.0f;
+//
+//	DrawDebugCapsule(
+//		GetWorld(),
+//		Center,
+//		HalfHeight,
+//		AttackRadius,
+//		CapsuleRot,
+//		DrawColor,
+//		false,
+//		DebugLifeTime
+//	);
+//
+//	#endif
+//
+//	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+//	
+//	if (bResult && HitResult.Actor.IsValid())
+//	{
+//		GSLOG(Warning, TEXT("Hit Actor Name : %s"),*HitResult.Actor->GetName());
+//
+//		// Player Stat에서 현재 진행중인 애니메이션 몽타주 인덱스와 섹션 인덱스를 통해 데미지 적용율을 가지고와 데미지를 계산함
+//		float HitDamage =	CharacterStat->GetDamage() * (GSGameInstance->GetPlayerATKRateTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex()))/100.0f;
+//
+//		GSLOG(Warning, TEXT("Hit Damage : %f"),HitDamage);
+//		//데미지 적용
+//		UGameplayStatics::ApplyDamage(HitResult.GetActor(), HitDamage, NULL, GetController(), NULL);
+//	}
+//
+//}
+#pragma endregion
