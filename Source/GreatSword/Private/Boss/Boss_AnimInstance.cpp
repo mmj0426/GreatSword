@@ -35,7 +35,6 @@ void UBoss_AnimInstance::PlayDeathMontage()
 {
 	if (!Montage_IsPlaying(DeathMontage))
 	{
-		GSLOG(Warning, TEXT("Playing"));
 		Montage_Play(DeathMontage,1.0f);
 	}
 }

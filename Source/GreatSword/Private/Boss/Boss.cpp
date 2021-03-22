@@ -4,6 +4,7 @@
 #include "Boss.h"
 #include "Boss_AnimInstance.h"
 #include "BossStatComponent.h"
+#include "Boss_AIController.h"
 
 #include "UObject/ConstructorHelpers.h"
 #include "Components/CapsuleComponent.h"
@@ -35,6 +36,9 @@ ABoss::ABoss()
 
 	// Stat
 	BossStat = CreateDefaultSubobject<UBossStatComponent>(TEXT("BossStat"));
+
+	AIControllerClass = ABoss_AIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ABoss::PostInitializeComponents()

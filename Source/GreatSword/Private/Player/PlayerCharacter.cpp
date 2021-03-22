@@ -2,13 +2,14 @@
 
 
 #include "PlayerCharacter.h"
+#include "Player_Controller.h"
 #include "Player_AnimInstance.h"
 #include "PlayerCharacterStatComponent.h"
 #include "GSGameInstance.h"
+#include "Boss.h"
 //#include "DrawDebugHelpers.h"
 
 #include "UObject/ConstructorHelpers.h"
-#include "UObject/Class.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -17,7 +18,6 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-#include "Boss.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -178,69 +178,6 @@ void APlayerCharacter::PostInitializeComponents()
 			}
 		});
 }
-// Called to bind functionality to input
-void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAxis(TEXT("MoveForward"),this,&APlayerCharacter::MoveForward);
-	PlayerInputComponent->BindAxis(TEXT("MoveRight"),this,&APlayerCharacter::MoveRight);
-	PlayerInputComponent->BindAxis(TEXT("LookUp"),this, &APlayerCharacter::LookUp);
-	PlayerInputComponent->BindAxis(TEXT("Turn"),this, &APlayerCharacter::Turn);
-
-	PlayerInputComponent->BindAction(TEXT("Run"),EInputEvent::IE_Released, this, &APlayerCharacter::Walk);
-	PlayerInputComponent->BindAction(TEXT("Run"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Run);
-
-	PlayerInputComponent->BindAction(TEXT("Attack"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Attack);
-	PlayerInputComponent->BindAction(TEXT("Smash"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Smash);
-	PlayerInputComponent->BindAction(TEXT("Evade"),EInputEvent::IE_Pressed, this, &APlayerCharacter::Evade);
-}
-
-void APlayerCharacter::MoveForward(float NewAxisValue)
-{
-	MoveValue.X = NewAxisValue;
-	if (Controller != nullptr && NewAxisValue != 0.0f && (CurrentState != EPlayerState::Attacking))
-	{
-		CurrentState = EPlayerState::Moving;
-		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
-	}
-}
-
-void APlayerCharacter::MoveRight(float NewAxisValue)
-{	
-	MoveValue.Y = NewAxisValue;
-	if (Controller != nullptr && NewAxisValue != 0.0f && (CurrentState != EPlayerState::Attacking))
-	{
-		CurrentState = EPlayerState::Moving;
-		AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
-	}
-}
-
-void APlayerCharacter::LookUp(float NewAxisValue)
-{
-	if (Controller != nullptr && NewAxisValue != 0.0f)
-	{
-		AddControllerPitchInput(NewAxisValue);
-	}
-}
-
-void APlayerCharacter::Turn(float NewAxisValue)
-{
-	if (Controller != nullptr && NewAxisValue != 0.0f)
-	{
-		AddControllerYawInput(NewAxisValue);
-	}
-}
-
-void APlayerCharacter::Walk()
-{
-	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
-}
-
-void APlayerCharacter::Run()
-{
-	GetCharacterMovement()->MaxWalkSpeed = 450.0f;
-}
 
 void APlayerCharacter::Attack()
 {
@@ -284,11 +221,13 @@ void APlayerCharacter::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 
 void APlayerCharacter::Evade()
 { 
-	if (MoveValue.IsZero() && CanEvade())
+	auto GSController = Cast<APlayer_Controller>(GetController());
+
+	if (GSController->GetMoveValue().IsZero() && CanEvade())
 	{
 		Parrying();
 	}
-	else if (!MoveValue.IsZero() && CanEvade())
+	else if (!GSController->GetMoveValue().IsZero() && CanEvade())
 	{
 		Dodge();
 	}
@@ -311,9 +250,11 @@ void APlayerCharacter::Dodge()
 
 void APlayerCharacter::SetPlayerRotation()
 {	
+	auto GSController = Cast<APlayer_Controller>(GetController());
+
 	int32 RotationRate = 0;
-	int32 MoveValueX = static_cast<int32>(MoveValue.X);
-	int32 MoveValueY = static_cast<int32>(MoveValue.Y);
+	int32 MoveValueX = static_cast<int32>(GSController->GetMoveValue().X);
+	int32 MoveValueY = static_cast<int32>(GSController->GetMoveValue().Y);
 
 	if (MoveValueX != 0 && MoveValueY == 0)
 	{

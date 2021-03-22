@@ -2,7 +2,7 @@
 
 
 #include "GSGameMode.h"
-#include "GSPlayerController.h"
+#include "Player_Controller.h"
 
 #include "GameFramework/Character.h"
 #include "UObject/ConstructorHelpers.h"
@@ -13,5 +13,5 @@ AGSGameMode::AGSGameMode()
 	PlayerCharacter(TEXT("/Game/Blueprints/Player/BP_PlayerCharacter.BP_PlayerCharacter_C"));
 
 	DefaultPawnClass = PlayerCharacter.Class;
-	PlayerControllerClass = AGSPlayerController::StaticClass();
+	PlayerControllerClass = APlayer_Controller::StaticClass();
 }

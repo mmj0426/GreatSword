@@ -5,7 +5,7 @@
 #include "PlayerCharacter.generated.h"
 
 UENUM(Category = State)
-enum class EPlayerState : uint8
+enum class EPlayerState 
 {
 	Idle,
 	Moving,
@@ -16,7 +16,7 @@ enum class EPlayerState : uint8
 
 // 마우스 입력 값
 UENUM(Category = Attack)
-enum class EMouseControll : uint8
+enum class EMouseControll
 {
 	None,
 	Left,
@@ -35,7 +35,6 @@ public:
 public:
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PostInitializeComponents() override;
 
 	// Camera 
@@ -84,8 +83,7 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 MaxCombo;
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	FVector MoveValue;
+
 
 #pragma region Legacy - Draw Debug
 
@@ -98,16 +96,7 @@ private:
 
 #pragma endregion
 
-private:
-
-	//Movement
-	void MoveForward(float NewAxisValue);
-	void MoveRight(float NewAxisValue);
-	void LookUp(float NewAxisValue);
-	void Turn(float NewAxisValue);
-
-	void Run();
-	void Walk();
+public:
 
 	//Attack
 	UFUNCTION()
@@ -132,5 +121,6 @@ public :
 	
 	int32 GetAttackComboIndex() const {return AttackComboIndex;}
 	EPlayerState GetPlayerState() const { return CurrentState; }
+	void SetPlayerState(EPlayerState newState) { CurrentState = newState; }
 	bool CanEvade() const {	return (CurrentState != EPlayerState::Attacking) && (CurrentState != EPlayerState::Parrying) && (CurrentState != EPlayerState::Dodge);}
 };
