@@ -41,5 +41,4 @@ private:
 
 public : 
 	FVector GetMoveValue() const { return MoveValue; }
-
 };

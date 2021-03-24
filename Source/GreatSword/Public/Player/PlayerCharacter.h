@@ -4,19 +4,10 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
-UENUM(Category = State)
-enum class EPlayerState 
-{
-	Idle,
-	Moving,
-	Attacking, 
-	Parrying,
-	Dodge
-};
 
 // 마우스 입력 값
 UENUM(Category = Attack)
-enum class EMouseControll
+enum class EReadyToAttack
 {
 	None,
 	Left,
@@ -55,11 +46,9 @@ public:
 	class UCapsuleComponent* WeaponCollision;
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
-	EPlayerState CurrentState;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
-	EMouseControll CurrentMouseInput;
+	EReadyToAttack CurrentMouseInput;
 
 	// AnimInstance
 	UPROPERTY()
@@ -120,7 +109,7 @@ public:
 public : 
 	
 	int32 GetAttackComboIndex() const {return AttackComboIndex;}
-	EPlayerState GetPlayerState() const { return CurrentState; }
-	void SetPlayerState(EPlayerState newState) { CurrentState = newState; }
-	bool CanEvade() const {	return (CurrentState != EPlayerState::Attacking) && (CurrentState != EPlayerState::Parrying) && (CurrentState != EPlayerState::Dodge);}
+
+	bool CanEvade() const;
+	bool CanMove() const;
 };

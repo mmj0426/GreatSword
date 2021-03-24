@@ -13,7 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Components/SkeletalMeshComponent.h"
+//#include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -98,7 +98,6 @@ APlayerCharacter::APlayerCharacter()
 	WeaponCollision->SetCollisionProfileName("Player_Weapon");
 
 	// Attack
-	CurrentState = EPlayerState::Idle;
 
 	MaxCombo = 4;
 	AttackEndComboState();
@@ -113,7 +112,7 @@ APlayerCharacter::APlayerCharacter()
 
 void APlayerCharacter::AttackStartComboState()
 {
-	CurrentMouseInput = EMouseControll::None;
+	CurrentMouseInput = EReadyToAttack::None;
 
 	// 콤보 값이 0 ~ MaxCombo-1 사이인지 검사
 	GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 0,MaxCombo -1));
@@ -122,7 +121,7 @@ void APlayerCharacter::AttackStartComboState()
 
 void APlayerCharacter::AttackEndComboState()
 {
-	CurrentMouseInput = EMouseControll::None;
+	CurrentMouseInput = EReadyToAttack::None;
 
 	AttackComboIndex = 0;
 	SmashIndex = 0;
@@ -133,6 +132,7 @@ void APlayerCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	PlayerAnim = Cast<UPlayer_AnimInstance>(GetMesh()->GetAnimInstance());
+	PlayerAnim->SetCurrentPlayerState(EPlayerState::Idle);
 	GSCHECK(nullptr != PlayerAnim);
 
 	//TODO : PlayerAnimMontage AttackHitCheck 노티파이 지우기
@@ -145,10 +145,11 @@ void APlayerCharacter::PostInitializeComponents()
 	// Combo Attack Delegate
 	PlayerAnim->OnNextAttackCheck.AddLambda([this]()->void
 		{
-			if (CurrentMouseInput == EMouseControll::Left)
+			if (CurrentMouseInput == EReadyToAttack::Left)
 			{
 				AttackStartComboState();
 				SmashIndex = 0;
+
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 				PlayerAnim->PlayAttackMontage(AttackComboIndex);
 			}
@@ -157,23 +158,24 @@ void APlayerCharacter::PostInitializeComponents()
 	PlayerAnim->OnSmashCheck.AddLambda([this]()->void
 		{
 			//GSLOG(Error, TEXT("OnSmashCheck Lambda"));
-			if (CurrentMouseInput == EMouseControll::Right)
+			if (CurrentMouseInput == EReadyToAttack::Right)
 			{
 				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, PlayerAnim->GetMaxSection()-1));
 				SmashIndex = FMath::Clamp<int32>(SmashIndex+1, 1, PlayerAnim->GetMaxSection());
 				
 				//GSLOG(Error, TEXT("Smash Index : %i"), SmashIndex);
 
-				CurrentMouseInput = EMouseControll::None;
-				///bRMDown = false;
-				CurrentState = EPlayerState::Attacking;
+				CurrentMouseInput = EReadyToAttack::None;
+				
 				PlayerAnim->SetCurrentCombo(PlayerAnim->GetCurrentCombo() + 1);
+
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 				PlayerAnim->JumpToSmashMontageSection(SmashIndex);
+				//PlayerAnim->SetCurrentPlayerState(EPlayerState::Attacking);
 			}
 			else
 			{
-				CurrentState = EPlayerState::Idle;
+				PlayerAnim->SetCurrentPlayerState(EPlayerState::Idle);
 				AttackEndComboState();
 			}
 		});
@@ -181,10 +183,10 @@ void APlayerCharacter::PostInitializeComponents()
 
 void APlayerCharacter::Attack()
 {
-	if (CurrentState == EPlayerState::Attacking)
+	if (PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
 	{
 		GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 1, MaxCombo));
-		CurrentMouseInput = EMouseControll::Left;
+		CurrentMouseInput = EReadyToAttack::Left;
 	}
 	else
 	{
@@ -192,28 +194,29 @@ void APlayerCharacter::Attack()
 		AttackStartComboState();
 		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 		PlayerAnim->PlayAttackMontage(AttackComboIndex);
-		CurrentState = EPlayerState::Attacking;
+		
+		//CurrentState = EPlayerState::Attacking;
 	}
 }
 
 void APlayerCharacter::Smash()
 {
-	if(CurrentState == EPlayerState::Attacking)
+	if(PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
 	{
-		CurrentMouseInput = EMouseControll::Right;
+		CurrentMouseInput = EReadyToAttack::Right;
 	}
 }
 
 void APlayerCharacter::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 {
-	if (CurrentState != EPlayerState::Attacking)
+	if (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Attacking)
 	{
-		CurrentState = EPlayerState::Idle;
+		PlayerAnim->SetCurrentPlayerState(EPlayerState::Idle);
 	}
 
 	if (PlayerAnim->GetCurrentCombo() >= PlayerAnim->GetMaxSection())
 	{
-		CurrentState = EPlayerState::Idle;
+		PlayerAnim->SetCurrentPlayerState(EPlayerState::Idle);
 		//GSLOG(Error, TEXT("CurrentCombo : %i , MaxSection : %i"),PlayerAnim->GetCurrentCombo(), PlayerAnim->GetMaxSection());
 		AttackEndComboState();
 	}
@@ -235,14 +238,11 @@ void APlayerCharacter::Evade()
 
 void APlayerCharacter::Parrying()
 {
-	CurrentState = EPlayerState::Parrying;
 	PlayerAnim->PlayParryingMontage();
 }
 
 void APlayerCharacter::Dodge()
 {
-	CurrentState = EPlayerState::Dodge;
-
 	SetPlayerRotation();
 
 	PlayerAnim->PlayDodgeMontage();
@@ -269,12 +269,26 @@ void APlayerCharacter::SetPlayerRotation()
 	
 }
 
+bool APlayerCharacter::CanEvade() const
+{
+	return (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Attacking) 
+	&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Parrying) 
+	&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Dodge);
+}
+
+bool APlayerCharacter::CanMove() const
+{
+	return (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Attacking)
+	&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Parrying)
+	&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Dodge);
+}
+
 void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	auto HitResult = Cast<ABoss>(OtherActor);
 	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	if (HitResult != nullptr && CurrentState == EPlayerState::Attacking)
+	if (HitResult != nullptr && PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
 	{
 		// Player Stat에서 현재 진행중인 애니메이션 몽타주 인덱스와 섹션 인덱스를 통해 데미지 적용율을 가지고와 데미지를 계산함
 		float HitDamage = CharacterStat->GetDamage() * (GSGameInstance->GetPlayerATKRateTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex())) / 100.0f;

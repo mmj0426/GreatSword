@@ -40,9 +40,9 @@ void APlayer_Controller::MoveForward(float NewAxisValue)
 	MoveValue.X = NewAxisValue;
 	
 
-	if (GSPlayer && NewAxisValue != 0.0f && (GSPlayer->GetPlayerState()!= EPlayerState::Attacking))
+	if (GSPlayer && NewAxisValue != 0.0f && GSPlayer->CanMove())
 	{
-		GSPlayer->SetPlayerState(EPlayerState::Moving);
+		//GSPlayer->SetPlayerState(EPlayerState::Moving);
 		GSPlayer->AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
 	}
 }
@@ -51,16 +51,15 @@ void APlayer_Controller::MoveRight(float NewAxisValue)
 {
 	MoveValue.Y = NewAxisValue;
 
-	if (GSPlayer && NewAxisValue != 0.0f && (GSPlayer->GetPlayerState() != EPlayerState::Attacking))
+	if (GSPlayer && NewAxisValue != 0.0f && GSPlayer->CanMove())
 	{
-		GSPlayer->SetPlayerState(EPlayerState::Moving);
+		//GSPlayer->SetPlayerState(EPlayerState::Moving);
 		GSPlayer->AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::Y), NewAxisValue);
 	}
 }
 
 void APlayer_Controller::LookUp(float NewAxisValue)
 {
-
 	if (Player && NewAxisValue != 0.0f)
 	{
 		GSPlayer->AddControllerPitchInput(NewAxisValue);

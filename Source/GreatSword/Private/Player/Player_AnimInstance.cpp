@@ -121,6 +121,7 @@ void UPlayer_AnimInstance::PlayAttackMontage(int32 NextCombo)
 	if (!Montage_IsPlaying((CurrentAttackMontage)))
 	{
 		Montage_Play(CurrentAttackMontage, 1.0f);
+		CurrentPlayerState = EPlayerState::Attacking;
 	}
 }
 
@@ -130,6 +131,7 @@ void UPlayer_AnimInstance::PlayParryingMontage()
 	if (!Montage_IsPlaying(ParryingMontage))
 	{
 		Montage_Play(ParryingMontage, 1.0f);
+		CurrentPlayerState = EPlayerState::Parrying;
 	}
 }
 
@@ -138,6 +140,7 @@ void UPlayer_AnimInstance::PlayDodgeMontage()
 	if ((!Montage_IsPlaying(DodgeMontage)))
 	{
 		Montage_Play(DodgeMontage, 1.0f);
+		CurrentPlayerState = EPlayerState::Dodge;
 	}
 }
 
@@ -149,6 +152,7 @@ void UPlayer_AnimInstance::JumpToSmashMontageSection(int32 NewSection)
 	if (Montage_IsPlaying(CurrentAttackMontage))
 	{
 		Montage_JumpToSection(GetSmashMontageSectionName(NewSection), CurrentAttackMontage);
+		CurrentPlayerState = EPlayerState::Attacking;
 	}
 }
 

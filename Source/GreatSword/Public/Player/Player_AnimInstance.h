@@ -2,11 +2,22 @@
 
 #pragma once
 
+
 #include "GreatSword.h"
 #include "Animation/AnimInstance.h"
 #include "Containers/Array.h"
 
 #include "Player_AnimInstance.generated.h"
+
+UENUM(Category = State)
+enum class EPlayerState
+{
+	Idle,
+	//Moving,
+	Attacking,
+	Parrying,
+	Dodge
+};
 
 /**
  *
@@ -51,34 +62,38 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 		float CurrentPawnSpeed;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+		EPlayerState CurrentPlayerState;
+
+
 	// Attack
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* AttackMontage_01;
+		UAnimMontage* AttackMontage_01;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* AttackMontage_02;
+		UAnimMontage* AttackMontage_02;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* AttackMontage_03;
+		UAnimMontage* AttackMontage_03;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* AttackMontage_04;
+		UAnimMontage* AttackMontage_04;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* CurrentAttackMontage;
+		UAnimMontage* CurrentAttackMontage;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	int32 CurrentCombo;
+		int32 CurrentCombo;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	int32 MaxSection;
+		int32 MaxSection;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	int32 CurrentAttackIndex;
+		int32 CurrentAttackIndex;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
-	int32 CurrentSectionIndex;
+		int32 CurrentSectionIndex;
 
 
 	// Evade
@@ -121,8 +136,11 @@ private:
 public:
 	int32 GetCurrentCombo() const { return CurrentCombo; }
 	int32 GetMaxSection() const { return MaxSection; }
-	int32 GetCurrentAttackIndex() const {return CurrentAttackIndex;}
-	int32 GetCurrentSectionIndex() const {return CurrentSectionIndex;}
+	int32 GetCurrentAttackIndex() const { return CurrentAttackIndex; }
+	int32 GetCurrentSectionIndex() const { return CurrentSectionIndex; }
 
 	void SetCurrentCombo(int32 NewCurrentCombo) { CurrentCombo = NewCurrentCombo; }
+
+	EPlayerState GetCurrentPlayerState() const { return CurrentPlayerState; }
+	void SetCurrentPlayerState(EPlayerState NewState) { CurrentPlayerState = NewState; }
 };
