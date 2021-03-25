@@ -9,7 +9,7 @@ public class GreatSword : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG","NavigationSystem" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG","NavigationSystem", "AIModule", "GameplayTasks" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
@@ -23,7 +23,8 @@ public class GreatSword : ModuleRules
 			Path.Combine(ModuleDirectory, "Public"),
 			Path.Combine(ModuleDirectory, "Public/Player"),
 			Path.Combine(ModuleDirectory, "Public/Boss"),
-			Path.Combine(ModuleDirectory, "Public/AnimNotifyState")
+			Path.Combine(ModuleDirectory, "Public/AnimNotifyState"),
+			Path.Combine(ModuleDirectory, "Public/AI")
 		});
 
 		// Uncomment if you are using Slate UI

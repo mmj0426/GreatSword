@@ -17,11 +17,17 @@ class GREATSWORD_API ABoss_AIController : public AAIController
 public : 
 	ABoss_AIController();
 	virtual void OnPossess(APawn* InPawn)override;
-	virtual void OnUnPossess()override;
+	
+	static const FName HomePosKey;
+	static const FName PatrolPosKey;
 
 private : 
-	void OnRepeatTimer();
+	
+	UPROPERTY()
+	class UBehaviorTree* BTAsset;
 
-	FTimerHandle RepeatTimeHandle;
-	float RepeatInterval;
+	UPROPERTY()
+	class UBlackboardData* BBAsset;
+	
+
 };
