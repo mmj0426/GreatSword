@@ -10,6 +10,7 @@
 
 const FName ABoss_AIController::HomePosKey(TEXT("HomePos"));
 const FName ABoss_AIController::PatrolPosKey(TEXT("PatrolPos"));
+const FName ABoss_AIController::TargetKey(TEXT("Target"));
 
 ABoss_AIController::ABoss_AIController()
 {

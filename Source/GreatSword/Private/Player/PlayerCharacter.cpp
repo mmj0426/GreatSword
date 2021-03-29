@@ -145,7 +145,7 @@ void APlayerCharacter::PostInitializeComponents()
 	// Combo Attack Delegate
 	PlayerAnim->OnNextAttackCheck.AddLambda([this]()->void
 		{
-			if (CurrentMouseInput == EReadyToAttack::Left)
+			if (CurrentMouseInput == EReadyToAttack::Attack)
 			{
 				AttackStartComboState();
 				SmashIndex = 0;
@@ -158,7 +158,7 @@ void APlayerCharacter::PostInitializeComponents()
 	PlayerAnim->OnSmashCheck.AddLambda([this]()->void
 		{
 			//GSLOG(Error, TEXT("OnSmashCheck Lambda"));
-			if (CurrentMouseInput == EReadyToAttack::Right)
+			if (CurrentMouseInput == EReadyToAttack::Smash)
 			{
 				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, PlayerAnim->GetMaxSection()-1));
 				SmashIndex = FMath::Clamp<int32>(SmashIndex+1, 1, PlayerAnim->GetMaxSection());
@@ -186,7 +186,7 @@ void APlayerCharacter::Attack()
 	if (PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
 	{
 		GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 1, MaxCombo));
-		CurrentMouseInput = EReadyToAttack::Left;
+		CurrentMouseInput = EReadyToAttack::Attack;
 	}
 	else
 	{
@@ -203,7 +203,7 @@ void APlayerCharacter::Smash()
 {
 	if(PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
 	{
-		CurrentMouseInput = EReadyToAttack::Right;
+		CurrentMouseInput = EReadyToAttack::Smash;
 	}
 }
 

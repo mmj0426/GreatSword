@@ -4,14 +4,12 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
-
-// 마우스 입력 값
 UENUM(Category = Attack)
 enum class EReadyToAttack
 {
 	None,
-	Left,
-	Right
+	Attack,
+	Smash
 };
 
 UCLASS(Blueprintable)
