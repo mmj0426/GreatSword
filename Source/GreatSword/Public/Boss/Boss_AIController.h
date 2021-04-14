@@ -29,6 +29,10 @@ private :
 
 	UPROPERTY()
 	class UBlackboardData* BBAsset;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Meta = (AllowPrivateAccess = true))
+	class ABoss* GSBoss;
+
 	
 
 };

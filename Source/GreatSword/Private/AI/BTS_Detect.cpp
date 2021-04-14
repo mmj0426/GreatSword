@@ -11,7 +11,7 @@
 
 UBTS_Detect::UBTS_Detect()
 {
-	NodeName = TEXT("Detect");
+	NodeName = TEXT("BTS_Detect");
 	Interval = 1.0f;
 }
 
@@ -27,6 +27,7 @@ void UBTS_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 	float DetectRadius = 600.0f;
 
 	if(nullptr == World) return;
+
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams CollisionQueryParam(NAME_None,false,ControllingPawn);
 	bool bResult = World->OverlapMultiByChannel(
@@ -51,15 +52,16 @@ void UBTS_Detect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 				DrawDebugLine(World,ControllingPawn->GetActorLocation(),Player_Character->GetActorLocation(),FColor::Blue,false,0.27f);
 				return;
 			}
-			
 		}
 		
 	}
 	else
 	{
 		OwnerComp.GetBlackboardComponent()->SetValueAsObject(ABoss_AIController::TargetKey, nullptr);
+		GSLOG(Warning,TEXT("Target Is Not Set"));
 	}
 
+	OwnerComp.GetBlackboardComponent()->SetValueAsObject(ABoss_AIController::TargetKey, nullptr);
 	DrawDebugSphere(World,Center,DetectRadius,16,FColor::Red,false,0.2f);
 
 }

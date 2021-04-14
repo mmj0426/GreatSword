@@ -13,6 +13,13 @@ UBoss_AnimInstance::UBoss_AnimInstance()
 	CurrentPawnSpeed = 0.0f;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
+	BasicAttack_Montage(TEXT("/Game/Blueprints/Enemies/Animation/Attack/Crunch_Upper.Crunch_Upper"));
+	if (BasicAttack_Montage.Succeeded())
+	{
+		BasicAttackMontage = BasicAttack_Montage.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>
 	Death_Montage (TEXT("/Game/Blueprints/Enemies/Animation/AnimMontage_Death.AnimMontage_Death"));
 	if (Death_Montage.Succeeded())
 	{
@@ -31,10 +38,20 @@ void UBoss_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
+void UBoss_AnimInstance::PlayAttackMontage()
+{
+	if (!Montage_IsPlaying(BasicAttackMontage))
+	{
+		Montage_Play(BasicAttackMontage,1.0f);
+		CurrentState = EBossState::Attacking;
+	}
+}
+
 void UBoss_AnimInstance::PlayDeathMontage()
 {
 	if (!Montage_IsPlaying(DeathMontage))
 	{
 		Montage_Play(DeathMontage,1.0f);
+		CurrentState = EBossState::Death;
 	}
 }

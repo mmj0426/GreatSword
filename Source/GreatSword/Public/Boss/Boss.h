@@ -7,11 +7,9 @@
 
 #include "Boss.generated.h"
 
-UENUM(Category = BossState)
-enum class EBossState : uint8
-{
-	Death
-};
+DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
+
+
 
 UCLASS()
 class GREATSWORD_API ABoss : public ACharacter
@@ -37,14 +35,23 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Boss)
-	float MaxHP;
+	void Attack();
+
+	UFUNCTION()
+	void MontageEnded(UAnimMontage* Montage, bool bInterrupeted);
+
+
+	FOnAttackEndDelegate OnAttackEnd;
+
+public: 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
 	class UBossStatComponent* BossStat;
 
-protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Boss, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stat)
+	float MaxHP;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
 	float CurrentHP;
 
 private : 
@@ -52,6 +59,5 @@ private :
 	UPROPERTY()
 	class UBoss_AnimInstance* BossAnim;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
-	EBossState CurrentState;
+	
 };

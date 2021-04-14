@@ -2,11 +2,14 @@
 
 
 #include "Boss_AIController.h"
+#include "Boss.h"
 #include "NavigationSystem.h"
 
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
 #include "BehaviorTree/BlackboardComponent.h"
+
+#include "GameFramework/CharacterMovementComponent.h"
 
 const FName ABoss_AIController::HomePosKey(TEXT("HomePos"));
 const FName ABoss_AIController::PatrolPosKey(TEXT("PatrolPos"));
@@ -14,6 +17,7 @@ const FName ABoss_AIController::TargetKey(TEXT("Target"));
 
 ABoss_AIController::ABoss_AIController()
 {
+
 	static ConstructorHelpers::FObjectFinder<UBlackboardData>
 	BB_Object(TEXT("/Game/Blueprints/Enemies/AI/BB_Boss.BB_Boss"));
 
@@ -34,6 +38,9 @@ ABoss_AIController::ABoss_AIController()
 void ABoss_AIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	GSBoss = Cast<ABoss>(InPawn);
+	GSBoss->GetCharacterMovement()->MaxWalkSpeed = 400.0f;
 
 	if (UseBlackboard(BBAsset, Blackboard))
 	{	

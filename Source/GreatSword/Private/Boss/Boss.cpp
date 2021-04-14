@@ -8,6 +8,7 @@
 
 #include "UObject/ConstructorHelpers.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ABoss::ABoss()
@@ -15,6 +16,12 @@ ABoss::ABoss()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// 자연스러운 움직임을 위함
+	GetCharacterMovement()->bUseControllerDesiredRotation = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f,480.0f,0.0f);
+
+	// Capsule Component
 	GetCapsuleComponent()->SetCapsuleHalfHeight(140.0f);
 	GetCapsuleComponent()->SetCapsuleRadius(60.0f);
 	GetCapsuleComponent()->SetCollisionProfileName("Boss");
@@ -48,9 +55,10 @@ void ABoss::PostInitializeComponents()
 	BossAnim = Cast<UBoss_AnimInstance>(GetMesh()->GetAnimInstance());
 	GSCHECK(BossAnim != nullptr);
 
+	BossAnim->OnMontageEnded.AddDynamic(this, &ABoss::MontageEnded);
+
 	BossStat->OnBossHPIsZero.AddLambda([this]()->void
 		{
-			CurrentState = EBossState::Death;
 			BossAnim->PlayDeathMontage();
 			SetActorEnableCollision(false);
 		});
@@ -87,4 +95,15 @@ float ABoss::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEve
 	BossStat->SetHP(Damage);
 
 	return Damage;
+}
+
+void ABoss::Attack()
+{
+	BossAnim->PlayAttackMontage();
+}
+
+void ABoss::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
+{
+	GSLOG(Warning, TEXT("Boss Montage Ended"));
+	OnAttackEnd.Broadcast();
 }
