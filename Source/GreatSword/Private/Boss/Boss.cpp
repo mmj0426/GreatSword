@@ -29,6 +29,7 @@ ABoss::ABoss()
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f,0.0f,-130.0f),FRotator(0.0f,-90.0f,0.0f));
 
 	MaxHP = 100.0f;
+	IsAlive = true;
 
 	// Animation
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
@@ -59,6 +60,7 @@ void ABoss::PostInitializeComponents()
 
 	BossStat->OnBossHPIsZero.AddLambda([this]()->void
 		{
+			IsAlive = false;
 			BossAnim->PlayDeathMontage();
 			SetActorEnableCollision(false);
 		});

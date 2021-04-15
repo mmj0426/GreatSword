@@ -14,6 +14,7 @@
 const FName ABoss_AIController::HomePosKey(TEXT("HomePos"));
 const FName ABoss_AIController::PatrolPosKey(TEXT("PatrolPos"));
 const FName ABoss_AIController::TargetKey(TEXT("Target"));
+const FName ABoss_AIController::IsAliveKey(TEXT("IsAlive"));
 
 ABoss_AIController::ABoss_AIController()
 {
@@ -45,6 +46,7 @@ void ABoss_AIController::OnPossess(APawn* InPawn)
 	if (UseBlackboard(BBAsset, Blackboard))
 	{	
 		Blackboard->SetValueAsVector(HomePosKey,InPawn->GetActorLocation());
+		Blackboard->SetValueAsBool(IsAliveKey,true);
 
 		if (!RunBehaviorTree(BTAsset))
 		{

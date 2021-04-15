@@ -54,7 +54,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
 	float CurrentHP;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
+	bool IsAlive;
+
 private : 
+
 	// AnimInstance
 	UPROPERTY()
 	class UBoss_AnimInstance* BossAnim;

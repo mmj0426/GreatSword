@@ -13,14 +13,14 @@ UBoss_AnimInstance::UBoss_AnimInstance()
 	CurrentPawnSpeed = 0.0f;
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
-	BasicAttack_Montage(TEXT("/Game/Blueprints/Enemies/Animation/Attack/Crunch_Upper.Crunch_Upper"));
+	BasicAttack_Montage(TEXT("/Game/Blueprints/Enemies/Animation/Boss_Attack01.Boss_Attack01"));
 	if (BasicAttack_Montage.Succeeded())
 	{
 		BasicAttackMontage = BasicAttack_Montage.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
-	Death_Montage (TEXT("/Game/Blueprints/Enemies/Animation/AnimMontage_Death.AnimMontage_Death"));
+	Death_Montage (TEXT("/Game/Blueprints/Enemies/Animation/Boss_Death.Boss_Death"));
 	if (Death_Montage.Succeeded())
 	{
 		DeathMontage = Death_Montage.Object;
