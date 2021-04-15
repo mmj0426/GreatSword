@@ -4,3 +4,4 @@ E:/GreatSword/Content/Maps filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Characters/Global filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/FX filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/ParagonRampage/Characters/Global/Textures filter=lfs diff=lfs merge=lfs -text
+E:/GreatSword/Content/ParagonRampage/Characters/Global/MaterialLayers filter=lfs diff=lfs merge=lfs -text
