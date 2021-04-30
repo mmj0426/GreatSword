@@ -27,11 +27,14 @@ public :
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 ;public : 
-	void PlayAttackMontage();
+	void PlayAttackMontage(FString MontageName);
 	void PlayDeathMontage();
 
 
 private : 
+	UPROPERTY(VisibleAnywhere, category = Attack)
+	TMap<FString, UAnimMontage*> BossAttackMontages;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float CurrentPawnSpeed;
 
@@ -42,7 +45,10 @@ private :
 	EBossState CurrentState;
 	
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Death, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* BasicAttackMontage;
+	UAnimMontage* BasicAttackMontage01;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Death, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* BasicAttackMontage02;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Death, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* DeathMontage;

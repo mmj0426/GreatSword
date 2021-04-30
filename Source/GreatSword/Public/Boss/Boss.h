@@ -35,11 +35,11 @@ public:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
-	void Attack();
+	void BossAttack();
+	void DecideAttackType();
 
 	UFUNCTION()
 	void MontageEnded(UAnimMontage* Montage, bool bInterrupeted);
-
 
 	FOnAttackEndDelegate OnAttackEnd;
 
@@ -62,6 +62,9 @@ private :
 	// AnimInstance
 	UPROPERTY()
 	class UBoss_AnimInstance* BossAnim;
+
+	UPROPERTY()
+	FString CurrentAttackType;
 
 	
 };

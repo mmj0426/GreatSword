@@ -13,6 +13,13 @@ UGSGameInstance::UGSGameInstance()
 	GSCHECK(DT_PlayerATKRate.Succeeded());
 	PlayerATKRateTable = DT_PlayerATKRate.Object;
 	GSCHECK(PlayerATKRateTable->GetRowMap().Num() > 0);
+
+	FString BossAttackDataPath = TEXT("/Game/GameData/DT_BossAttack.DT_BossAttack");
+	static ConstructorHelpers::FObjectFinder<UDataTable>DT_BossAttack(*BossAttackDataPath);
+
+	GSCHECK(DT_BossAttack.Succeeded());
+	BossAttackTable = DT_BossAttack.Object;
+	GSCHECK(BossAttackTable->GetRowMap().Num() > 0);
 }
 
 void UGSGameInstance::Init()
@@ -40,5 +47,10 @@ float UGSGameInstance::GetPlayerATKRateTable(int32 AnimMontageIndex, int32 Secti
 		GSLOG(Error, TEXT("Error : Over the Section Index"));
 		break;
 	}
+	return 0.0f;
+}
+
+float UGSGameInstance::GetBossAttackTable(int32 Phase) const
+{
 	return 0.0f;
 }

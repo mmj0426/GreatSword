@@ -99,13 +99,23 @@ float ABoss::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEve
 	return Damage;
 }
 
-void ABoss::Attack()
+void ABoss::BossAttack()
 {
-	BossAnim->PlayAttackMontage();
+	//DecideAttackType();
+	BossAnim->PlayAttackMontage(CurrentAttackType);
 }
 
 void ABoss::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 {
 	GSLOG(Warning, TEXT("Boss Montage Ended"));
 	OnAttackEnd.Broadcast();
+}
+
+void ABoss::DecideAttackType()
+{
+	// TODO : 페이즈를 검사하는 BTS 생성 -> 여기서 CurrentPhase 설정해주기
+
+	// TODO : datatable에서 우선순위 가져와서 페이즈에 맞는 우선순위 계산 -> CurrentAttackType Setting
+
+	// CurrentAttackType = TEXT("~~");
 }

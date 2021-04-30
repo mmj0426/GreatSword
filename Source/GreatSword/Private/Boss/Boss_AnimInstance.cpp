@@ -12,19 +12,31 @@ UBoss_AnimInstance::UBoss_AnimInstance()
 {
 	CurrentPawnSpeed = 0.0f;
 
+
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
-	BasicAttack_Montage(TEXT("/Game/Blueprints/Enemies/Animation/Boss_Attack01.Boss_Attack01"));
-	if (BasicAttack_Montage.Succeeded())
+		BasicAttack_Montage01(TEXT("/Game/Blueprints/Enemies/Animation/Attack/BasicAttack01.BasicAttack01"));
+	if (BasicAttack_Montage01.Succeeded())
 	{
-		BasicAttackMontage = BasicAttack_Montage.Object;
+		BasicAttackMontage01 = BasicAttack_Montage01.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
-	Death_Montage (TEXT("/Game/Blueprints/Enemies/Animation/Boss_Death.Boss_Death"));
+		BasicAttack_Montage02(TEXT("/Game/Blueprints/Enemies/Animation/Attack/BasicAttack02.BasicAttack02"));
+	if (BasicAttack_Montage02.Succeeded())
+	{
+		BasicAttackMontage02 = BasicAttack_Montage02.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>
+		Death_Montage(TEXT("/Game/Blueprints/Enemies/Animation/Boss_Dead.Boss_Dead"));
 	if (Death_Montage.Succeeded())
 	{
 		DeathMontage = Death_Montage.Object;
 	}
+
+	BossAttackMontages.Emplace(TEXT("Phase1_Attack01"),BasicAttackMontage01);
+	BossAttackMontages.Emplace(TEXT("Phase1_Attack02"),BasicAttackMontage02);
+	
 }
 
 void UBoss_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -38,11 +50,11 @@ void UBoss_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
-void UBoss_AnimInstance::PlayAttackMontage()
+void UBoss_AnimInstance::PlayAttackMontage(FString MontageName)
 {
-	if (!Montage_IsPlaying(BasicAttackMontage))
+	if (!Montage_IsPlaying(BossAttackMontages[MontageName]))
 	{
-		Montage_Play(BasicAttackMontage,1.0f);
+		Montage_Play(BossAttackMontages[MontageName],1.0f);
 		CurrentState = EBossState::Attacking;
 	}
 }

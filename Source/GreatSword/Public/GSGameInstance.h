@@ -28,6 +28,30 @@ public :
 	float Section_2;
 };
 
+USTRUCT(BlueprintType)
+struct FBossAttack : public FTableRowBase
+{
+	GENERATED_BODY()
+public : 
+	FBossAttack() : Phase(0), AttackName(TEXT("")), Priority(-1), ATKRate(0.0f), Cooldown(0.0f) {}
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	int32 Phase;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	FString AttackName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	int32 Priority;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	float ATKRate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	float Cooldown;
+
+};
+
 /**
  * 
  */
@@ -41,9 +65,13 @@ public :
 	virtual void Init() override;
 
 	float GetPlayerATKRateTable(int32 AnimMontageIndex, int32 SectionIndex) const;
+	float GetBossAttackTable(int32 Phase) const;
 
 private : 
+
 	UPROPERTY()
 	class UDataTable* PlayerATKRateTable;
 
+	UPROPERTY()
+	class UDataTable* BossAttackTable;
 };
