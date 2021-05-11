@@ -5,10 +5,12 @@
 #include "Boss_AnimInstance.h"
 #include "BossStatComponent.h"
 #include "Boss_AIController.h"
+#include "GSGameInstance.h"
 
 #include "UObject/ConstructorHelpers.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABoss::ABoss()
@@ -47,6 +49,8 @@ ABoss::ABoss()
 
 	AIControllerClass = ABoss_AIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	CurrentPhase = EBossPhase::Phase1;
 }
 
 void ABoss::PostInitializeComponents()
@@ -113,7 +117,12 @@ void ABoss::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 
 void ABoss::DecideAttackType()
 {
+	
 	// TODO : 페이즈를 검사하는 BTS 생성 -> 여기서 CurrentPhase 설정해주기
+	
+	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+	//GSGameInstance->GetAttack(FName("Phase1_Attack01"))->Priority
 
 	// TODO : datatable에서 우선순위 가져와서 페이즈에 맞는 우선순위 계산 -> CurrentAttackType Setting
 

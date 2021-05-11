@@ -22,6 +22,7 @@ public :
 	static const FName PatrolPosKey;
 	static const FName TargetKey;
 	static const FName IsAliveKey;
+	static const FName PhaseKey;
 
 private : 
 	

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "GreatSword.h"
@@ -9,14 +7,20 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
 
+UENUM(Category = Phase)
+enum class EBossPhase : uint8
+{
+	Phase1 UMETA(DisplayName = "Phase1"),
+	Phase2 UMETA(DisplayName = "Phase2"),
+	Phase3 UMETA(DisplayName = "Phase3")
+};
 
-
-UCLASS()
+UCLASS(Blueprintable)
 class GREATSWORD_API ABoss : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
+public: 
 	// Sets default values for this character's properties
 	ABoss();
 
@@ -48,14 +52,22 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
 	class UBossStatComponent* BossStat;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stat)
-	float MaxHP;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
-	float CurrentHP;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
 	bool IsAlive;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = Stat)
+		float MaxHP;
+
+	UPROPERTY(VisibleAnywhere, Category = Stat)
+		float CurrentHP;
+
+	EBossPhase GetCurrentPhase() { return CurrentPhase; }
+	void SetCurrentPhase(EBossPhase NewPhase) { CurrentPhase = NewPhase; }
+
+	float GetMaxHP() { return MaxHP; }
+	float GetCurrentHP() { return CurrentHP; }
+
 
 private : 
 
@@ -66,5 +78,7 @@ private :
 	UPROPERTY()
 	FString CurrentAttackType;
 
-	
+	UPROPERTY(EditAnywhere, Category = Phase)
+	EBossPhase CurrentPhase;
+
 };

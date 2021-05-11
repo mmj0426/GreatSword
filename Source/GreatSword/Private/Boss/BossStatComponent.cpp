@@ -56,7 +56,7 @@ void UBossStatComponent::InitializeComponent()
 
 void UBossStatComponent::SetHP(float NewDamage)
 {
-	CurrentHP = FMath::Clamp<float>(CurrentHP-NewDamage, 0.0f,MaxHP);
+	CurrentHP = FMath::Clamp<float>(CurrentHP - NewDamage, 0.0f,MaxHP);
 
 	GSLOG(Warning, TEXT("Boss CurrentHP : %f"), CurrentHP);
 
@@ -65,3 +65,4 @@ void UBossStatComponent::SetHP(float NewDamage)
 		OnBossHPIsZero.Broadcast();
 	}
 }
+ 

@@ -65,9 +65,11 @@ public :
 	virtual void Init() override;
 
 	float GetPlayerATKRateTable(int32 AnimMontageIndex, int32 SectionIndex) const;
-	float GetBossAttackTable(int32 Phase) const;
+	//float GetBossAttackTable(int32 Phase) const;
+	FBossAttack* GetAttack(FName AttackName) const;
 
 private : 
+
 
 	UPROPERTY()
 	class UDataTable* PlayerATKRateTable;

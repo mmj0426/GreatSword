@@ -50,7 +50,7 @@ float UGSGameInstance::GetPlayerATKRateTable(int32 AnimMontageIndex, int32 Secti
 	return 0.0f;
 }
 
-float UGSGameInstance::GetBossAttackTable(int32 Phase) const
+FBossAttack* UGSGameInstance::GetAttack(FName AttackName) const
 {
-	return 0.0f;
+	return BossAttackTable->FindRow<FBossAttack>(AttackName,TEXT(""));
 }

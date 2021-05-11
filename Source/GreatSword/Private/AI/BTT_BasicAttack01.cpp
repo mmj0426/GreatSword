@@ -23,7 +23,6 @@ EBTNodeResult::Type UBTT_BasicAttack01::ExecuteTask(UBehaviorTreeComponent& Owne
 		return EBTNodeResult::Failed;
 	}
 
-
 	Boss->BossAttack();
 
 	IsAttacking = true;
