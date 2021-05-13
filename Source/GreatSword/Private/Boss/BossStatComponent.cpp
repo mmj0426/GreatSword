@@ -27,7 +27,7 @@ void UBossStatComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
-	CurrentHP = MaxHP;
+	//CurrentHP = MaxHP;
 }
 #endif
 

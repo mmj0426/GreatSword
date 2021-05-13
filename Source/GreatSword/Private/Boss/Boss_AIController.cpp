@@ -15,7 +15,7 @@ const FName ABoss_AIController::HomePosKey(TEXT("HomePos"));
 const FName ABoss_AIController::PatrolPosKey(TEXT("PatrolPos"));
 const FName ABoss_AIController::TargetKey(TEXT("Target"));
 const FName ABoss_AIController::IsAliveKey(TEXT("IsAlive"));
-const FName ABoss_AIController::PhaseKey(TEXT("Phase"));
+const FName ABoss_AIController::PhaseKey(TEXT("BossPhase"));
 
 ABoss_AIController::ABoss_AIController()
 {

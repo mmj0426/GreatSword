@@ -10,6 +10,7 @@
 #include "UObject/ConstructorHelpers.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Containers/Array.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -30,7 +31,7 @@ ABoss::ABoss()
 
 	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f,0.0f,-130.0f),FRotator(0.0f,-90.0f,0.0f));
 
-	MaxHP = 100.0f;
+	//MaxHP = 100.0f;
 	IsAlive = true;
 
 	// Animation
@@ -75,7 +76,7 @@ void ABoss::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	CurrentHP = MaxHP;
+	//CurrentHP = MaxHP;
 	
 }
 
@@ -105,7 +106,8 @@ float ABoss::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEve
 
 void ABoss::BossAttack()
 {
-	//DecideAttackType();
+	DecideAttackType();
+	GSLOG(Warning, TEXT("%s"), *CurrentAttackType);
 	BossAnim->PlayAttackMontage(CurrentAttackType);
 }
 
@@ -117,10 +119,43 @@ void ABoss::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 
 void ABoss::DecideAttackType()
 {
+	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+	GSGameInstance->Priority_Phase2.Sort();
+
+	//for (int i = 0; i < GSGameInstance->Phase2_Attack.Num(); i++)
+	//{
+	//	GSLOG(Warning, TEXT("%d"),GSGameInstance->Priority_Phase2[i]);
+	//}
+
+	switch (CurrentPhase)
+	{
+	case EBossPhase::Phase1:
+		
+		GSGameInstance->Priority_Phase1.Sort();
+		CurrentAttackType = GSGameInstance->Phase1_Attack[0].AttackName;
+
+		break;
+
+	case EBossPhase::Phase2:
+
+		GSGameInstance->Priority_Phase2.Sort();
+		break;
+
+	case EBossPhase::Phase3:
+
+		break;
+
+	default:
+		break;
+	}
 	
 	// TODO : 페이즈를 검사하는 BTS 생성 -> 여기서 CurrentPhase 설정해주기
 	
-	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+
+	//CurrentAttackType = GSGameInstance->Phase1_Attack[0]->AttackName;
+
+	
 
 	//GSGameInstance->GetAttack(FName("Phase1_Attack01"))->Priority
 

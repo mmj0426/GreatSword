@@ -9,12 +9,12 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnBossHPIsZeroDelegate);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class GREATSWORD_API UBossStatComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UBossStatComponent();
 
@@ -25,19 +25,22 @@ protected:
 	virtual void PostInitProperties() override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
-public : 
+public:
+	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	void SetHP(float NewDamage);
 
 	FOnBossHPIsZeroDelegate OnBossHPIsZero;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	float GetCurrentHP() { return CurrentHP; }
+	float GetMaxHP() { return MaxHP; }	
 
+private:
 	UPROPERTY(EditAnywhere, Category = Stat)
-	float MaxHP;
+		float MaxHP;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
-	float CurrentHP;
+		float CurrentHP;
 
 };

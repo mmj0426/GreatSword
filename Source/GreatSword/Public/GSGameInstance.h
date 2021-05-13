@@ -61,15 +61,30 @@ class GREATSWORD_API UGSGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public : 
+
 	UGSGameInstance();
 	virtual void Init() override;
 
 	float GetPlayerATKRateTable(int32 AnimMontageIndex, int32 SectionIndex) const;
 	//float GetBossAttackTable(int32 Phase) const;
-	FBossAttack* GetAttack(FName AttackName) const;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack)
+	TArray<FBossAttack> Phase1_Attack;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack)
+	TArray<int32> Priority_Phase1;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack)
+	TArray<FBossAttack> Phase2_Attack;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack)
+	TArray<int32> Priority_Phase2;
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack)
+	//TArray<FBossAttack*> Phase3_Attack;
+	
 
 private : 
-
 
 	UPROPERTY()
 	class UDataTable* PlayerATKRateTable;

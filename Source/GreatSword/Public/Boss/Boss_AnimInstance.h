@@ -43,14 +43,31 @@ private :
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
 	EBossState CurrentState;
-	
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Death, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* BasicAttackMontage01;
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Death, Meta = (AllowPrivateAccess = true))
-	UAnimMontage* BasicAttackMontage02;
+private : 
 
-	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Death, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* Phase1_Attack01;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* Phase1_Attack02;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* Phase2_Attack01;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* Phase2_Attack02;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* Phase2_Attack03;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* Phase2_Attack04;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
+	UAnimMontage* Phase2_Attack05;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* DeathMontage;
 
 public : 

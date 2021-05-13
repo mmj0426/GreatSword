@@ -2,6 +2,7 @@
 
 
 #include "GSGameInstance.h"
+#include "Containers/Array.h"
 
 #include "UObject/ConstructorHelpers.h"
 
@@ -25,6 +26,27 @@ UGSGameInstance::UGSGameInstance()
 void UGSGameInstance::Init()
 {
 	Super::Init();
+
+	Phase1_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(1), TEXT(""))));
+	Phase1_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(2), TEXT(""))));
+
+	for (int i = 0; i < Phase1_Attack.Num() - 1; i++)
+	{
+		Priority_Phase1.Add(Phase1_Attack[i].Priority);
+	}
+
+	Phase2_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(3), TEXT(""))));
+	Phase2_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(4), TEXT(""))));
+	Phase2_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(5), TEXT(""))));
+	Phase2_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(6), TEXT(""))));
+	Phase2_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(7), TEXT(""))));
+
+	for (int i = 0; i < Phase2_Attack.Num() - 1; i++)
+	{
+		Priority_Phase2.Add(Phase2_Attack[i].Priority);
+	}
+
+	
 	//GSLOG(Warning, TEXT("AttackMontage - 03 Section_1 ATKRate : %f"),GetPlayerATKRateTable(3)->Section_1);
 }
 
@@ -48,9 +70,4 @@ float UGSGameInstance::GetPlayerATKRateTable(int32 AnimMontageIndex, int32 Secti
 		break;
 	}
 	return 0.0f;
-}
-
-FBossAttack* UGSGameInstance::GetAttack(FName AttackName) const
-{
-	return BossAttackTable->FindRow<FBossAttack>(AttackName,TEXT(""));
 }
