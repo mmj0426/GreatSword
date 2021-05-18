@@ -12,24 +12,25 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Containers/Array.h"
 #include "Kismet/GameplayStatics.h"
+#include "Math/UnrealMathUtility.h"
 
 // Sets default values
 ABoss::ABoss()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// 자연스러운 움직임을 위함
 	GetCharacterMovement()->bUseControllerDesiredRotation = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.0f,480.0f,0.0f);
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 480.0f, 0.0f);
 
 	// Capsule Component
 	GetCapsuleComponent()->SetCapsuleHalfHeight(140.0f);
 	GetCapsuleComponent()->SetCapsuleRadius(60.0f);
 	GetCapsuleComponent()->SetCollisionProfileName("Boss");
 
-	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f,0.0f,-130.0f),FRotator(0.0f,-90.0f,0.0f));
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -130.0f), FRotator(0.0f, -90.0f, 0.0f));
 
 	//MaxHP = 100.0f;
 	IsAlive = true;
@@ -52,6 +53,10 @@ ABoss::ABoss()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	CurrentPhase = EBossPhase::Phase1;
+
+	judgeAttack = 0;
+	IsPhase2FirstEntry = true;
+	IsPhase3FirstEntry = true;
 }
 
 void ABoss::PostInitializeComponents()
@@ -75,9 +80,9 @@ void ABoss::PostInitializeComponents()
 void ABoss::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	//CurrentHP = MaxHP;
-	
+
 }
 
 // Called every frame
@@ -108,6 +113,7 @@ void ABoss::BossAttack()
 {
 	DecideAttackType();
 	GSLOG(Warning, TEXT("%s"), *CurrentAttackType);
+	GSLOG(Warning, TEXT("%d"), judgeAttack);
 	BossAnim->PlayAttackMontage(CurrentAttackType);
 }
 
@@ -121,45 +127,124 @@ void ABoss::DecideAttackType()
 {
 	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	GSGameInstance->Priority_Phase2.Sort();
-
-	//for (int i = 0; i < GSGameInstance->Phase2_Attack.Num(); i++)
-	//{
-	//	GSLOG(Warning, TEXT("%d"),GSGameInstance->Priority_Phase2[i]);
-	//}
-
 	switch (CurrentPhase)
 	{
 	case EBossPhase::Phase1:
-		
-		GSGameInstance->Priority_Phase1.Sort();
+
+		if (2 == judgeAttack)
+		{
+			// Front01
+			CurrentAttackType = GSGameInstance->Phase1_Attack[1].AttackName;
+			judgeAttack += GSGameInstance->Phase1_Attack[1].JudgeAttack;
+			break;
+		}
+
+		// Ground01
 		CurrentAttackType = GSGameInstance->Phase1_Attack[0].AttackName;
+		judgeAttack += GSGameInstance->Phase1_Attack[0].JudgeAttack;
 
 		break;
 
 	case EBossPhase::Phase2:
 
-		GSGameInstance->Priority_Phase2.Sort();
+		if (true == IsPhase2FirstEntry)
+		{
+			judgeAttack = 0;
+		}
+
+		if (2 == judgeAttack)
+		{
+			// Grount01-2
+			CurrentAttackType = GSGameInstance->Phase2_Attack[1].AttackName;
+			judgeAttack += GSGameInstance->Phase2_Attack[1].JudgeAttack;
+			break;
+		}
+		if (4 == judgeAttack)
+		{
+			// L_Foot, R_Foot 랜덤으로 지정
+			int32 index = FMath::RandRange(2, 3);
+			CurrentAttackType = GSGameInstance->Phase2_Attack[index].AttackName;
+			judgeAttack += GSGameInstance->Phase2_Attack[index].JudgeAttack;
+			break;
+		}
+		if (true == IsPhase2FirstEntry || 6 == judgeAttack)
+		{
+			// Jump
+			CurrentAttackType = GSGameInstance->Phase2_Attack[4].AttackName;
+			judgeAttack += GSGameInstance->Phase2_Attack[4].JudgeAttack;
+
+			IsPhase2FirstEntry = false;
+			break;
+		}
+		if (TEXT("Jump") == CurrentAttackType || true == CanDash)
+		{
+			//TODO : 플레이어와의 거리 12칸 이상일 경우
+
+			//Dash
+			CurrentAttackType = GSGameInstance->Phase2_Attack[5].AttackName;
+			judgeAttack += GSGameInstance->Phase2_Attack[5].JudgeAttack;
+			CanDash = false;
+			break;
+		}
+
+		CurrentAttackType = GSGameInstance->Phase2_Attack[0].AttackName;
+		judgeAttack += GSGameInstance->Phase2_Attack[0].JudgeAttack;
+
 		break;
 
 	case EBossPhase::Phase3:
 
+		if (true == IsPhase3FirstEntry)
+		{
+			judgeAttack = 0;
+		}
+
+		// Ground02
+		if (true == IsPhase3FirstEntry || 1 == judgeAttack)
+		{
+			CurrentAttackType = GSGameInstance->Phase3_Attack[1].AttackName;
+			judgeAttack += GSGameInstance->Phase3_Attack[1].JudgeAttack;
+
+			IsPhase3FirstEntry = false;
+			break;
+		}
+		if (4 == judgeAttack)
+		{
+			// L_Foot, R_Foot 랜덤으로 지정
+			int32 index = FMath::RandRange(2, 3);
+			CurrentAttackType = GSGameInstance->Phase3_Attack[index].AttackName;
+			judgeAttack += GSGameInstance->Phase3_Attack[index].JudgeAttack;
+			break;
+		}
+		if (6 == judgeAttack)
+		{
+			// Jump
+			CurrentAttackType = GSGameInstance->Phase2_Attack[4].AttackName;
+			judgeAttack += GSGameInstance->Phase2_Attack[4].JudgeAttack;
+
+			IsPhase2FirstEntry = false;
+			break;
+		}
+		if (TEXT("Jump") == CurrentAttackType || true == CanDash)
+		{
+			//TODO : 플레이어와의 거리 12칸 이상일 경우
+
+			//Dash
+			CurrentAttackType = GSGameInstance->Phase2_Attack[5].AttackName;
+			judgeAttack += GSGameInstance->Phase2_Attack[5].JudgeAttack;
+			CanDash = false;
+			break;
+		}
+
+		// Front03
+		CurrentAttackType = GSGameInstance->Phase3_Attack[0].AttackName;
+		judgeAttack += GSGameInstance->Phase3_Attack[0].JudgeAttack;
+
 		break;
 
 	default:
+
 		break;
 	}
 	
-	// TODO : 페이즈를 검사하는 BTS 생성 -> 여기서 CurrentPhase 설정해주기
-	
-
-	//CurrentAttackType = GSGameInstance->Phase1_Attack[0]->AttackName;
-
-	
-
-	//GSGameInstance->GetAttack(FName("Phase1_Attack01"))->Priority
-
-	// TODO : datatable에서 우선순위 가져와서 페이즈에 맞는 우선순위 계산 -> CurrentAttackType Setting
-
-	// CurrentAttackType = TEXT("~~");
 }

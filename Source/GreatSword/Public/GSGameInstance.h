@@ -33,22 +33,16 @@ struct FBossAttack : public FTableRowBase
 {
 	GENERATED_BODY()
 public : 
-	FBossAttack() : Phase(0), AttackName(TEXT("")), Priority(-1), ATKRate(0.0f), Cooldown(0.0f) {}
+	FBossAttack() : AttackName(TEXT("")), ATKRate(0.f), JudgeAttack(0.f){}
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	int32 Phase;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	FString AttackName;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	int32 Priority;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float ATKRate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
-	float Cooldown;
+	int32 JudgeAttack;
 
 };
 
@@ -72,16 +66,10 @@ public :
 	TArray<FBossAttack> Phase1_Attack;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack)
-	TArray<int32> Priority_Phase1;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack)
 	TArray<FBossAttack> Phase2_Attack;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack)
-	TArray<int32> Priority_Phase2;
-
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack)
-	//TArray<FBossAttack*> Phase3_Attack;
+	TArray<FBossAttack> Phase3_Attack;
 	
 
 private : 

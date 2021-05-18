@@ -30,21 +30,19 @@ void UGSGameInstance::Init()
 	Phase1_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(1), TEXT(""))));
 	Phase1_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(2), TEXT(""))));
 
-	for (int i = 0; i < Phase1_Attack.Num() - 1; i++)
-	{
-		Priority_Phase1.Add(Phase1_Attack[i].Priority);
-	}
-
 	Phase2_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(3), TEXT(""))));
 	Phase2_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(4), TEXT(""))));
 	Phase2_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(5), TEXT(""))));
 	Phase2_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(6), TEXT(""))));
 	Phase2_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(7), TEXT(""))));
+	Phase2_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(8), TEXT(""))));
 
-	for (int i = 0; i < Phase2_Attack.Num() - 1; i++)
-	{
-		Priority_Phase2.Add(Phase2_Attack[i].Priority);
-	}
+	Phase3_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(9), TEXT(""))));
+	Phase3_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(10), TEXT(""))));
+	Phase3_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(5), TEXT(""))));
+	Phase3_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(6), TEXT(""))));
+	Phase3_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(7), TEXT(""))));
+	Phase3_Attack.Emplace(*(BossAttackTable->FindRow<FBossAttack>(*FString::FromInt(8), TEXT(""))));
 
 	
 	//GSLOG(Warning, TEXT("AttackMontage - 03 Section_1 ATKRate : %f"),GetPlayerATKRateTable(3)->Section_1);

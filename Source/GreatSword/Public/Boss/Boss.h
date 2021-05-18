@@ -70,6 +70,10 @@ public:
 	//float GetCurrentHP() { return CurrentHP; }
 
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
+		bool CanDash;
+
+
 private : 
 
 	// AnimInstance
@@ -80,6 +84,15 @@ private :
 	FString CurrentAttackType;
 
 	UPROPERTY(EditAnywhere, Category = Phase)
-		EBossPhase CurrentPhase;
+	EBossPhase CurrentPhase;
+
+	int32 judgeAttack;
+
+	UPROPERTY()
+	bool IsPhase2FirstEntry;
+
+	UPROPERTY()
+	bool IsPhase3FirstEntry;
+
 
 };
