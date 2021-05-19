@@ -3,6 +3,7 @@
 
 #include "BossStatComponent.h"
 
+
 // Sets default values for this component's properties
 UBossStatComponent::UBossStatComponent()
 {
@@ -34,9 +35,7 @@ void UBossStatComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 // Called when the game starts
 void UBossStatComponent::BeginPlay()
 {
-	Super::BeginPlay();
-
-	// ...
+	Super::BeginPlay();	// ...
 	
 }
 
@@ -46,6 +45,8 @@ void UBossStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+
+	
 	// ...
 }
 
@@ -65,4 +66,3 @@ void UBossStatComponent::SetHP(float NewDamage)
 		OnBossHPIsZero.Broadcast();
 	}
 }
- 

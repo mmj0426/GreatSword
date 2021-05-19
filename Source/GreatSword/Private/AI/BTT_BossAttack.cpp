@@ -1,19 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BTT_BasicAttack01.h"
+#include "BTT_BossAttack.h"
 
 #include "Boss_AIController.h"
 #include "Boss.h"
 
-UBTT_BasicAttack01::UBTT_BasicAttack01()
+UBTT_BossAttack::UBTT_BossAttack()
 {
-	NodeName = TEXT("BasicAttack01");
+	NodeName = TEXT("Boss Attack");
 	bNotifyTick = true;
 	IsAttacking = false;
 }
 
-EBTNodeResult::Type UBTT_BasicAttack01::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type UBTT_BossAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp, NodeMemory);
 
@@ -35,7 +35,7 @@ EBTNodeResult::Type UBTT_BasicAttack01::ExecuteTask(UBehaviorTreeComponent& Owne
 	return EBTNodeResult::InProgress;
 }
 
-void UBTT_BasicAttack01::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+void UBTT_BossAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 

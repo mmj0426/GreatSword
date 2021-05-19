@@ -29,6 +29,10 @@ public :
 	UPROPERTY(EditAnywhere, Category = Stat)
 	float MaxStamina;
 
+	float GetCurrentHP() { return CurrentHP; }
+	void SetCurrentHP(float HP) { CurrentHP = HP; }
+	float GetMaxHP() { return MaxHP; }
+
 private : 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 

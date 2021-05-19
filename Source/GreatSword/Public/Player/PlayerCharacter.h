@@ -25,6 +25,7 @@ public:
 
 	// Called to bind functionality to input
 	virtual void PostInitializeComponents() override;
+	virtual void BeginPlay() override;
 
 	// Camera 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
@@ -85,6 +86,8 @@ private:
 
 public:
 
+	FTimerHandle PlayerTimerHandle;
+
 	//Attack
 	UFUNCTION()
 	void MontageEnded(UAnimMontage* Montage, bool bInterrupeted);
@@ -104,7 +107,9 @@ public:
 
 	void SetPlayerRotation();
 
-public : 
+	void HP_Recovery();
+
+public:
 	
 	int32 GetAttackComboIndex() const {return AttackComboIndex;}
 

@@ -3,21 +3,19 @@
 #pragma once
 
 #include "GreatSword.h"
-
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTT_BasicAttack01.generated.h"
-
+#include "BTT_BossAttack.generated.h"
 
 /**
- *
+ * 
  */
 UCLASS()
-class GREATSWORD_API UBTT_BasicAttack01 : public UBTTaskNode
+class GREATSWORD_API UBTT_BossAttack : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
+
 public:
-	UBTT_BasicAttack01();
+	UBTT_BossAttack();
 
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 

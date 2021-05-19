@@ -41,11 +41,13 @@ public:
 
 	void BossAttack();
 	void DecideAttackType();
+	void HP_Recovery();
 
 	UFUNCTION()
 	void MontageEnded(UAnimMontage* Montage, bool bInterrupeted);
 
 	FOnAttackEndDelegate OnAttackEnd;
+	FTimerHandle MemberTimerHandle;
 
 public: 
 

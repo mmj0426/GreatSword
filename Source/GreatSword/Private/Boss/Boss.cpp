@@ -81,6 +81,7 @@ void ABoss::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GetWorld()->GetTimerManager().SetTimer(MemberTimerHandle, this, &ABoss::HP_Recovery,1.0f,true);
 	//CurrentHP = MaxHP;
 
 }
@@ -123,6 +124,17 @@ void ABoss::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 	OnAttackEnd.Broadcast();
 }
 
+void ABoss::HP_Recovery()
+{
+	int currentHP = BossStat->GetCurrentHP();
+
+	currentHP = FMath::Clamp<float>(currentHP + 1.f,0.f,BossStat->GetMaxHP());
+
+	BossStat->SetCurrentHP(currentHP);
+
+	GSLOG(Warning, TEXT("Boss CurrentHP : %f"), BossStat->GetCurrentHP());
+}
+
 void ABoss::DecideAttackType()
 {
 	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
@@ -152,6 +164,14 @@ void ABoss::DecideAttackType()
 			judgeAttack = 0;
 		}
 
+		if (TEXT("Jump") == CurrentAttackType || true == CanDash)
+		{
+			//Dash
+			CurrentAttackType = GSGameInstance->Phase2_Attack[5].AttackName;
+			judgeAttack += GSGameInstance->Phase2_Attack[5].JudgeAttack;
+			CanDash = false;
+			break;
+		}
 		if (2 == judgeAttack)
 		{
 			// Grount01-2
@@ -176,16 +196,7 @@ void ABoss::DecideAttackType()
 			IsPhase2FirstEntry = false;
 			break;
 		}
-		if (TEXT("Jump") == CurrentAttackType || true == CanDash)
-		{
-			//TODO : 플레이어와의 거리 12칸 이상일 경우
 
-			//Dash
-			CurrentAttackType = GSGameInstance->Phase2_Attack[5].AttackName;
-			judgeAttack += GSGameInstance->Phase2_Attack[5].JudgeAttack;
-			CanDash = false;
-			break;
-		}
 
 		CurrentAttackType = GSGameInstance->Phase2_Attack[0].AttackName;
 		judgeAttack += GSGameInstance->Phase2_Attack[0].JudgeAttack;
@@ -199,6 +210,14 @@ void ABoss::DecideAttackType()
 			judgeAttack = 0;
 		}
 
+		if (TEXT("Jump") == CurrentAttackType || true == CanDash)
+		{
+			//Dash
+			CurrentAttackType = GSGameInstance->Phase2_Attack[5].AttackName;
+			judgeAttack += GSGameInstance->Phase2_Attack[5].JudgeAttack;
+			CanDash = false;
+			break;
+		}
 		// Ground02
 		if (true == IsPhase3FirstEntry || 1 == judgeAttack)
 		{
@@ -225,16 +244,7 @@ void ABoss::DecideAttackType()
 			IsPhase2FirstEntry = false;
 			break;
 		}
-		if (TEXT("Jump") == CurrentAttackType || true == CanDash)
-		{
-			//TODO : 플레이어와의 거리 12칸 이상일 경우
 
-			//Dash
-			CurrentAttackType = GSGameInstance->Phase2_Attack[5].AttackName;
-			judgeAttack += GSGameInstance->Phase2_Attack[5].JudgeAttack;
-			CanDash = false;
-			break;
-		}
 
 		// Front03
 		CurrentAttackType = GSGameInstance->Phase3_Attack[0].AttackName;

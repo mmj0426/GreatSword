@@ -2,15 +2,15 @@
 
 #pragma once
 
-#include "GreatSword.h"
+#include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTT_BasicAttack02.generated.h"
+#include "BTT_DashAttack.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class GREATSWORD_API UBTT_BasicAttack02 : public UBTTaskNode
+class GREATSWORD_API UBTT_DashAttack : public UBTTaskNode
 {
 	GENERATED_BODY()
 	

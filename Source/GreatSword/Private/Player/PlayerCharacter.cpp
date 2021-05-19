@@ -181,6 +181,13 @@ void APlayerCharacter::PostInitializeComponents()
 		});
 }
 
+void APlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetWorld()->GetTimerManager().SetTimer(PlayerTimerHandle, this, &APlayerCharacter::HP_Recovery, 1.0f, true);
+}
+
 void APlayerCharacter::Attack()
 {
 	if (PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
@@ -267,6 +274,15 @@ void APlayerCharacter::SetPlayerRotation()
 
 	SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw + RotationRate, 0.0f));
 	
+}
+
+void APlayerCharacter::HP_Recovery()
+{
+	int currentHP = CharacterStat->GetCurrentHP();
+
+	currentHP = FMath::Clamp<float>(currentHP + 1.f, 0.f, CharacterStat->GetMaxHP());
+
+	CharacterStat->SetCurrentHP(currentHP);
 }
 
 bool APlayerCharacter::CanEvade() const

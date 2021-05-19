@@ -34,6 +34,7 @@ public:
 	FOnBossHPIsZeroDelegate OnBossHPIsZero;
 
 	float GetCurrentHP() { return CurrentHP; }
+	void SetCurrentHP(float HP) { CurrentHP = HP; }
 	float GetMaxHP() { return MaxHP; }	
 
 private:
