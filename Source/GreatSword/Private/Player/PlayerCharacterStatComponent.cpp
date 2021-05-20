@@ -49,6 +49,18 @@ void UPlayerCharacterStatComponent::BeginPlay()
 	
 }
 
+void UPlayerCharacterStatComponent::SetCurrentHP(float HP)
+{
+	CurrentHP = HP;
+
+	GSLOG(Warning, TEXT("Player CurrentHP : %f"), CurrentHP);
+
+	if (CurrentHP <= 0.f)
+	{
+		OnPlayerHPIsZero.Broadcast();
+	}
+}
+
 void UPlayerCharacterStatComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);

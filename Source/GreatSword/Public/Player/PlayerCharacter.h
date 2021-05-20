@@ -26,13 +26,14 @@ public:
 	// Called to bind functionality to input
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	// Camera 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-	class	USpringArmComponent* SpringArm;
+	class USpringArmComponent* SpringArm;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
-	class	UCameraComponent* Camera;
+	class UCameraComponent* Camera;
 
 	// Weapon
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Weapon)

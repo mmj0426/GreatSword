@@ -133,3 +133,8 @@ void UBoss_AnimInstance::PlayDeathMontage()
 		CurrentState = EBossState::Death;
 	}
 }
+
+//void UBoss_AnimInstance::AnimNotify_AttackHitCheck()
+//{
+//	
+//}

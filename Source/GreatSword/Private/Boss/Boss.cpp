@@ -81,9 +81,6 @@ void ABoss::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorld()->GetTimerManager().SetTimer(MemberTimerHandle, this, &ABoss::HP_Recovery,1.0f,true);
-	//CurrentHP = MaxHP;
-
 }
 
 // Called every frame
@@ -113,8 +110,9 @@ float ABoss::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEve
 void ABoss::BossAttack()
 {
 	DecideAttackType();
+	//GSLOG(Warning, TEXT("%d"), HitDamage);
 	GSLOG(Warning, TEXT("%s"), *CurrentAttackType);
-	GSLOG(Warning, TEXT("%d"), judgeAttack);
+	//GSLOG(Warning, TEXT("%d"), judgeAttack);
 	BossAnim->PlayAttackMontage(CurrentAttackType);
 }
 
@@ -122,17 +120,6 @@ void ABoss::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 {
 	GSLOG(Warning, TEXT("Boss Montage Ended"));
 	OnAttackEnd.Broadcast();
-}
-
-void ABoss::HP_Recovery()
-{
-	int currentHP = BossStat->GetCurrentHP();
-
-	currentHP = FMath::Clamp<float>(currentHP + 1.f,0.f,BossStat->GetMaxHP());
-
-	BossStat->SetCurrentHP(currentHP);
-
-	GSLOG(Warning, TEXT("Boss CurrentHP : %f"), BossStat->GetCurrentHP());
 }
 
 void ABoss::DecideAttackType()
@@ -148,13 +135,14 @@ void ABoss::DecideAttackType()
 			// Front01
 			CurrentAttackType = GSGameInstance->Phase1_Attack[1].AttackName;
 			judgeAttack += GSGameInstance->Phase1_Attack[1].JudgeAttack;
+			HitDamage = BossStat->BaseDamage * GSGameInstance->Phase1_Attack[1].ATKRate;
 			break;
 		}
 
 		// Ground01
 		CurrentAttackType = GSGameInstance->Phase1_Attack[0].AttackName;
 		judgeAttack += GSGameInstance->Phase1_Attack[0].JudgeAttack;
-
+		HitDamage = BossStat->BaseDamage * GSGameInstance->Phase1_Attack[0].ATKRate;
 		break;
 
 	case EBossPhase::Phase2:
@@ -169,6 +157,7 @@ void ABoss::DecideAttackType()
 			//Dash
 			CurrentAttackType = GSGameInstance->Phase2_Attack[5].AttackName;
 			judgeAttack += GSGameInstance->Phase2_Attack[5].JudgeAttack;
+			HitDamage = BossStat->BaseDamage * GSGameInstance->Phase2_Attack[5].ATKRate;
 			CanDash = false;
 			break;
 		}
@@ -177,6 +166,7 @@ void ABoss::DecideAttackType()
 			// Grount01-2
 			CurrentAttackType = GSGameInstance->Phase2_Attack[1].AttackName;
 			judgeAttack += GSGameInstance->Phase2_Attack[1].JudgeAttack;
+			HitDamage = BossStat->BaseDamage * GSGameInstance->Phase2_Attack[1].ATKRate;
 			break;
 		}
 		if (4 == judgeAttack)
@@ -185,6 +175,7 @@ void ABoss::DecideAttackType()
 			int32 index = FMath::RandRange(2, 3);
 			CurrentAttackType = GSGameInstance->Phase2_Attack[index].AttackName;
 			judgeAttack += GSGameInstance->Phase2_Attack[index].JudgeAttack;
+			HitDamage = BossStat->BaseDamage * GSGameInstance->Phase2_Attack[index].ATKRate;
 			break;
 		}
 		if (true == IsPhase2FirstEntry || 6 == judgeAttack)
@@ -192,7 +183,7 @@ void ABoss::DecideAttackType()
 			// Jump
 			CurrentAttackType = GSGameInstance->Phase2_Attack[4].AttackName;
 			judgeAttack += GSGameInstance->Phase2_Attack[4].JudgeAttack;
-
+			HitDamage = BossStat->BaseDamage * GSGameInstance->Phase2_Attack[4].ATKRate;
 			IsPhase2FirstEntry = false;
 			break;
 		}
@@ -200,6 +191,7 @@ void ABoss::DecideAttackType()
 
 		CurrentAttackType = GSGameInstance->Phase2_Attack[0].AttackName;
 		judgeAttack += GSGameInstance->Phase2_Attack[0].JudgeAttack;
+		HitDamage = BossStat->BaseDamage * GSGameInstance->Phase2_Attack[0].ATKRate;
 
 		break;
 
@@ -215,6 +207,7 @@ void ABoss::DecideAttackType()
 			//Dash
 			CurrentAttackType = GSGameInstance->Phase2_Attack[5].AttackName;
 			judgeAttack += GSGameInstance->Phase2_Attack[5].JudgeAttack;
+			HitDamage = BossStat->BaseDamage * GSGameInstance->Phase2_Attack[5].ATKRate;
 			CanDash = false;
 			break;
 		}
@@ -223,6 +216,7 @@ void ABoss::DecideAttackType()
 		{
 			CurrentAttackType = GSGameInstance->Phase3_Attack[1].AttackName;
 			judgeAttack += GSGameInstance->Phase3_Attack[1].JudgeAttack;
+			HitDamage = BossStat->BaseDamage * GSGameInstance->Phase3_Attack[1].ATKRate;
 
 			IsPhase3FirstEntry = false;
 			break;
@@ -233,6 +227,7 @@ void ABoss::DecideAttackType()
 			int32 index = FMath::RandRange(2, 3);
 			CurrentAttackType = GSGameInstance->Phase3_Attack[index].AttackName;
 			judgeAttack += GSGameInstance->Phase3_Attack[index].JudgeAttack;
+			HitDamage = BossStat->BaseDamage * GSGameInstance->Phase3_Attack[index].ATKRate;
 			break;
 		}
 		if (6 == judgeAttack)
@@ -240,7 +235,7 @@ void ABoss::DecideAttackType()
 			// Jump
 			CurrentAttackType = GSGameInstance->Phase2_Attack[4].AttackName;
 			judgeAttack += GSGameInstance->Phase2_Attack[4].JudgeAttack;
-
+			HitDamage = BossStat->BaseDamage * GSGameInstance->Phase2_Attack[4].ATKRate;
 			IsPhase2FirstEntry = false;
 			break;
 		}
@@ -249,6 +244,7 @@ void ABoss::DecideAttackType()
 		// Front03
 		CurrentAttackType = GSGameInstance->Phase3_Attack[0].AttackName;
 		judgeAttack += GSGameInstance->Phase3_Attack[0].JudgeAttack;
+		HitDamage = BossStat->BaseDamage * GSGameInstance->Phase2_Attack[0].ATKRate;
 
 		break;
 

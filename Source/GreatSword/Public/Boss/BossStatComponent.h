@@ -37,11 +37,16 @@ public:
 	void SetCurrentHP(float HP) { CurrentHP = HP; }
 	float GetMaxHP() { return MaxHP; }	
 
+	UPROPERTY(Transient, EditAnywhere, Category = Stat)
+	float BaseDamage;
+
 private:
 	UPROPERTY(EditAnywhere, Category = Stat)
 		float MaxHP;
 
 	UPROPERTY(Transient, VisibleInstanceOnly, Category = Stat)
 		float CurrentHP;
+
+	
 
 };

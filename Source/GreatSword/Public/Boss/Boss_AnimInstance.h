@@ -79,6 +79,12 @@ private :
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	UAnimMontage* DeathMontage;
 
+private : 
+	// Anim Notify 
+
+	//UFUNCTION()
+	//void AnimNotify_AttackHitCheck();
+
 public : 
 	EBossState GetCurrentBossState()const { return CurrentState; }
 };

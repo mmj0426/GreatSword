@@ -7,6 +7,8 @@
 #include "PlayerCharacterStatComponent.generated.h"
 
 
+DECLARE_MULTICAST_DELEGATE(FOnPlayerHPIsZeroDelegate);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class GREATSWORD_API UPlayerCharacterStatComponent : public UActorComponent
 {
@@ -30,8 +32,10 @@ public :
 	float MaxStamina;
 
 	float GetCurrentHP() { return CurrentHP; }
-	void SetCurrentHP(float HP) { CurrentHP = HP; }
+	void SetCurrentHP(float HP);
 	float GetMaxHP() { return MaxHP; }
+
+	FOnPlayerHPIsZeroDelegate OnPlayerHPIsZero;
 
 private : 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

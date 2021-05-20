@@ -179,6 +179,11 @@ void APlayerCharacter::PostInitializeComponents()
 				AttackEndComboState();
 			}
 		});
+	
+	CharacterStat->OnPlayerHPIsZero.AddLambda([this]()->void
+		{
+			// TODO : 플레이어 죽었을 때 
+		});
 }
 
 void APlayerCharacter::BeginPlay()
@@ -186,6 +191,15 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	GetWorld()->GetTimerManager().SetTimer(PlayerTimerHandle, this, &APlayerCharacter::HP_Recovery, 1.0f, true);
+}
+
+float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	CharacterStat->SetCurrentHP(FMath::Clamp<float>(CharacterStat->GetCurrentHP() - Damage, 0.0f, CharacterStat->GetMaxHP()));
+	
+	return Damage;
 }
 
 void APlayerCharacter::Attack()

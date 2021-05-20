@@ -41,13 +41,11 @@ public:
 
 	void BossAttack();
 	void DecideAttackType();
-	void HP_Recovery();
 
 	UFUNCTION()
 	void MontageEnded(UAnimMontage* Montage, bool bInterrupeted);
 
 	FOnAttackEndDelegate OnAttackEnd;
-	FTimerHandle MemberTimerHandle;
 
 public: 
 
@@ -73,7 +71,7 @@ public:
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
-		bool CanDash;
+	bool CanDash;
 
 
 private : 
@@ -89,6 +87,12 @@ private :
 	EBossPhase CurrentPhase;
 
 	int32 judgeAttack;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = true))
+	float AttackRadius;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat, meta = (AllowPrivateAccess = true))
+	float HitDamage;
 
 	UPROPERTY()
 	bool IsPhase2FirstEntry;

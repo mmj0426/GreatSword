@@ -13,6 +13,7 @@ UBossStatComponent::UBossStatComponent()
 	bWantsInitializeComponent = true;
 
 	MaxHP = 1000.0f;
+	BaseDamage = 100.0f;
 	// ...
 }
 
