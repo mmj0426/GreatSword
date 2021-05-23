@@ -19,3 +19,4 @@ E:/GreatSword/Content/Fire/Fire_Fortress filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Fire/MasterMaterials filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Forge/Env_Forge filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Forge/Env_Forge_Damaged filter=lfs diff=lfs merge=lfs -text
+E:/GreatSword/Content/InfinityBladeFireLands/Maps/LevelContent/Architecture filter=lfs diff=lfs merge=lfs -text
