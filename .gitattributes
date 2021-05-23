@@ -15,3 +15,4 @@ E:/GreatSword/Content/Fire/Env_Fire_Robot filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Fire/Env_Fire_Rocky filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Fire/Env_Fire_Terrain filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Fire/Env_Fire_Terrain2 filter=lfs diff=lfs merge=lfs -text
+E:/GreatSword/Content/Fire/Fire_Fortress filter=lfs diff=lfs merge=lfs -text
