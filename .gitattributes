@@ -21,3 +21,4 @@ E:/GreatSword/Content/Forge/Env_Forge filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Forge/Env_Forge_Damaged filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/InfinityBladeFireLands/Maps/LevelContent/Architecture filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/InfinityBladeFireLands/Maps/LevelContent/HDRI filter=lfs diff=lfs merge=lfs -text
+E:/GreatSword/Content/InfinityBladeFireLands/Maps/LevelContent/M_EV_Lightbeam_Master_01_Inst_Inst.uasset filter=lfs diff=lfs merge=lfs -text
