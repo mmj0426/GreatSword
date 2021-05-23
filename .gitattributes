@@ -9,3 +9,4 @@ E:/GreatSword/Content/Fire filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Fire/Env_Fire_deco filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Fire/Env_Fire_Engines filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Fire/Env_Fire_FlameDungeon filter=lfs diff=lfs merge=lfs -text
+E:/GreatSword/Content/Fire/Env_Fire_Magma filter=lfs diff=lfs merge=lfs -text
