@@ -30,3 +30,4 @@ E:/GreatSword/Content/WarpsPack/YellowWarp filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Meadow_Environment/Environment/Follage/Materials filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Meadow_Environment/Environment/Follage/Meshes filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/Meadow_Environment/Environment/Follage/Textures filter=lfs diff=lfs merge=lfs -text
+E:/GreatSword/Content/Meadow_Environment/Environment/Rocks/Materials filter=lfs diff=lfs merge=lfs -text
