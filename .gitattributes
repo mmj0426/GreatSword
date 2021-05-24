@@ -25,3 +25,4 @@ E:/GreatSword/Content/InfinityBladeFireLands/Maps/LevelContent/M_EV_Lightbeam_Ma
 E:/GreatSword/Content/InfinityBladeFireLands/Maps/Overview.umap filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/WarpsPack/BlueWarp filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/WarpsPack/GreenWarp filter=lfs diff=lfs merge=lfs -text
+E:/GreatSword/Content/WarpsPack/OrangeWarp filter=lfs diff=lfs merge=lfs -text
