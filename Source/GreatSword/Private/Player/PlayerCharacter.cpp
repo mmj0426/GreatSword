@@ -108,6 +108,9 @@ APlayerCharacter::APlayerCharacter()
 
 	// Character Stat
 	CharacterStat = CreateDefaultSubobject<UPlayerCharacterStatComponent>(TEXT("CharacterStat"));
+
+	bCanHP_Recovery = false;
+	bCanStamina_Recovery = false;
 }
 
 void APlayerCharacter::AttackStartComboState()
@@ -141,24 +144,27 @@ void APlayerCharacter::PostInitializeComponents()
 
 	WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapBegin);
 	//WeaponCollision->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapEnd);
+
 	 
 	// Combo Attack Delegate
 	PlayerAnim->OnNextAttackCheck.AddLambda([this]()->void
 		{
-			if (CurrentMouseInput == EReadyToAttack::Attack)
+			if (CurrentMouseInput == EReadyToAttack::Attack && CanAttack())
 			{
 				AttackStartComboState();
 				SmashIndex = 0;
 
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+
 				PlayerAnim->PlayAttackMontage(AttackComboIndex);
+				UseStamina(true);
 			}
 		});
 
 	PlayerAnim->OnSmashCheck.AddLambda([this]()->void
 		{
 			//GSLOG(Error, TEXT("OnSmashCheck Lambda"));
-			if (CurrentMouseInput == EReadyToAttack::Smash)
+			if (CurrentMouseInput == EReadyToAttack::Smash && CanAttack())
 			{
 				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, PlayerAnim->GetMaxSection()-1));
 				SmashIndex = FMath::Clamp<int32>(SmashIndex+1, 1, PlayerAnim->GetMaxSection());
@@ -171,6 +177,8 @@ void APlayerCharacter::PostInitializeComponents()
 
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 				PlayerAnim->JumpToSmashMontageSection(SmashIndex);
+				UseStamina(true);
+
 				//PlayerAnim->SetCurrentPlayerState(EPlayerState::Attacking);
 			}
 			else
@@ -190,7 +198,29 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorld()->GetTimerManager().SetTimer(PlayerTimerHandle, this, &APlayerCharacter::HP_Recovery, 1.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(PlayerHPHandle, this, &APlayerCharacter::HP_Recovery, 1.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(PlayerStaminaHandle, this, &APlayerCharacter::Stamina_Recovery, 1.0f, true);
+}
+
+void APlayerCharacter::Tick(float DeltaSeconds)
+{
+	if (GetCharacterMovement()->MaxWalkSpeed >= 450.f)
+	{
+		bCanStamina_Recovery = false;
+
+		if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryHandle))
+		{
+			GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+		}
+
+		float waitTime = 3.f;
+
+		GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryHandle, [&]()
+			{
+				bCanStamina_Recovery = true;
+				GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+			}, waitTime, false);
+	}
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -199,11 +229,45 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 
 	CharacterStat->SetCurrentHP(FMath::Clamp<float>(CharacterStat->GetCurrentHP() - Damage, 0.0f, CharacterStat->GetMaxHP()));
 	
+	bCanHP_Recovery = false;
+
+	// 5초간 피격 여부 검사
+	if (GetWorldTimerManager().IsTimerActive(HP_RecoveryHandle))
+	{
+		GetWorldTimerManager().ClearTimer(HP_RecoveryHandle);
+	}
+
+	float waitTime = 5.f;
+
+	GetWorld()->GetTimerManager().SetTimer(HP_RecoveryHandle, [&]()
+	{
+		bCanHP_Recovery = true;
+		GetWorldTimerManager().ClearTimer(HP_RecoveryHandle);
+	}, waitTime, false);
+	
 	return Damage;
 }
 
 void APlayerCharacter::Attack()
 {
+	// 3초간 Attack 여부 검사
+	bCanStamina_Recovery = false;
+
+	if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryHandle))
+	{
+		GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+	}
+
+	float waitTime = 3.f;
+
+	GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryHandle, [&]()
+		{
+			bCanStamina_Recovery = true;
+			GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+		}, waitTime, false);
+
+
+
 	if (PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
 	{
 		GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 1, MaxCombo));
@@ -215,6 +279,7 @@ void APlayerCharacter::Attack()
 		AttackStartComboState();
 		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 		PlayerAnim->PlayAttackMontage(AttackComboIndex);
+		UseStamina(true);
 		
 		//CurrentState = EPlayerState::Attacking;
 	}
@@ -222,6 +287,23 @@ void APlayerCharacter::Attack()
 
 void APlayerCharacter::Smash()
 {
+	// 3초간 Smash 여부 검사
+	bCanStamina_Recovery = false;
+
+	if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryHandle))
+	{
+		GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+	}
+
+	float waitTime = 3.f;
+
+	GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryHandle, [&]()
+		{
+			bCanStamina_Recovery = true;
+			GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+		}, waitTime, false);
+
+	
 	if(PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
 	{
 		CurrentMouseInput = EReadyToAttack::Smash;
@@ -245,6 +327,23 @@ void APlayerCharacter::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 
 void APlayerCharacter::Evade()
 { 
+	// 3초간 회피 여부 검사	
+	bCanStamina_Recovery = false;
+
+	if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryHandle))
+	{
+		GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+	}
+
+	float waitTime = 3.f;
+
+	GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryHandle, [&]()
+		{
+			bCanStamina_Recovery = true;
+			GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+		}, waitTime, false);
+
+
 	auto GSController = Cast<APlayer_Controller>(GetController());
 
 	if (GSController->GetMoveValue().IsZero() && CanEvade())
@@ -260,6 +359,7 @@ void APlayerCharacter::Evade()
 void APlayerCharacter::Parrying()
 {
 	PlayerAnim->PlayParryingMontage();
+	UseStamina(false);
 }
 
 void APlayerCharacter::Dodge()
@@ -267,6 +367,7 @@ void APlayerCharacter::Dodge()
 	SetPlayerRotation();
 
 	PlayerAnim->PlayDodgeMontage();
+	UseStamina(false);
 }
 
 void APlayerCharacter::SetPlayerRotation()
@@ -292,11 +393,28 @@ void APlayerCharacter::SetPlayerRotation()
 
 void APlayerCharacter::HP_Recovery()
 {
-	int currentHP = CharacterStat->GetCurrentHP();
+	// 초당 HP 회복
+	if (bCanHP_Recovery)
+	{
+		int currentHP = CharacterStat->GetCurrentHP();
 
-	currentHP = FMath::Clamp<float>(currentHP + 1.f, 0.f, CharacterStat->GetMaxHP());
+		currentHP = FMath::Clamp<float>(currentHP + 1.f, 0.f, CharacterStat->GetMaxHP());
 
-	CharacterStat->SetCurrentHP(currentHP);
+		CharacterStat->SetCurrentHP(currentHP);
+	}
+}
+
+void APlayerCharacter::Stamina_Recovery()
+{
+	// 초당 Stamina 회복
+	if (bCanStamina_Recovery)
+	{
+		int currentStamina = CharacterStat->GetCurrentStamina();
+
+		currentStamina = FMath::Clamp<float>(currentStamina + 15.f, 0.f, CharacterStat->GetMaxStamina());
+
+		CharacterStat->SetCurrentStamina(currentStamina);
+	}
 }
 
 bool APlayerCharacter::CanEvade() const
@@ -313,6 +431,37 @@ bool APlayerCharacter::CanMove() const
 	&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Dodge);
 }
 
+bool APlayerCharacter::CanAttack() const
+{
+	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	float UseStamina = GSGameInstance->GetPlayerStaminaTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex());
+
+	if (CharacterStat->GetCurrentStamina() >= UseStamina)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void APlayerCharacter::UseStamina(bool isAttack)
+{
+	if (isAttack)
+	{
+		auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+		float UseStamina = GSGameInstance->GetPlayerStaminaTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex());
+
+		CharacterStat->SetCurrentStamina(FMath::Clamp<float>(CharacterStat->GetCurrentStamina() - UseStamina, 0.f, CharacterStat->GetMaxStamina()));
+	}
+	else
+	{
+		// Evade Stamina
+		CharacterStat->SetCurrentStamina(FMath::Clamp<float>(CharacterStat->GetCurrentStamina() - 10.f, 0.f, CharacterStat->GetMaxStamina()));
+	}
+}
+
 void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	auto HitResult = Cast<ABoss>(OtherActor);
@@ -323,7 +472,8 @@ void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 		// Player Stat에서 현재 진행중인 애니메이션 몽타주 인덱스와 섹션 인덱스를 통해 데미지 적용율을 가지고와 데미지를 계산함
 		float HitDamage = CharacterStat->GetDamage() * (GSGameInstance->GetPlayerATKRateTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex())) / 100.0f;
 
-		GSLOG(Warning, TEXT("Hit Damage : %f"), HitDamage);
+		//GSLOG(Warning, TEXT("Hit Damage : %f "), HitDamage);
+
 		//데미지 적용
 		UGameplayStatics::ApplyDamage(HitResult, HitDamage, NULL, GetController(), NULL);
 	}

@@ -35,6 +35,10 @@ public :
 	void SetCurrentHP(float HP);
 	float GetMaxHP() { return MaxHP; }
 
+	float GetCurrentStamina() {return CurrentStamina;}
+	void SetCurrentStamina(float Stamina);
+	float GetMaxStamina() {return MaxStamina;}
+
 	FOnPlayerHPIsZeroDelegate OnPlayerHPIsZero;
 
 private : 

@@ -26,6 +26,7 @@ public:
 	// Called to bind functionality to input
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	// Camera 
@@ -87,7 +88,13 @@ private:
 
 public:
 
-	FTimerHandle PlayerTimerHandle;
+	FTimerHandle HP_RecoveryHandle;
+
+	FTimerHandle Stamina_RecoveryHandle;
+
+	FTimerHandle PlayerHPHandle;
+
+	FTimerHandle PlayerStaminaHandle;
 
 	//Attack
 	UFUNCTION()
@@ -109,6 +116,9 @@ public:
 	void SetPlayerRotation();
 
 	void HP_Recovery();
+	void Stamina_Recovery();
+
+	void UseStamina(bool isAttack);
 
 public:
 	
@@ -116,4 +126,8 @@ public:
 
 	bool CanEvade() const;
 	bool CanMove() const;
+	bool CanAttack() const;
+
+	bool bCanHP_Recovery;
+	bool bCanStamina_Recovery;
 };

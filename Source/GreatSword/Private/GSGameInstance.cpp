@@ -15,6 +15,13 @@ UGSGameInstance::UGSGameInstance()
 	PlayerATKRateTable = DT_PlayerATKRate.Object;
 	GSCHECK(PlayerATKRateTable->GetRowMap().Num() > 0);
 
+	FString PlayerStaminaDataPath = TEXT("/Game/GameData/DT_PlayerStamina.DT_PlayerStamina");
+	static ConstructorHelpers::FObjectFinder<UDataTable> DT_PlayerStamina(*PlayerStaminaDataPath);
+
+	GSCHECK(DT_PlayerStamina.Succeeded());
+	PlayerStamina = DT_PlayerStamina.Object;
+	GSCHECK(PlayerStamina->GetRowMap().Num() > 0);
+
 	FString BossAttackDataPath = TEXT("/Game/GameData/DT_BossAttack.DT_BossAttack");
 	static ConstructorHelpers::FObjectFinder<UDataTable>DT_BossAttack(*BossAttackDataPath);
 
@@ -61,6 +68,28 @@ float UGSGameInstance::GetPlayerATKRateTable(int32 AnimMontageIndex, int32 Secti
 		return Row->Section_1;
 
 	case 2 : 
+		return Row->Section_2;
+
+	default:
+		GSLOG(Error, TEXT("Error : Over the Section Index"));
+		break;
+	}
+	return 0.0f;
+}
+
+float UGSGameInstance::GetPlayerStaminaTable(int32 AnimMontageIndex, int32 SectionIndex) const
+{
+	auto Row = PlayerStamina->FindRow<FPlayerStamina>(*FString::FromInt(AnimMontageIndex), TEXT(""));
+
+	switch (SectionIndex)
+	{
+	case 0:
+		return Row->Section_0;
+
+	case 1:
+		return Row->Section_1;
+
+	case 2:
 		return Row->Section_2;
 
 	default:

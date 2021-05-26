@@ -53,7 +53,7 @@ void UPlayerCharacterStatComponent::SetCurrentHP(float HP)
 {
 	CurrentHP = HP;
 
-	GSLOG(Warning, TEXT("Player CurrentHP : %f"), CurrentHP);
+	//GSLOG(Warning, TEXT("Player CurrentHP : %f"), CurrentHP);
 
 	if (CurrentHP <= 0.f)
 	{
@@ -61,11 +61,16 @@ void UPlayerCharacterStatComponent::SetCurrentHP(float HP)
 	}
 }
 
+void UPlayerCharacterStatComponent::SetCurrentStamina(float Stamina)
+{
+	CurrentStamina = Stamina;
+	GSLOG(Warning, TEXT("Player Stamina : %f"), CurrentStamina);
+}
+
 void UPlayerCharacterStatComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// TODO : HP & Stamina 초당 회복
 }
 
 void UPlayerCharacterStatComponent::InitializeComponent()

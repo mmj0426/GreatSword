@@ -29,6 +29,27 @@ public :
 };
 
 USTRUCT(BlueprintType)
+struct FPlayerStamina : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+	FPlayerStamina() : AttackMontageIndex(0), Section_0(0.0f), Section_1(0.0f), Section_2(0.0f) {}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		int32 AttackMontageIndex;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		float Section_0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		float Section_1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+		float Section_2;
+};
+
+USTRUCT(BlueprintType)
 struct FBossAttack : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -60,6 +81,8 @@ public :
 	virtual void Init() override;
 
 	float GetPlayerATKRateTable(int32 AnimMontageIndex, int32 SectionIndex) const;
+
+	float GetPlayerStaminaTable(int32 AnimMontageIndex, int32 SectionIndex) const;
 	//float GetBossAttackTable(int32 Phase) const;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attack)
@@ -79,4 +102,7 @@ private :
 
 	UPROPERTY()
 	class UDataTable* BossAttackTable;
+
+	UPROPERTY()
+	class UDataTable* PlayerStamina;
 };

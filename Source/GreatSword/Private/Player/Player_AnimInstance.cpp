@@ -8,7 +8,6 @@
 #include "UObject/ConstructorHelpers.h"
 #include "UObject/Class.h"
 
-
 UPlayer_AnimInstance::UPlayer_AnimInstance()
 {
 	CurrentPawnSpeed = 0.0f;
@@ -121,10 +120,10 @@ void UPlayer_AnimInstance::PlayAttackMontage(int32 NextCombo)
 	if (!Montage_IsPlaying((CurrentAttackMontage)))
 	{
 		Montage_Play(CurrentAttackMontage, 1.0f);
+
 		CurrentPlayerState = EPlayerState::Attacking;
 	}
 }
-
 
 void UPlayer_AnimInstance::PlayParryingMontage()
 {
