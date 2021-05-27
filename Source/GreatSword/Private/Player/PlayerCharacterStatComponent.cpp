@@ -3,6 +3,7 @@
 
 #include "PlayerCharacterStatComponent.h"
 #include "Lightmass/LightmassImportanceVolume.h"
+#include "PlayerCharacter.h"
 
 // Sets default values for this component's properties
 UPlayerCharacterStatComponent::UPlayerCharacterStatComponent()
@@ -45,6 +46,9 @@ void UPlayerCharacterStatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+
+	GetWorld()->GetTimerManager().SetTimer(HP_RecoveryHandle, this, &UPlayerCharacterStatComponent::HP_Recovery, 1.0f, true);
+	GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryHandle, this, &UPlayerCharacterStatComponent::Stamina_Recovery, 1.0f, true);
 	// ...
 	
 }
@@ -71,6 +75,32 @@ void UPlayerCharacterStatComponent::TickComponent(float DeltaTime, enum ELevelTi
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+}
+
+void UPlayerCharacterStatComponent::HP_Recovery()
+{
+	// 초당 HP 회복
+	auto Player = Cast<APlayerCharacter>(GetOwner());
+
+	if (nullptr != Player && Player->GetCanHP_Recovery())
+	{
+		CurrentHP = FMath::Clamp<float>(CurrentHP + 1.f, 0.f, MaxHP);
+
+		SetCurrentHP(CurrentHP);
+	}
+}
+
+void UPlayerCharacterStatComponent::Stamina_Recovery()
+{
+	auto Player = Cast<APlayerCharacter>(GetOwner());
+
+	// 초당 Stamina 회복
+	if (nullptr != Player && Player->GetCanStamina_Recovery())
+	{
+		CurrentStamina = FMath::Clamp<float>(CurrentStamina + 15.f, 0.f, MaxStamina);
+
+		SetCurrentStamina(CurrentStamina);
+	}
 }
 
 void UPlayerCharacterStatComponent::InitializeComponent()

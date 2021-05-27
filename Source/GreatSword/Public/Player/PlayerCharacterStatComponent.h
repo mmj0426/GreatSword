@@ -26,6 +26,11 @@ protected:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
 public : 
+
+	FTimerHandle HP_RecoveryHandle;
+
+	FTimerHandle Stamina_RecoveryHandle;
+
 	UPROPERTY(EditAnywhere, Category = Stat)
 	float MaxHP;
 	UPROPERTY(EditAnywhere, Category = Stat)
@@ -55,5 +60,8 @@ private :
 
 public : 
 	float GetDamage()const{ return Damage; }
+
+	void HP_Recovery();
+	void Stamina_Recovery();
 
 };

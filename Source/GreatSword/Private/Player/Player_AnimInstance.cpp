@@ -69,6 +69,8 @@ UPlayer_AnimInstance::UPlayer_AnimInstance()
 
 	DodgeMontageArray.Add(DodgeMontage);
 	//PlayerMontageMap.Add(EPlayerState::Dodge, DodgeMontageArray);
+
+	IsDead = false;
 }
 
 void UPlayer_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -105,6 +107,7 @@ void UPlayer_AnimInstance::PlayAttackMontage(int32 NextCombo)
 {
 	//GSLOG(Warning, TEXT("PlayAttackMontage : %i"), NextCombo);
 
+	GSCHECK(!IsDead);
 	CurrentCombo = 0;
 	
 	CurrentAttackIndex = NextCombo;
@@ -127,6 +130,7 @@ void UPlayer_AnimInstance::PlayAttackMontage(int32 NextCombo)
 
 void UPlayer_AnimInstance::PlayParryingMontage()
 {
+	GSCHECK(!IsDead);
 	if (!Montage_IsPlaying(ParryingMontage))
 	{
 		Montage_Play(ParryingMontage, 1.0f);
@@ -136,6 +140,7 @@ void UPlayer_AnimInstance::PlayParryingMontage()
 
 void UPlayer_AnimInstance::PlayDodgeMontage()
 {
+	GSCHECK(!IsDead);
 	if ((!Montage_IsPlaying(DodgeMontage)))
 	{
 		Montage_Play(DodgeMontage, 1.0f);
@@ -145,6 +150,7 @@ void UPlayer_AnimInstance::PlayDodgeMontage()
 
 void UPlayer_AnimInstance::JumpToSmashMontageSection(int32 NewSection)
 {
+	GSCHECK(!IsDead);
 	CurrentSectionIndex = NewSection;
 	//GSLOG(Warning, TEXT("CurrentSection : %d"),CurrentSectionIndex);
 

@@ -22,14 +22,14 @@
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bUseControllerRotationYaw = false;
 
-	GetCharacterMovement()->bOrientRotationToMovement  = true;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	GetCapsuleComponent()->SetCapsuleHalfHeight(85.0f);
-	GetCapsuleComponent()->SetRelativeLocation(FVector(0.0f,0.0f,90.0f));
+	GetCapsuleComponent()->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
 	GetCapsuleComponent()->SetCollisionProfileName(TEXT("PlayerCharacter"));
 
 	//SpringArm
@@ -59,7 +59,7 @@ APlayerCharacter::APlayerCharacter()
 	//Skeletal Mesh
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
-	SK_Player(TEXT("/Game/GreatSword/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
+		SK_Player(TEXT("/Game/GreatSword/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
 
 	if (SK_Player.Succeeded())
 	{
@@ -71,8 +71,8 @@ APlayerCharacter::APlayerCharacter()
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
 	static ConstructorHelpers::FClassFinder<UAnimInstance>
-	Anim_Player(TEXT("/Game/Blueprints/Player/Animation/AnimBP_PlayerCharacter.AnimBP_PlayerCharacter_C"));
-	
+		Anim_Player(TEXT("/Game/Blueprints/Player/Animation/AnimBP_PlayerCharacter.AnimBP_PlayerCharacter_C"));
+
 	if (Anim_Player.Succeeded())
 	{
 		GetMesh()->SetAnimInstanceClass(Anim_Player.Class);
@@ -83,7 +83,7 @@ APlayerCharacter::APlayerCharacter()
 	FName WeaponSocket(TEXT("Weapon"));
 
 	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
-	Weapon->SetupAttachment(GetMesh(),WeaponSocket);
+	Weapon->SetupAttachment(GetMesh(), WeaponSocket);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>
 		SM_Weapon(TEXT("/Game/GreatSword/GreatSword/Weapon/GreatSword_02.GreatSword_02"));
@@ -92,7 +92,7 @@ APlayerCharacter::APlayerCharacter()
 	{
 		Weapon->SetStaticMesh(SM_Weapon.Object);
 	}
-	
+
 	WeaponCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponCollision"));
 	WeaponCollision->SetupAttachment(Weapon);
 	WeaponCollision->SetCollisionProfileName("Player_Weapon");
@@ -118,8 +118,8 @@ void APlayerCharacter::AttackStartComboState()
 	CurrentMouseInput = EReadyToAttack::None;
 
 	// 콤보 값이 0 ~ MaxCombo-1 사이인지 검사
-	GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 0,MaxCombo -1));
-	AttackComboIndex = FMath::Clamp<int32>(AttackComboIndex+1, 1, MaxCombo);
+	GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 0, MaxCombo - 1));
+	AttackComboIndex = FMath::Clamp<int32>(AttackComboIndex + 1, 1, MaxCombo);
 }
 
 void APlayerCharacter::AttackEndComboState()
@@ -139,13 +139,13 @@ void APlayerCharacter::PostInitializeComponents()
 	GSCHECK(nullptr != PlayerAnim);
 
 	//TODO : PlayerAnimMontage AttackHitCheck 노티파이 지우기
-	PlayerAnim->OnMontageEnded.AddDynamic(this,&APlayerCharacter::MontageEnded);
+	PlayerAnim->OnMontageEnded.AddDynamic(this, &APlayerCharacter::MontageEnded);
 	//PlayerAnim->OnAttackHitCheck.AddUObject(this, &APlayerCharacter::AttackCheck);
 
 	WeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapBegin);
 	//WeaponCollision->OnComponentEndOverlap.AddDynamic(this, &APlayerCharacter::OnOverlapEnd);
 
-	 
+
 	// Combo Attack Delegate
 	PlayerAnim->OnNextAttackCheck.AddLambda([this]()->void
 		{
@@ -166,13 +166,13 @@ void APlayerCharacter::PostInitializeComponents()
 			//GSLOG(Error, TEXT("OnSmashCheck Lambda"));
 			if (CurrentMouseInput == EReadyToAttack::Smash && CanAttack())
 			{
-				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, PlayerAnim->GetMaxSection()-1));
-				SmashIndex = FMath::Clamp<int32>(SmashIndex+1, 1, PlayerAnim->GetMaxSection());
-				
+				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, PlayerAnim->GetMaxSection() - 1));
+				SmashIndex = FMath::Clamp<int32>(SmashIndex + 1, 1, PlayerAnim->GetMaxSection());
+
 				//GSLOG(Error, TEXT("Smash Index : %i"), SmashIndex);
 
 				CurrentMouseInput = EReadyToAttack::None;
-				
+
 				PlayerAnim->SetCurrentCombo(PlayerAnim->GetCurrentCombo() + 1);
 
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
@@ -187,10 +187,11 @@ void APlayerCharacter::PostInitializeComponents()
 				AttackEndComboState();
 			}
 		});
-	
+
 	CharacterStat->OnPlayerHPIsZero.AddLambda([this]()->void
 		{
-			// TODO : 플레이어 죽었을 때 
+			PlayerAnim->SetIsDead();
+			SetActorEnableCollision(false);
 		});
 }
 
@@ -198,29 +199,31 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorld()->GetTimerManager().SetTimer(PlayerHPHandle, this, &APlayerCharacter::HP_Recovery, 1.0f, true);
-	GetWorld()->GetTimerManager().SetTimer(PlayerStaminaHandle, this, &APlayerCharacter::Stamina_Recovery, 1.0f, true);
+
 }
 
 void APlayerCharacter::Tick(float DeltaSeconds)
 {
+	// 플레이어가 달리는지 검사
 	if (GetCharacterMovement()->MaxWalkSpeed >= 450.f)
 	{
 		bCanStamina_Recovery = false;
 
-		if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryHandle))
+		if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryCheckHandle))
 		{
-			GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+			GetWorldTimerManager().ClearTimer(Stamina_RecoveryCheckHandle);
 		}
 
 		float waitTime = 3.f;
 
-		GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryHandle, [&]()
+		GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryCheckHandle, [&]()
 			{
 				bCanStamina_Recovery = true;
-				GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+				GetWorldTimerManager().ClearTimer(Stamina_RecoveryCheckHandle);
 			}, waitTime, false);
 	}
+
+	//GSLOG(Warning, TEXT("AttackIndex : %d"),AttackComboIndex);
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -228,23 +231,23 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	CharacterStat->SetCurrentHP(FMath::Clamp<float>(CharacterStat->GetCurrentHP() - Damage, 0.0f, CharacterStat->GetMaxHP()));
-	
+
 	bCanHP_Recovery = false;
 
 	// 5초간 피격 여부 검사
-	if (GetWorldTimerManager().IsTimerActive(HP_RecoveryHandle))
+	if (GetWorldTimerManager().IsTimerActive(HP_RecoveryCheckHandle))
 	{
-		GetWorldTimerManager().ClearTimer(HP_RecoveryHandle);
+		GetWorldTimerManager().ClearTimer(HP_RecoveryCheckHandle);
 	}
 
 	float waitTime = 5.f;
 
-	GetWorld()->GetTimerManager().SetTimer(HP_RecoveryHandle, [&]()
-	{
-		bCanHP_Recovery = true;
-		GetWorldTimerManager().ClearTimer(HP_RecoveryHandle);
-	}, waitTime, false);
-	
+	GetWorld()->GetTimerManager().SetTimer(HP_RecoveryCheckHandle, [&]()
+		{
+			bCanHP_Recovery = true;
+			GetWorldTimerManager().ClearTimer(HP_RecoveryCheckHandle);
+		}, waitTime, false);
+
 	return Damage;
 }
 
@@ -253,17 +256,17 @@ void APlayerCharacter::Attack()
 	// 3초간 Attack 여부 검사
 	bCanStamina_Recovery = false;
 
-	if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryHandle))
+	if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryCheckHandle))
 	{
-		GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+		GetWorldTimerManager().ClearTimer(Stamina_RecoveryCheckHandle);
 	}
 
 	float waitTime = 3.f;
 
-	GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryHandle, [&]()
+	GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryCheckHandle, [&]()
 		{
 			bCanStamina_Recovery = true;
-			GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+			GetWorldTimerManager().ClearTimer(Stamina_RecoveryCheckHandle);
 		}, waitTime, false);
 
 
@@ -280,7 +283,6 @@ void APlayerCharacter::Attack()
 		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 		PlayerAnim->PlayAttackMontage(AttackComboIndex);
 		UseStamina(true);
-		
 		//CurrentState = EPlayerState::Attacking;
 	}
 }
@@ -290,21 +292,21 @@ void APlayerCharacter::Smash()
 	// 3초간 Smash 여부 검사
 	bCanStamina_Recovery = false;
 
-	if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryHandle))
+	if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryCheckHandle))
 	{
-		GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+		GetWorldTimerManager().ClearTimer(Stamina_RecoveryCheckHandle);
 	}
 
 	float waitTime = 3.f;
 
-	GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryHandle, [&]()
+	GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryCheckHandle, [&]()
 		{
 			bCanStamina_Recovery = true;
-			GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+			GetWorldTimerManager().ClearTimer(Stamina_RecoveryCheckHandle);
 		}, waitTime, false);
 
-	
-	if(PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
+
+	if (PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
 	{
 		CurrentMouseInput = EReadyToAttack::Smash;
 	}
@@ -326,21 +328,21 @@ void APlayerCharacter::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 }
 
 void APlayerCharacter::Evade()
-{ 
+{
 	// 3초간 회피 여부 검사	
 	bCanStamina_Recovery = false;
 
-	if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryHandle))
+	if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryCheckHandle))
 	{
-		GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+		GetWorldTimerManager().ClearTimer(Stamina_RecoveryCheckHandle);
 	}
 
 	float waitTime = 3.f;
 
-	GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryHandle, [&]()
+	GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryCheckHandle, [&]()
 		{
 			bCanStamina_Recovery = true;
-			GetWorldTimerManager().ClearTimer(Stamina_RecoveryHandle);
+			GetWorldTimerManager().ClearTimer(Stamina_RecoveryCheckHandle);
 		}, waitTime, false);
 
 
@@ -371,7 +373,7 @@ void APlayerCharacter::Dodge()
 }
 
 void APlayerCharacter::SetPlayerRotation()
-{	
+{
 	auto GSController = Cast<APlayer_Controller>(GetController());
 
 	int32 RotationRate = 0;
@@ -388,53 +390,27 @@ void APlayerCharacter::SetPlayerRotation()
 	}
 
 	SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw + RotationRate, 0.0f));
-	
-}
 
-void APlayerCharacter::HP_Recovery()
-{
-	// 초당 HP 회복
-	if (bCanHP_Recovery)
-	{
-		int currentHP = CharacterStat->GetCurrentHP();
-
-		currentHP = FMath::Clamp<float>(currentHP + 1.f, 0.f, CharacterStat->GetMaxHP());
-
-		CharacterStat->SetCurrentHP(currentHP);
-	}
-}
-
-void APlayerCharacter::Stamina_Recovery()
-{
-	// 초당 Stamina 회복
-	if (bCanStamina_Recovery)
-	{
-		int currentStamina = CharacterStat->GetCurrentStamina();
-
-		currentStamina = FMath::Clamp<float>(currentStamina + 15.f, 0.f, CharacterStat->GetMaxStamina());
-
-		CharacterStat->SetCurrentStamina(currentStamina);
-	}
 }
 
 bool APlayerCharacter::CanEvade() const
 {
-	return (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Attacking) 
-	&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Parrying) 
-	&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Dodge);
+	return (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Attacking)
+		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Parrying)
+		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Dodge);
 }
 
 bool APlayerCharacter::CanMove() const
 {
 	return (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Attacking)
-	&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Parrying)
-	&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Dodge);
+		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Parrying)
+		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Dodge);
 }
 
 bool APlayerCharacter::CanAttack() const
 {
 	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	float UseStamina = GSGameInstance->GetPlayerStaminaTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex());
+	float UseStamina = GSGameInstance->GetPlayerStaminaTable(AttackComboIndex, SmashIndex);
 
 	if (CharacterStat->GetCurrentStamina() >= UseStamina)
 	{

@@ -85,6 +85,10 @@ private :
 	//UFUNCTION()
 	//void AnimNotify_AttackHitCheck();
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	bool IsDead;
+
 public : 
 	EBossState GetCurrentBossState()const { return CurrentState; }
+	void SetDeadAnim() {IsDead = true;}
 };

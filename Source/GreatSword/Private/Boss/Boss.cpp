@@ -71,8 +71,8 @@ void ABoss::PostInitializeComponents()
 	BossStat->OnBossHPIsZero.AddLambda([this]()->void
 		{
 			IsAlive = false;
-			BossAnim->PlayDeathMontage();
-			SetActorEnableCollision(false);
+			BossAnim->SetDeadAnim();
+			SetActorEnableCollision(false); 
 		});
 }
 

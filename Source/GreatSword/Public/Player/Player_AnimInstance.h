@@ -131,6 +131,9 @@ private:
 
 	// Evade
 
+	// Dead
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	bool IsDead;
 
 public:
 	int32 GetCurrentCombo() const { return CurrentCombo; }
@@ -142,4 +145,6 @@ public:
 
 	EPlayerState GetCurrentPlayerState() const { return CurrentPlayerState; }
 	void SetCurrentPlayerState(EPlayerState NewState) { CurrentPlayerState = NewState; }
+
+	void SetIsDead() { IsDead = true; }
 };

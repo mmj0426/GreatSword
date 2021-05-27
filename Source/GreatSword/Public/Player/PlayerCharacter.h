@@ -73,6 +73,10 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 MaxCombo;
 
+	// Recovery
+	bool bCanHP_Recovery;
+	bool bCanStamina_Recovery;
+
 
 
 #pragma region Legacy - Draw Debug
@@ -88,13 +92,9 @@ private:
 
 public:
 
-	FTimerHandle HP_RecoveryHandle;
+	FTimerHandle HP_RecoveryCheckHandle;
 
-	FTimerHandle Stamina_RecoveryHandle;
-
-	FTimerHandle PlayerHPHandle;
-
-	FTimerHandle PlayerStaminaHandle;
+	FTimerHandle Stamina_RecoveryCheckHandle;
 
 	//Attack
 	UFUNCTION()
@@ -115,10 +115,11 @@ public:
 
 	void SetPlayerRotation();
 
-	void HP_Recovery();
-	void Stamina_Recovery();
-
 	void UseStamina(bool isAttack);
+
+	// Recovery
+	bool GetCanHP_Recovery() {return bCanHP_Recovery;}
+	bool GetCanStamina_Recovery() { return bCanStamina_Recovery; }
 
 public:
 	
@@ -128,6 +129,5 @@ public:
 	bool CanMove() const;
 	bool CanAttack() const;
 
-	bool bCanHP_Recovery;
-	bool bCanStamina_Recovery;
+
 };

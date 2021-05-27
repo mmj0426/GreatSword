@@ -102,7 +102,8 @@ UBoss_AnimInstance::UBoss_AnimInstance()
 	{
 		DeathMontage = Death_Montage.Object;
 	}
-															 
+			
+	IsDead = false;
 }
 
 void UBoss_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
@@ -110,14 +111,17 @@ void UBoss_AnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
 	ABoss* const Boss = Cast<ABoss>(TryGetPawnOwner());
-	if (::IsValid(TryGetPawnOwner()))
+	if (! ::IsValid(TryGetPawnOwner())) return;
+	if(!IsDead)
 	{
 		CurrentPawnSpeed = TryGetPawnOwner()->GetVelocity().Size();
 	}
+	
 }
 
 void UBoss_AnimInstance::PlayAttackMontage(FString MontageName)
 {
+	GSCHECK(!IsDead);
 	if (!Montage_IsPlaying(BossAttackMontages[MontageName]))
 	{
 		Montage_Play(BossAttackMontages[MontageName],1.0f);
@@ -127,6 +131,7 @@ void UBoss_AnimInstance::PlayAttackMontage(FString MontageName)
 
 void UBoss_AnimInstance::PlayDeathMontage()
 {
+	GSCHECK(!IsDead);
 	if (!Montage_IsPlaying(DeathMontage))
 	{
 		Montage_Play(DeathMontage,1.0f);
