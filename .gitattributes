@@ -38,3 +38,4 @@ E:/GreatSword/Content/Meadow_Environment/Environment/Roads/Textures filter=lfs d
 E:/GreatSword/Content/MercenaryWarrior/Textures filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/MercenaryWarrior/Meshes filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/MercenaryWarrior/Materials filter=lfs diff=lfs merge=lfs -text
+E:/GreatSword/Content/MercenaryWarrior/Demo filter=lfs diff=lfs merge=lfs -text
