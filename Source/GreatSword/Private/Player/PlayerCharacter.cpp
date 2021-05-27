@@ -58,8 +58,9 @@ APlayerCharacter::APlayerCharacter()
 
 	//Skeletal Mesh
 
+	// /Game/GreatSword/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
-		SK_Player(TEXT("/Game/GreatSword/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
+		SK_Player(TEXT("/Game/MercenaryWarrior/Meshes/SK_MercenaryWarrior_WithoutHelmet.SK_MercenaryWarrior_WithoutHelmet"));
 
 	if (SK_Player.Succeeded())
 	{
@@ -71,7 +72,7 @@ APlayerCharacter::APlayerCharacter()
 	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 
 	static ConstructorHelpers::FClassFinder<UAnimInstance>
-		Anim_Player(TEXT("/Game/Blueprints/Player/Animation/AnimBP_PlayerCharacter.AnimBP_PlayerCharacter_C"));
+		Anim_Player(TEXT("/Game/Blueprints/Player/Animation/AnimBP_Player.AnimBP_Player_C"));
 
 	if (Anim_Player.Succeeded())
 	{
@@ -84,9 +85,12 @@ APlayerCharacter::APlayerCharacter()
 
 	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
 	Weapon->SetupAttachment(GetMesh(), WeaponSocket);
+	Weapon->SetRelativeScale3D(FVector(2.f,2.f,2.f));
+	//Weapon->Se
 
+	// /Game/GreatSword/GreatSword/Weapon/GreatSword_02.GreatSword_02
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>
-		SM_Weapon(TEXT("/Game/GreatSword/GreatSword/Weapon/GreatSword_02.GreatSword_02"));
+		SM_Weapon(TEXT("/Game/MercenaryWarrior/Meshes/SM_greatsword.SM_greatsword"));
 
 	if (SM_Weapon.Succeeded())
 	{
@@ -220,9 +224,10 @@ void APlayerCharacter::Tick(float DeltaSeconds)
 			{
 				bCanStamina_Recovery = true;
 				GetWorldTimerManager().ClearTimer(Stamina_RecoveryCheckHandle);
-			}, waitTime, false);
+			}, waitTime, false); 
 	}
 
+	//GSLOG(Warning, TEXT("Current Pawn Speed : %f"), GetCharacterMovement()->MaxWalkSpeed);
 	//GSLOG(Warning, TEXT("AttackIndex : %d"),AttackComboIndex);
 }
 
@@ -283,18 +288,21 @@ void APlayerCharacter::Attack()
 
 	if (PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
 	{
+		//GSLOG(Warning, TEXT(" Current  Player State : Attack"))
 		GSCHECK(FMath::IsWithinInclusive<int32>(AttackComboIndex, 1, MaxCombo));
 		CurrentMouseInput = EReadyToAttack::Attack;
 	}
 	else
 	{
-		GSCHECK(AttackComboIndex == 0);
+		//GSCHECK(AttackComboIndex == 0);
 		AttackStartComboState();
 		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 		PlayerAnim->PlayAttackMontage(AttackComboIndex);
 		UseStamina(true);
-		//CurrentState = EPlayerState::Attacking;
+
+		PlayerAnim->SetCurrentPlayerState(EPlayerState::Attacking);
 	}
+
 }
 
 void APlayerCharacter::Smash()
@@ -324,6 +332,7 @@ void APlayerCharacter::Smash()
 
 void APlayerCharacter::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 {
+
 	if (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Attacking)
 	{
 		PlayerAnim->SetCurrentPlayerState(EPlayerState::Idle);

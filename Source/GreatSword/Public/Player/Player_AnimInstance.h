@@ -147,4 +147,6 @@ public:
 	void SetCurrentPlayerState(EPlayerState NewState) { CurrentPlayerState = NewState; }
 
 	void SetIsDead() { IsDead = true; }
+
+	UAnimMontage* GetCurrentAttackMontage() {	return CurrentAttackMontage; }
 };
