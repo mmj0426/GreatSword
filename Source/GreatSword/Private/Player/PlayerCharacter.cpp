@@ -230,7 +230,17 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 {
 	float Damage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	CharacterStat->SetCurrentHP(FMath::Clamp<float>(CharacterStat->GetCurrentHP() - Damage, 0.0f, CharacterStat->GetMaxHP()));
+	// 패링이 아닐 경우
+	if (!isParrying && !isPerfectParrying)
+	{
+		CharacterStat->SetCurrentHP(FMath::Clamp<float>(CharacterStat->GetCurrentHP() - Damage, 0.0f, CharacterStat->GetMaxHP()));
+	}
+	if (isPerfectParrying)
+	{
+		UGameplayStatics::SetGlobalTimeDilation(this, 0.4);
+		// 패링 소모값만큼 스태미나 회복
+		CharacterStat->SetCurrentStamina(FMath::Clamp<float>(CharacterStat->GetCurrentStamina() + 10.f, 0.f, CharacterStat->GetMaxStamina()));
+	}
 
 	bCanHP_Recovery = false;
 

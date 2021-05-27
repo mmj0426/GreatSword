@@ -73,9 +73,20 @@ private:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = Attack, Meta = (AllowPrivateAccess = true))
 	int32 MaxCombo;
 
+
+	//Parrying
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Evade, Meta = (AllowPrivateAccess = true))
+	bool isParrying;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Evade, Meta = (AllowPrivateAccess = true))
+	bool isPerfectParrying;
+
+
 	// Recovery
 	bool bCanHP_Recovery;
 	bool bCanStamina_Recovery;
+
+
 
 
 
@@ -112,6 +123,7 @@ public:
 	void Evade();
 	void Parrying();
 	void Dodge();
+
 
 	void SetPlayerRotation();
 
