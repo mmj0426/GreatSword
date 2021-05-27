@@ -152,15 +152,15 @@ void ABoss::DecideAttackType()
 			judgeAttack = 0;
 		}
 
-		if (TEXT("Jump") == CurrentAttackType || true == CanDash)
-		{
-			//Dash
-			CurrentAttackType = GSGameInstance->Phase2_Attack[5].AttackName;
-			judgeAttack += GSGameInstance->Phase2_Attack[5].JudgeAttack;
-			HitDamage = BossStat->BaseDamage * GSGameInstance->Phase2_Attack[5].ATKRate;
-			CanDash = false;
-			break;
-		}
+		//if (TEXT("Jump") == CurrentAttackType || true == CanDash)
+		//{
+		//	//Dash
+		//	CurrentAttackType = GSGameInstance->Phase2_Attack[5].AttackName;
+		//	judgeAttack += GSGameInstance->Phase2_Attack[5].JudgeAttack;
+		//	HitDamage = BossStat->BaseDamage * GSGameInstance->Phase2_Attack[5].ATKRate;
+		//	CanDash = false;
+		//	break;
+		//}
 		if (2 == judgeAttack)
 		{
 			// Grount01-2
@@ -202,15 +202,15 @@ void ABoss::DecideAttackType()
 			judgeAttack = 0;
 		}
 
-		if (TEXT("Jump") == CurrentAttackType || true == CanDash)
-		{
-			//Dash
-			CurrentAttackType = GSGameInstance->Phase2_Attack[5].AttackName;
-			judgeAttack += GSGameInstance->Phase2_Attack[5].JudgeAttack;
-			HitDamage = BossStat->BaseDamage * GSGameInstance->Phase2_Attack[5].ATKRate;
-			CanDash = false;
-			break;
-		}
+		//if (TEXT("Jump") == CurrentAttackType || true == CanDash)
+		//{
+		//	//Dash
+		//	CurrentAttackType = GSGameInstance->Phase2_Attack[5].AttackName;
+		//	judgeAttack += GSGameInstance->Phase2_Attack[5].JudgeAttack;
+		//	HitDamage = BossStat->BaseDamage * GSGameInstance->Phase2_Attack[5].ATKRate;
+		//	CanDash = false;
+		//	break;
+		//}
 		// Ground02
 		if (true == IsPhase3FirstEntry || 1 == judgeAttack)
 		{

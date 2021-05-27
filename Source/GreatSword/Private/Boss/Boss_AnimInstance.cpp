@@ -62,12 +62,12 @@ UBoss_AnimInstance::UBoss_AnimInstance()
 		Phase2_Attack05 = Phase2_Attack05_Montage.Object;
 	}	
 	
-	static ConstructorHelpers::FObjectFinder<UAnimMontage>
-		Phase2_Attack06_Montage(TEXT("/Game/Blueprints/Enemies/Animation/Attack/Dash.Dash"));
-	if (Phase2_Attack06_Montage.Succeeded())
-	{
-		Phase2_Attack06 = Phase2_Attack06_Montage.Object;
-	}
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage>
+	//	Phase2_Attack06_Montage(TEXT("/Game/Blueprints/Enemies/Animation/Attack/Dash.Dash"));
+	//if (Phase2_Attack06_Montage.Succeeded())
+	//{
+	//	Phase2_Attack06 = Phase2_Attack06_Montage.Object;
+	//}
 
 	static ConstructorHelpers::FObjectFinder<UAnimMontage>
 		Phase3_Attack01_Montage(TEXT("/Game/Blueprints/Enemies/Animation/Attack/Front03.Front03"));
@@ -91,7 +91,7 @@ UBoss_AnimInstance::UBoss_AnimInstance()
 	BossAttackMontages.Emplace(TEXT("L_Foot"), Phase2_Attack03);
 	BossAttackMontages.Emplace(TEXT("R_Foot"), Phase2_Attack04);
 	BossAttackMontages.Emplace(TEXT("Jump"), Phase2_Attack05);
-	BossAttackMontages.Emplace(TEXT("Dash"), Phase2_Attack06);
+	//BossAttackMontages.Emplace(TEXT("Dash"), Phase2_Attack06);
 
 	BossAttackMontages.Emplace(TEXT("Front03"),Phase3_Attack01);
 	BossAttackMontages.Emplace(TEXT("Ground02"), Phase3_Attack02);
