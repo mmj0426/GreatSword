@@ -3,6 +3,7 @@
 
 #include "Player_Controller.h"
 #include "PlayerCharacter.h"
+#include "GSHUD.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 
@@ -32,6 +33,7 @@ void APlayer_Controller::SetupInputComponent()
 	InputComponent->BindAction(TEXT("Attack"), EInputEvent::IE_Pressed, this, &APlayer_Controller::Attack);
 	InputComponent->BindAction(TEXT("Smash"), EInputEvent::IE_Pressed, this, &APlayer_Controller::Smash);
 	InputComponent->BindAction(TEXT("Evade"), EInputEvent::IE_Pressed, this, &APlayer_Controller::Evade);
+
 }
 
 

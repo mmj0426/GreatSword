@@ -33,6 +33,8 @@ public:
 
 	FOnBossHPIsZeroDelegate OnBossHPIsZero;
 
+	FTimerHandle HUDInitHandle;
+
 	float GetCurrentHP() { return CurrentHP; }
 	void SetCurrentHP(float HP) { CurrentHP = HP; }
 	float GetMaxHP() { return MaxHP; }	

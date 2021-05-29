@@ -37,15 +37,16 @@ public:
 	class UCameraComponent* Camera;
 
 	// Weapon
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	class UStaticMeshComponent* Weapon;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Weapon)
+	class UStaticMeshComponent* WeaponMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = Weapon)
 		class UCapsuleComponent* WeaponCollision;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
-	class UPlayerCharacterStatComponent* CharacterStat;
+		class UPlayerCharacterStatComponent* CharacterStat;
 
+	UPlayerCharacterStatComponent* GetCharacterStat(){return CharacterStat;}
 
 private:
 

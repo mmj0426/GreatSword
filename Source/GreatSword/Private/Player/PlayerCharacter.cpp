@@ -7,6 +7,7 @@
 #include "PlayerCharacterStatComponent.h"
 #include "GSGameInstance.h"
 #include "Boss.h"
+#include "GSHUD.h"
 //#include "DrawDebugHelpers.h"
 
 #include "UObject/ConstructorHelpers.h"
@@ -17,6 +18,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/WidgetComponent.h"
 
 
 // Sets default values
@@ -83,10 +85,10 @@ APlayerCharacter::APlayerCharacter()
 	//Weapon
 	FName WeaponSocket(TEXT("Weapon"));
 
-	Weapon = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
-	Weapon->SetupAttachment(GetMesh(), WeaponSocket);
-	Weapon->SetRelativeScale3D(FVector(2.f,2.f,2.f));
-	//Weapon->Se
+	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+	WeaponMesh->SetupAttachment(GetMesh(), WeaponSocket);
+	WeaponMesh->SetRelativeScale3D(FVector(2.f,2.f,2.f));
+	WeaponMesh->SetCollisionProfileName("Nocollision");
 
 	// /Game/GreatSword/GreatSword/Weapon/GreatSword_02.GreatSword_02
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>
@@ -94,12 +96,11 @@ APlayerCharacter::APlayerCharacter()
 
 	if (SM_Weapon.Succeeded())
 	{
-		Weapon->SetStaticMesh(SM_Weapon.Object);
+		WeaponMesh->SetStaticMesh(SM_Weapon.Object);
 	}
 
 	WeaponCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("WeaponCollision"));
-	WeaponCollision->SetupAttachment(Weapon);
-	WeaponCollision->SetCollisionProfileName("Player_Weapon");
+	WeaponCollision->SetupAttachment(WeaponMesh);
 
 	// Attack
 
@@ -115,6 +116,8 @@ APlayerCharacter::APlayerCharacter()
 
 	bCanHP_Recovery = false;
 	bCanStamina_Recovery = false;
+
+	
 }
 
 void APlayerCharacter::AttackStartComboState()
@@ -137,6 +140,7 @@ void APlayerCharacter::AttackEndComboState()
 void APlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
 
 	PlayerAnim = Cast<UPlayer_AnimInstance>(GetMesh()->GetAnimInstance());
 	PlayerAnim->SetCurrentPlayerState(EPlayerState::Idle);
@@ -203,7 +207,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	
 }
 
 void APlayerCharacter::Tick(float DeltaSeconds)
@@ -239,6 +243,7 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	if (!isParrying && !isPerfectParrying)
 	{
 		CharacterStat->SetCurrentHP(FMath::Clamp<float>(CharacterStat->GetCurrentHP() - Damage, 0.0f, CharacterStat->GetMaxHP()));
+
 	}
 	if (isPerfectParrying)
 	{
@@ -459,6 +464,8 @@ void APlayerCharacter::UseStamina(bool isAttack)
 
 void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	//GSLOG(Warning,TEXT("OnOverlapBegin"));
+
 	auto HitResult = Cast<ABoss>(OtherActor);
 	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 

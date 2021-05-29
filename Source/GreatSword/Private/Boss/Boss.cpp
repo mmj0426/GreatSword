@@ -30,7 +30,7 @@ ABoss::ABoss()
 	GetCapsuleComponent()->SetCapsuleRadius(60.0f);
 	GetCapsuleComponent()->SetCollisionProfileName("Boss");
 
-	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -130.0f), FRotator(0.0f, -90.0f, 0.0f));
+	GetMesh()->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, -100.0f), FRotator(0.0f, -90.0f, 0.0f));
 
 	//MaxHP = 100.0f;
 	IsAlive = true;

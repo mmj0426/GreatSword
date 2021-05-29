@@ -6,6 +6,8 @@
 
 #include "GameFramework/Character.h"
 #include "UObject/ConstructorHelpers.h"
+#include "GSHUD.h"
+
 
 AGSGameMode::AGSGameMode()
 {
@@ -14,4 +16,10 @@ AGSGameMode::AGSGameMode()
 
 	DefaultPawnClass = PlayerCharacter.Class;
 	PlayerControllerClass = APlayer_Controller::StaticClass();
+
+
+	static ConstructorHelpers::FClassFinder<AGSHUD>
+	HudClass(TEXT("/Game/Blueprints/UMG/GSHUD.GSHUD_C"));
+
+	HUDClass = HudClass.Class;
 }

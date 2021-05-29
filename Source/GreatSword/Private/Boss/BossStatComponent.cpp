@@ -2,6 +2,10 @@
 
 
 #include "BossStatComponent.h"
+#include "Boss.h"
+#include "GSHUD.h"
+#include "Kismet/GameplayStatics.h"
+#include "Widget_StatBar.h"
 
 
 // Sets default values for this component's properties
@@ -29,7 +33,7 @@ void UBossStatComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
-	//CurrentHP = MaxHP;
+	CurrentHP = MaxHP;
 }
 #endif
 
@@ -37,7 +41,17 @@ void UBossStatComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyC
 void UBossStatComponent::BeginPlay()
 {
 	Super::BeginPlay();	// ...
-	
+
+	//GSLOG(Warning, TEXT("PlayerStat : Beginplay"));
+	GetWorld()->GetTimerManager().SetTimer(HUDInitHandle, [&]()
+		{
+			auto Controller = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+			auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_StatBar();
+
+			Widget->SetBossHPPercent(FMath::Clamp(MaxHP / MaxHP, 0.f, 1.f));
+
+			GetWorld()->GetTimerManager().ClearTimer(HUDInitHandle);
+		}, 0.1f, false);	
 }
 
 
@@ -59,6 +73,11 @@ void UBossStatComponent::InitializeComponent()
 void UBossStatComponent::SetHP(float NewDamage)
 {
 	CurrentHP = FMath::Clamp<float>(CurrentHP - NewDamage, 0.0f,MaxHP);
+
+	auto Controller = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_StatBar();
+
+	Widget->SetBossHPPercent(FMath::Clamp(CurrentHP/MaxHP,0.f,1.f));
 
 	GSLOG(Warning, TEXT("Boss CurrentHP : %f"), CurrentHP);
 

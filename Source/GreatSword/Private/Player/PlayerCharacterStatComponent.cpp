@@ -4,6 +4,8 @@
 #include "PlayerCharacterStatComponent.h"
 #include "Lightmass/LightmassImportanceVolume.h"
 #include "PlayerCharacter.h"
+#include "Widget_StatBar.h"
+#include "GSHUD.h"
 
 // Sets default values for this component's properties
 UPlayerCharacterStatComponent::UPlayerCharacterStatComponent()
@@ -19,6 +21,10 @@ UPlayerCharacterStatComponent::UPlayerCharacterStatComponent()
 	MaxStamina = 100.0f;
 	Damage = 100.0f;
 
+
+
+
+
 	// ...
 }
 
@@ -29,6 +35,7 @@ void UPlayerCharacterStatComponent::PostInitProperties()
 	
 	CurrentHP = MaxHP;
 	CurrentStamina = MaxStamina;
+
 }
 
 #if WITH_EDITOR
@@ -47,8 +54,17 @@ void UPlayerCharacterStatComponent::BeginPlay()
 	Super::BeginPlay();
 
 
+	//GSLOG(Warning, TEXT("PlayerStat : Beginplay"));
+
 	GetWorld()->GetTimerManager().SetTimer(HP_RecoveryHandle, this, &UPlayerCharacterStatComponent::HP_Recovery, 1.0f, true);
 	GetWorld()->GetTimerManager().SetTimer(Stamina_RecoveryHandle, this, &UPlayerCharacterStatComponent::Stamina_Recovery, 1.0f, true);
+
+	auto Player = Cast<APlayerCharacter>(GetOwner());
+	auto Controller = Cast<APlayerController>(Player->GetController());
+	auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_StatBar();
+
+	Widget->SetPlayerHPPercent(FMath::Clamp<float>(MaxHP / MaxHP, 0.f, 1.f));
+	Widget->SetPlayerStaminaPercent(FMath::Clamp<float>(MaxStamina / MaxStamina, 0.f, 1.f));
 	// ...
 	
 }
@@ -59,6 +75,12 @@ void UPlayerCharacterStatComponent::SetCurrentHP(float HP)
 
 	GSLOG(Warning, TEXT("Player CurrentHP : %f"), CurrentHP);
 
+	auto Player = Cast<APlayerCharacter>(GetOwner());
+	auto Controller = Cast<APlayerController>(Player->GetController());
+	auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_StatBar();
+
+	Widget->SetPlayerHPPercent(FMath::Clamp<float>(CurrentHP / MaxHP, 0.f, 1.f));
+
 	if (CurrentHP <= 0.f)
 	{
 		OnPlayerHPIsZero.Broadcast();
@@ -68,6 +90,13 @@ void UPlayerCharacterStatComponent::SetCurrentHP(float HP)
 void UPlayerCharacterStatComponent::SetCurrentStamina(float Stamina)
 {
 	CurrentStamina = Stamina;
+
+	auto Player = Cast<APlayerCharacter>(GetOwner());
+	auto Controller = Cast<APlayerController>(Player->GetController());
+	auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_StatBar();
+
+	Widget->SetPlayerStaminaPercent(FMath::Clamp<float>(CurrentStamina / MaxStamina, 0.f, 1.f));
+
 	//GSLOG(Warning, TEXT("Player Stamina : %f"), CurrentStamina);
 }
 
