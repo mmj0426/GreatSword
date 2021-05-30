@@ -39,4 +39,6 @@ E:/GreatSword/Content/MercenaryWarrior/Textures filter=lfs diff=lfs merge=lfs -t
 E:/GreatSword/Content/MercenaryWarrior/Meshes filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/MercenaryWarrior/Materials filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/MercenaryWarrior/Demo filter=lfs diff=lfs merge=lfs -text
-Content/LogCabin filter=lfs diff=lfs merge=lfs -text
+Content/LogCabin/Textures/LogCabin_Maps filter=lfs diff=lfs merge=lfs -text
+Content/LogCabin/Textures/Props filter=lfs diff=lfs merge=lfs -text
+Content/LogCabin/Audio filter=lfs diff=lfs merge=lfs -text
