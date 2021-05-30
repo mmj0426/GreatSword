@@ -39,3 +39,4 @@ E:/GreatSword/Content/MercenaryWarrior/Textures filter=lfs diff=lfs merge=lfs -t
 E:/GreatSword/Content/MercenaryWarrior/Meshes filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/MercenaryWarrior/Materials filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/MercenaryWarrior/Demo filter=lfs diff=lfs merge=lfs -text
+C:/Users/Gim[[:space:]]JeongSu/Documents/GreatSword/Content/LogCabin filter=lfs diff=lfs merge=lfs -text
