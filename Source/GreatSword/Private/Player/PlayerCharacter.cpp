@@ -92,7 +92,7 @@ APlayerCharacter::APlayerCharacter()
 
 	// /Game/GreatSword/GreatSword/Weapon/GreatSword_02.GreatSword_02
 	static ConstructorHelpers::FObjectFinder<UStaticMesh>
-		SM_Weapon(TEXT("/Game/MercenaryWarrior/Meshes/SM_greatsword.SM_greatsword"));
+		SM_Weapon(TEXT("/Game/Blueprints/Player/SM_Great_Sword_5.SM_Great_Sword_5"));
 
 	if (SM_Weapon.Succeeded())
 	{
@@ -164,6 +164,7 @@ void APlayerCharacter::PostInitializeComponents()
 
 				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
 
+				GSLOG(Warning, TEXT("On Next Attack Check"));
 				PlayerAnim->PlayAttackMontage(AttackComboIndex);
 				UseStamina(true);
 			}
@@ -200,6 +201,7 @@ void APlayerCharacter::PostInitializeComponents()
 		{
 			PlayerAnim->SetIsDead();
 			SetActorEnableCollision(false);
+			//UnPossessed();
 		});
 }
 
@@ -337,6 +339,7 @@ void APlayerCharacter::Smash()
 
 void APlayerCharacter::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 {
+	GSLOG(Error, TEXT("Player Montage Ended"));
 
 	if (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Attacking)
 	{
@@ -433,17 +436,18 @@ bool APlayerCharacter::CanMove() const
 
 bool APlayerCharacter::CanAttack() const
 {
-	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	float UseStamina = GSGameInstance->GetPlayerStaminaTable(AttackComboIndex, SmashIndex);
+	//auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	//float UseStamina = GSGameInstance->GetPlayerStaminaTable(AttackComboIndex, SmashIndex);
 
-	if (CharacterStat->GetCurrentStamina() >= UseStamina)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	//if (CharacterStat->GetCurrentStamina() >= UseStamina)
+	//{
+	//	return true;
+	//}
+	//else
+	//{
+	//	return false;
+	//}
+	return true;
 }
 
 void APlayerCharacter::UseStamina(bool isAttack)
