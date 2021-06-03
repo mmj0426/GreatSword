@@ -130,6 +130,7 @@ public:
 	void SetPlayerRotation();
 
 	void UseStamina(bool isAttack);
+	float StaminaToUse(bool isAttack);
 
 	// Recovery
 	bool GetCanHP_Recovery() {return bCanHP_Recovery;}
@@ -141,7 +142,6 @@ public:
 
 	bool CanEvade() const;
 	bool CanMove() const;
-	bool CanAttack() const;
 
 
 };

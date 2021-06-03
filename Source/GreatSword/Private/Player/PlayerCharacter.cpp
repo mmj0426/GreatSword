@@ -115,9 +115,7 @@ APlayerCharacter::APlayerCharacter()
 	CharacterStat = CreateDefaultSubobject<UPlayerCharacterStatComponent>(TEXT("CharacterStat"));
 
 	bCanHP_Recovery = false;
-	bCanStamina_Recovery = false;
-
-	
+	bCanStamina_Recovery = false;	
 }
 
 void APlayerCharacter::AttackStartComboState()
@@ -141,7 +139,6 @@ void APlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-
 	PlayerAnim = Cast<UPlayer_AnimInstance>(GetMesh()->GetAnimInstance());
 	PlayerAnim->SetCurrentPlayerState(EPlayerState::Idle);
 	GSCHECK(nullptr != PlayerAnim);
@@ -157,23 +154,27 @@ void APlayerCharacter::PostInitializeComponents()
 	// Combo Attack Delegate
 	PlayerAnim->OnNextAttackCheck.AddLambda([this]()->void
 		{
-			if (CurrentMouseInput == EReadyToAttack::Attack && CanAttack())
+			if (CurrentMouseInput == EReadyToAttack::Attack)
 			{
 				AttackStartComboState();
 				SmashIndex = 0;
 
-				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-
 				GSLOG(Warning, TEXT("On Next Attack Check"));
-				PlayerAnim->PlayAttackMontage(AttackComboIndex);
-				UseStamina(true);
+
+				if (StaminaToUse(true) <= CharacterStat->GetCurrentStamina())
+				{
+					SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+					UseStamina(true);
+					PlayerAnim->PlayAttackMontage(AttackComboIndex);
+				}
+	
 			}
 		});
 
 	PlayerAnim->OnSmashCheck.AddLambda([this]()->void
 		{
 			//GSLOG(Error, TEXT("OnSmashCheck Lambda"));
-			if (CurrentMouseInput == EReadyToAttack::Smash && CanAttack())
+			if (CurrentMouseInput == EReadyToAttack::Smash)
 			{
 				GSCHECK(FMath::IsWithinInclusive<int32>(SmashIndex, 0, PlayerAnim->GetMaxSection() - 1));
 				SmashIndex = FMath::Clamp<int32>(SmashIndex + 1, 1, PlayerAnim->GetMaxSection());
@@ -184,9 +185,13 @@ void APlayerCharacter::PostInitializeComponents()
 
 				PlayerAnim->SetCurrentCombo(PlayerAnim->GetCurrentCombo() + 1);
 
-				SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-				PlayerAnim->JumpToSmashMontageSection(SmashIndex);
-				UseStamina(true);
+				if (StaminaToUse(true) <= CharacterStat->GetCurrentStamina())
+				{
+					SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+					UseStamina(true);
+					PlayerAnim->JumpToSmashMontageSection(SmashIndex);
+				}
+
 
 				//PlayerAnim->SetCurrentPlayerState(EPlayerState::Attacking);
 			}
@@ -303,11 +308,16 @@ void APlayerCharacter::Attack()
 	{
 		//GSCHECK(AttackComboIndex == 0);
 		AttackStartComboState();
-		SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
-		PlayerAnim->PlayAttackMontage(AttackComboIndex);
-		UseStamina(true);
+		
+		if (StaminaToUse(true) <= CharacterStat->GetCurrentStamina())
+		{
+			SetActorRotation(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+			UseStamina(true);
+			PlayerAnim->PlayAttackMontage(AttackComboIndex);
 
-		PlayerAnim->SetCurrentPlayerState(EPlayerState::Attacking);
+			PlayerAnim->SetCurrentPlayerState(EPlayerState::Attacking);
+		}
+
 	}
 
 }
@@ -387,16 +397,22 @@ void APlayerCharacter::Evade()
 
 void APlayerCharacter::Parrying()
 {
-	PlayerAnim->PlayParryingMontage();
-	UseStamina(false);
+	if (StaminaToUse(false) <= CharacterStat->GetCurrentStamina())
+	{
+		UseStamina(false);
+		PlayerAnim->PlayParryingMontage();
+	}
 }
 
 void APlayerCharacter::Dodge()
 {
-	SetPlayerRotation();
+	if (StaminaToUse(false) <= CharacterStat->GetCurrentStamina())
+	{
+		SetPlayerRotation();
 
-	PlayerAnim->PlayDodgeMontage();
-	UseStamina(false);
+		UseStamina(false);
+		PlayerAnim->PlayDodgeMontage();
+	}
 }
 
 void APlayerCharacter::SetPlayerRotation()
@@ -434,28 +450,12 @@ bool APlayerCharacter::CanMove() const
 		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Dodge);
 }
 
-bool APlayerCharacter::CanAttack() const
-{
-	//auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-	//float UseStamina = GSGameInstance->GetPlayerStaminaTable(AttackComboIndex, SmashIndex);
-
-	//if (CharacterStat->GetCurrentStamina() >= UseStamina)
-	//{
-	//	return true;
-	//}
-	//else
-	//{
-	//	return false;
-	//}
-	return true;
-}
-
 void APlayerCharacter::UseStamina(bool isAttack)
 {
 	if (isAttack)
 	{
 		auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
-		float UseStamina = GSGameInstance->GetPlayerStaminaTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex());
+		float UseStamina = GSGameInstance->GetPlayerStaminaTable(AttackComboIndex, SmashIndex);
 
 		CharacterStat->SetCurrentStamina(FMath::Clamp<float>(CharacterStat->GetCurrentStamina() - UseStamina, 0.f, CharacterStat->GetMaxStamina()));
 	}
@@ -463,6 +463,21 @@ void APlayerCharacter::UseStamina(bool isAttack)
 	{
 		// Evade Stamina
 		CharacterStat->SetCurrentStamina(FMath::Clamp<float>(CharacterStat->GetCurrentStamina() - 10.f, 0.f, CharacterStat->GetMaxStamina()));
+	}
+}
+
+float APlayerCharacter::StaminaToUse(bool isAttack)
+{
+	if (isAttack)
+	{
+		auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+		float Stamina = GSGameInstance->GetPlayerStaminaTable(AttackComboIndex, SmashIndex);
+
+		return Stamina; 
+	}
+	else
+	{
+		return 10.f;
 	}
 }
 
