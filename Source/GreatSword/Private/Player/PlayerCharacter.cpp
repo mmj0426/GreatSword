@@ -62,7 +62,7 @@ APlayerCharacter::APlayerCharacter()
 
 	// /Game/GreatSword/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh>
-		SK_Player(TEXT("/Game/MercenaryWarrior/Meshes/SK_MercenaryWarrior_WithoutHelmet.SK_MercenaryWarrior_WithoutHelmet"));
+	SK_Player(TEXT("/Game/MercenaryWarrior/Meshes/SK_MercenaryWarrior_WithoutHelmet.SK_MercenaryWarrior_WithoutHelmet"));
 
 	if (SK_Player.Succeeded())
 	{
@@ -249,6 +249,7 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	// 패링이 아닐 경우
 	if (!isParrying && !isPerfectParrying)
 	{
+		PlayerAnim->PlayHitAnimMontage();
 		CharacterStat->SetCurrentHP(FMath::Clamp<float>(CharacterStat->GetCurrentHP() - Damage, 0.0f, CharacterStat->GetMaxHP()));
 
 	}
@@ -256,7 +257,12 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	{
 		UGameplayStatics::SetGlobalTimeDilation(this, 0.4);
 		// 패링 소모값만큼 스태미나 회복
+		PlayerAnim->PlaySuccessParryingMontage();
 		CharacterStat->SetCurrentStamina(FMath::Clamp<float>(CharacterStat->GetCurrentStamina() + 10.f, 0.f, CharacterStat->GetMaxStamina()));
+	}
+	if (isParrying)
+	{
+		PlayerAnim->PlaySuccessParryingMontage();
 	}
 
 	bCanHP_Recovery = false;
@@ -440,14 +446,16 @@ bool APlayerCharacter::CanEvade() const
 {
 	return (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Attacking)
 		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Parrying)
-		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Dodge);
+		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Dodge)
+		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Hit);
 }
 
 bool APlayerCharacter::CanMove() const
 {
 	return (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Attacking)
 		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Parrying)
-		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Dodge);
+		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Dodge)
+		&& (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Hit);
 }
 
 void APlayerCharacter::UseStamina(bool isAttack)

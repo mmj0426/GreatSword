@@ -13,7 +13,7 @@ UENUM(Category = State)
 enum class EPlayerState
 {
 	Idle,
-	//Moving,
+	Hit,
 	Attacking,
 	Parrying,
 	Dodge
@@ -45,6 +45,8 @@ public:
 	//Attack Combo
 	void PlayAttackMontage(int32 NextCombo);
 	void JumpToSmashMontageSection(int32 NewSection);
+	void PlaySuccessParryingMontage();
+	void PlayHitAnimMontage();
 
 	FOnAttackHitCheckDelegate OnAttackHitCheck;
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
@@ -100,8 +102,15 @@ private:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Parrying, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* ParryingMontage;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Parrying, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* SuccessParryingMontage;
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Dodge, Meta = (AllowPrivateAccess = true))
 		UAnimMontage* DodgeMontage;
+
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = Dodge, Meta = (AllowPrivateAccess = true))
+		UAnimMontage* HitMontage;
 
 	// Montage Array 
 
@@ -134,6 +143,7 @@ private:
 	// Dead
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	bool IsDead;
+
 
 public:
 	int32 GetCurrentCombo() const { return CurrentCombo; }

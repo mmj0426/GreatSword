@@ -56,7 +56,14 @@ UPlayer_AnimInstance::UPlayer_AnimInstance()
 		ParryingMontage = Parrying_Montage.Object;
 	}
 
-	ParryingMontageArray.Add(ParryingMontage);
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>
+	Success_Parrying_Montage(TEXT("/Game/Blueprints/Player/Animation/Evade/AnimMontage_PlayerDefenseHit.AnimMontage_PlayerDefenseHit"));
+	if (Success_Parrying_Montage.Succeeded())
+	{
+		SuccessParryingMontage = Success_Parrying_Montage.Object;
+	}
+
+	//ParryingMontageArray.Add(ParryingMontage);
 	//PlayerMontageMap.Add(EPlayerState::Parrying, ParryingMontageArray);
 
 	// Dodge
@@ -67,7 +74,14 @@ UPlayer_AnimInstance::UPlayer_AnimInstance()
 		DodgeMontage = Dodge_Montage.Object;
 	}
 
-	DodgeMontageArray.Add(DodgeMontage);
+	static ConstructorHelpers::FObjectFinder<UAnimMontage>
+	Hit_Montage(TEXT("/Game/Blueprints/Player/Animation/AnimMontage_Player_Hit.AnimMontage_Player_Hit"));
+	if (Hit_Montage.Succeeded())
+	{
+		HitMontage = Hit_Montage.Object;
+	}
+
+	//DodgeMontageArray.Add(DodgeMontage);
 	//PlayerMontageMap.Add(EPlayerState::Dodge, DodgeMontageArray);
 
 	IsDead = false;
@@ -125,6 +139,26 @@ void UPlayer_AnimInstance::PlayAttackMontage(int32 NextCombo)
 		Montage_Play(CurrentAttackMontage, 1.0f);
 
 		CurrentPlayerState = EPlayerState::Attacking;
+	}
+}
+
+void UPlayer_AnimInstance::PlaySuccessParryingMontage()
+{
+	GSCHECK(!IsDead)
+	if (!Montage_IsPlaying(SuccessParryingMontage))
+	{
+		Montage_Play(SuccessParryingMontage,1.f);
+		CurrentPlayerState = EPlayerState::Parrying;
+	}
+}
+
+void UPlayer_AnimInstance::PlayHitAnimMontage()
+{
+	GSCHECK(!IsDead)
+	if(!Montage_IsPlaying(HitMontage))
+	{
+		Montage_Play(HitMontage,1.f);
+		CurrentPlayerState = EPlayerState::Hit;
 	}
 }
 
