@@ -61,7 +61,7 @@ void UPlayerCharacterStatComponent::BeginPlay()
 
 	auto Player = Cast<APlayerCharacter>(GetOwner());
 	auto Controller = Cast<APlayerController>(Player->GetController());
-	auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_StatBar();
+	auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_PlayerStatBar();
 
 	Widget->SetPlayerHPPercent(FMath::Clamp<float>(MaxHP / MaxHP, 0.f, 1.f));
 	Widget->SetPlayerStaminaPercent(FMath::Clamp<float>(MaxStamina / MaxStamina, 0.f, 1.f));
@@ -77,7 +77,7 @@ void UPlayerCharacterStatComponent::SetCurrentHP(float HP)
 
 	auto Player = Cast<APlayerCharacter>(GetOwner());
 	auto Controller = Cast<APlayerController>(Player->GetController());
-	auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_StatBar();
+	auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_PlayerStatBar();
 
 	Widget->SetPlayerHPPercent(FMath::Clamp<float>(CurrentHP / MaxHP, 0.f, 1.f));
 
@@ -93,7 +93,7 @@ void UPlayerCharacterStatComponent::SetCurrentStamina(float Stamina)
 
 	auto Player = Cast<APlayerCharacter>(GetOwner());
 	auto Controller = Cast<APlayerController>(Player->GetController());
-	auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_StatBar();
+	auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_PlayerStatBar();
 
 	Widget->SetPlayerStaminaPercent(FMath::Clamp<float>(CurrentStamina / MaxStamina, 0.f, 1.f));
 

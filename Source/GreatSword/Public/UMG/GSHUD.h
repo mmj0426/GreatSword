@@ -22,13 +22,21 @@ public:
 	virtual void BeginPlay() override;
 
 public:
-	UWidget_StatBar* GetWidget_StatBar();
+	UWidget_StatBar* GetWidget_PlayerStatBar();
+	UWidget_StatBar* GetWidget_BossStatBar();
 
 	UPROPERTY(EditDefaultsOnly, Category = UI)
-		TSubclassOf<UWidget_StatBar> StatBarWidgetClass;
+	TSubclassOf<UWidget_StatBar> PlayerStatWidget;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	TSubclassOf<UWidget_StatBar> BossStatWidget;
 
 private:
 	UPROPERTY()
-		class UWidget_StatBar* StatBarWidget;
+		class UWidget_StatBar* PlayerStatBar;
+
+	UPROPERTY()
+		class UWidget_StatBar* BossStatBar;
 
 };

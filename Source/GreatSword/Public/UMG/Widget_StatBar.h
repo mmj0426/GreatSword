@@ -18,7 +18,6 @@ public :
 	void SetPlayerStaminaPercent(float currentStamina);
 	void SetBossHPPercent(float currentHP);
 
-
 protected : 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float Player_HP_Percent;

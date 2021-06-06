@@ -15,18 +15,33 @@ void AGSHUD::BeginPlay()
 
 	//GSLOG(Warning, TEXT("PlayerStat : Beginplay"));
 
-	if (StatBarWidgetClass)
+	if (PlayerStatWidget)
 	{
-		StatBarWidget = CreateWidget<UWidget_StatBar>(GetWorld(),StatBarWidgetClass);
+		PlayerStatBar = CreateWidget<UWidget_StatBar>(GetWorld(),PlayerStatWidget);
 
-		if (StatBarWidget)
+		if (PlayerStatBar)
 		{
-			StatBarWidget->AddToViewport();
+			PlayerStatBar->AddToViewport();
+		}
+	}
+
+	if (BossStatWidget)
+	{
+		BossStatBar = CreateWidget<UWidget_StatBar>(GetWorld(), BossStatWidget);
+
+		if (BossStatBar)
+		{
+			BossStatBar->AddToViewport();
 		}
 	}
 }
 
-UWidget_StatBar* AGSHUD::GetWidget_StatBar()
+UWidget_StatBar* AGSHUD::GetWidget_PlayerStatBar()
 {
-	return StatBarWidget;
+	return PlayerStatBar;
+}
+
+UWidget_StatBar* AGSHUD::GetWidget_BossStatBar()
+{
+	return BossStatBar;
 }

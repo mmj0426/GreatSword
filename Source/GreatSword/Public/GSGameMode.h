@@ -15,4 +15,5 @@ class GREATSWORD_API AGSGameMode : public AGameModeBase
 	GENERATED_BODY()
 public:
 	AGSGameMode();
+
 };

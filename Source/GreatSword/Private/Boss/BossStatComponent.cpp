@@ -46,7 +46,7 @@ void UBossStatComponent::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(HUDInitHandle, [&]()
 		{
 			auto Controller = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-			auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_StatBar();
+			auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_BossStatBar();
 
 			Widget->SetBossHPPercent(FMath::Clamp(MaxHP / MaxHP, 0.f, 1.f));
 
@@ -75,7 +75,7 @@ void UBossStatComponent::SetHP(float NewDamage)
 	CurrentHP = FMath::Clamp<float>(CurrentHP - NewDamage, 0.0f,MaxHP);
 
 	auto Controller = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_StatBar();
+	auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_BossStatBar();
 
 	Widget->SetBossHPPercent(FMath::Clamp(CurrentHP/MaxHP,0.f,1.f));
 
