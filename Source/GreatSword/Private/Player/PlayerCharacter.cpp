@@ -249,8 +249,25 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	// 패링이 아닐 경우
 	if (!isParrying && !isPerfectParrying)
 	{
-		PlayerAnim->PlayHitAnimMontage();
+		//PlayerAnim->PlayHitAnimMontage();
+		PlayerAnim->SetIsHit(true);
+		PlayerAnim->SetCurrentPlayerState(EPlayerState::Hit);
 		CharacterStat->SetCurrentHP(FMath::Clamp<float>(CharacterStat->GetCurrentHP() - Damage, 0.0f, CharacterStat->GetMaxHP()));
+
+		if (GetWorldTimerManager().IsTimerActive(HitCheckHandle))
+		{
+			GetWorldTimerManager().ClearTimer(HitCheckHandle);
+		}
+
+		float waitTime = 2.f;
+
+		GetWorld()->GetTimerManager().SetTimer(HitCheckHandle, [&]()
+			{
+				PlayerAnim->SetIsHit(false);
+				PlayerAnim->SetCurrentPlayerState(EPlayerState::Idle);
+				GetWorldTimerManager().ClearTimer(HitCheckHandle);
+			}, waitTime, false);
+
 
 	}
 	if (isPerfectParrying)
@@ -356,6 +373,11 @@ void APlayerCharacter::Smash()
 void APlayerCharacter::MontageEnded(UAnimMontage* Montage, bool bInterrupeted)
 {
 	GSLOG(Error, TEXT("Player Montage Ended"));
+
+	if (PlayerAnim->GetCurrentPlayerState() == EPlayerState::Hit)
+	{
+		PlayerAnim->SetCurrentPlayerState(EPlayerState::Idle);
+	}
 
 	if (PlayerAnim->GetCurrentPlayerState() != EPlayerState::Attacking)
 	{

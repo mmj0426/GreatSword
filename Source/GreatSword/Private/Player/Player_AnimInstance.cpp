@@ -134,7 +134,7 @@ void UPlayer_AnimInstance::PlayAttackMontage(int32 NextCombo)
 
 	CurrentAttackMontage = AttackMontageArray[CurrentAttackIndex - 1];
 
-	if (!Montage_IsPlaying((CurrentAttackMontage)))
+	if (!Montage_IsPlaying(CurrentAttackMontage) && !Montage_IsPlaying(HitMontage))
 	{
 		Montage_Play(CurrentAttackMontage, 1.0f);
 
@@ -152,15 +152,15 @@ void UPlayer_AnimInstance::PlaySuccessParryingMontage()
 	}
 }
 
-void UPlayer_AnimInstance::PlayHitAnimMontage()
-{
-	GSCHECK(!IsDead)
-	if(!Montage_IsPlaying(HitMontage))
-	{
-		Montage_Play(HitMontage,1.f);
-		CurrentPlayerState = EPlayerState::Hit;
-	}
-}
+//void UPlayer_AnimInstance::PlayHitAnimMontage()
+//{
+//	GSCHECK(!IsDead)
+//	if(!Montage_IsPlaying(HitMontage))
+//	{
+//		Montage_Play(HitMontage,1.f);
+//		CurrentPlayerState = EPlayerState::Hit;
+//	}
+//}
 
 void UPlayer_AnimInstance::PlayParryingMontage()
 {

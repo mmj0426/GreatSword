@@ -40,10 +40,9 @@ void APlayer_Controller::SetupInputComponent()
 void APlayer_Controller::MoveForward(float NewAxisValue)
 {
 	MoveValue.X = NewAxisValue;
-	
-
 	if (GSPlayer && NewAxisValue != 0.0f && GSPlayer->CanMove())
 	{
+		
 		//GSPlayer->SetPlayerState(EPlayerState::Moving);
 		GSPlayer->AddMovementInput(FRotationMatrix(FRotator(0.0f, GetControlRotation().Yaw, 0.0f)).GetUnitAxis(EAxis::X), NewAxisValue);
 	}
