@@ -44,3 +44,7 @@ Content/LogCabin/Textures/Props filter=lfs diff=lfs merge=lfs -text
 Content/LogCabin/Audio filter=lfs diff=lfs merge=lfs -text
 Content/Warrior_Weapons/Textures filter=lfs diff=lfs merge=lfs -text
 GreatSword/Content/InfinityBladeGrassLands filter=lfs diff=lfs merge=lfs -text
+Content/SoulCave filter=lfs diff=lfs merge=lfs -text
+Content/Meadow_Environment_Set/Environment/Foliage filter=lfs diff=lfs merge=lfs -text
+Content/Level01_BuiltData.uasset filter=lfs diff=lfs merge=lfs -text
+Content/Level02_BuiltData.uasset filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,4 @@
+Level01_BuiltData.uasset filter=lfs diff=lfs merge=lfs -text
+Level02_BuiltData.uasset filter=lfs diff=lfs merge=lfs -text
+Content/Level01_BuiltData.uasset filter=lfs diff=lfs merge=lfs -text
+Content/Level02_BuiltData.uasset filter=lfs diff=lfs merge=lfs -text
