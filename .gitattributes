@@ -48,3 +48,7 @@ Content/SoulCave filter=lfs diff=lfs merge=lfs -text
 Content/Meadow_Environment_Set/Environment/Foliage filter=lfs diff=lfs merge=lfs -text
 Content/Level01_BuiltData.uasset filter=lfs diff=lfs merge=lfs -text
 Content/Level02_BuiltData.uasset filter=lfs diff=lfs merge=lfs -text
+<<<<<<< HEAD
+E:/GreatSword/Content/WaterMaterials filter=lfs diff=lfs merge=lfs -text
+=======
+>>>>>>> b156d4b78f44a6a7aef88a25471be894fc72c0ff
