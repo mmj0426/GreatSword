@@ -45,3 +45,4 @@ Content/LogCabin/Audio filter=lfs diff=lfs merge=lfs -text
 Content/Warrior_Weapons/Textures filter=lfs diff=lfs merge=lfs -text
 GreatSword/Content/InfinityBladeGrassLands filter=lfs diff=lfs merge=lfs -text
 E:/GreatSword/Content/GKnight filter=lfs diff=lfs merge=lfs -text
+E:/GreatSword/Content/BossyEnemy filter=lfs diff=lfs merge=lfs -text
