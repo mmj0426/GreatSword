@@ -20,6 +20,11 @@ void UWidget_StatBar::SetBossHPPercent(float currentHP)
 	Boss_HP_Percent = currentHP;
 }
 
+void UWidget_StatBar::SetGothicHPPercent(float currentHP)
+{
+	Gothic_HP_Percent = currentHP;
+}
+
 void UWidget_StatBar::NativeConstruct()
 {
 	Super::NativeConstruct();

@@ -3,8 +3,8 @@
 
 #include "BTT_TurnToTarget.h"
 
-#include "Boss_AIController.h"
-#include "Boss.h"
+#include "Gothic_AIController.h"
+#include "Gothic.h"
 #include "PlayerCharacter.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
@@ -18,23 +18,23 @@ EBTNodeResult::Type UBTT_TurnToTarget::ExecuteTask(UBehaviorTreeComponent& Owner
 {
 	EBTNodeResult::Type Result = Super::ExecuteTask(OwnerComp,NodeMemory);
 
-	auto Boss = Cast<ABoss>(OwnerComp.GetAIOwner()->GetPawn());
-	if(nullptr == Boss)
+	auto Gothic = Cast<AGothic>(OwnerComp.GetAIOwner()->GetPawn());
+	if(nullptr == Gothic)
 	{
 		return EBTNodeResult::Failed;
 	}
 
-	auto Target = Cast<APlayerCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(ABoss_AIController::TargetKey));
+	auto Target = Cast<APlayerCharacter>(OwnerComp.GetBlackboardComponent()->GetValueAsObject(AGothic_AIController::TargetKey));
 	if (nullptr == Target)
 	{
 		return EBTNodeResult::Failed;
 	}
 
 	// Turn to Target
-	FVector LookVector = Target->GetActorLocation() - Boss->GetActorLocation();
+	FVector LookVector = Target->GetActorLocation() - Gothic->GetActorLocation();
 	LookVector.Z = 0.0f;
 	FRotator TargetRot = FRotationMatrix::MakeFromX(LookVector).Rotator();
-	Boss->SetActorRotation(FMath::RInterpTo(Boss->GetActorRotation(),TargetRot,GetWorld()->GetDeltaSeconds(),2.0f));
+	Gothic->SetActorRotation(FMath::RInterpTo(Gothic->GetActorRotation(),TargetRot,GetWorld()->GetDeltaSeconds(),2.0f));
 
 	return EBTNodeResult::Succeeded;
 }

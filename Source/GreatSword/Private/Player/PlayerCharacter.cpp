@@ -7,6 +7,7 @@
 #include "PlayerCharacterStatComponent.h"
 #include "GSGameInstance.h"
 #include "Boss.h"
+#include "Gothic.h"
 #include "GSHUD.h"
 //#include "DrawDebugHelpers.h"
 
@@ -515,10 +516,11 @@ void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 {
 	//GSLOG(Warning,TEXT("OnOverlapBegin"));
 
-	auto HitResult = Cast<ABoss>(OtherActor);
+	auto HitBoss = Cast<ABoss>(OtherActor);
+	auto HitGothic = Cast<AGothic>(OtherActor);
 	auto GSGameInstance = Cast<UGSGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 
-	if (HitResult != nullptr && PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
+	if (HitBoss != nullptr && PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
 	{
 		// Player Stat에서 현재 진행중인 애니메이션 몽타주 인덱스와 섹션 인덱스를 통해 데미지 적용율을 가지고와 데미지를 계산함
 		float HitDamage = CharacterStat->GetDamage() * (GSGameInstance->GetPlayerATKRateTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex())) / 100.0f;
@@ -526,7 +528,17 @@ void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 		//GSLOG(Warning, TEXT("Hit Damage : %f "), HitDamage);
 
 		//데미지 적용
-		UGameplayStatics::ApplyDamage(HitResult, HitDamage, NULL, GetController(), NULL);
+		UGameplayStatics::ApplyDamage(HitBoss, HitDamage, NULL, GetController(), NULL);
+	}
+
+	if (HitGothic != nullptr && PlayerAnim->GetCurrentPlayerState() == EPlayerState::Attacking)
+	{
+		float HitDamage = CharacterStat->GetDamage() * (GSGameInstance->GetPlayerATKRateTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex())) / 100.0f;
+
+		//GSLOG(Warning, TEXT("Hit Damage : %f "), HitDamage);
+
+		//데미지 적용
+		UGameplayStatics::ApplyDamage(HitGothic, HitDamage, NULL, GetController(), NULL);
 	}
 }
 
