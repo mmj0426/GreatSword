@@ -46,7 +46,7 @@ public:
 	void PlayAttackMontage(int32 NextCombo);
 	void JumpToSmashMontageSection(int32 NewSection);
 	void PlaySuccessParryingMontage();
-	void PlayHitAnimMontage();
+	//void PlayHitAnimMontage();
 
 	FOnAttackHitCheckDelegate OnAttackHitCheck;
 	FOnNextAttackCheckDelegate OnNextAttackCheck;
@@ -144,6 +144,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	bool IsDead;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
+	bool IsHit;
+
 
 public:
 	int32 GetCurrentCombo() const { return CurrentCombo; }
@@ -157,6 +160,7 @@ public:
 	void SetCurrentPlayerState(EPlayerState NewState) { CurrentPlayerState = NewState; }
 
 	void SetIsDead() { IsDead = true; }
+	void SetIsHit(bool isHit) {IsHit = isHit;}
 
 	UAnimMontage* GetCurrentAttackMontage() {	return CurrentAttackMontage; }
 };

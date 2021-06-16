@@ -48,6 +48,7 @@ void UBossStatComponent::BeginPlay()
 			auto Controller = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 			auto Widget = Cast<AGSHUD>(Controller->GetHUD())->GetWidget_BossStatBar();
 
+			Widget->AddToViewport();
 			Widget->SetBossHPPercent(FMath::Clamp(MaxHP / MaxHP, 0.f, 1.f));
 
 			GetWorld()->GetTimerManager().ClearTimer(HUDInitHandle);

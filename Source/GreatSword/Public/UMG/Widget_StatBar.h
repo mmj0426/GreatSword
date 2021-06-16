@@ -16,6 +16,7 @@ public :
 	void SetPlayerHPPercent(float currentHP);
 	void SetPlayerStaminaPercent(float currentStamina);
 	void SetBossHPPercent(float currentHP);
+	void SetGothicHPPercent(float currentHP);
 
 protected : 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -26,6 +27,9 @@ protected :
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	float Boss_HP_Percent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float Gothic_HP_Percent;
 
 	virtual void NativeConstruct() override;
 };
