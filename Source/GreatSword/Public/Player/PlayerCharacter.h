@@ -89,9 +89,6 @@ private:
 	bool bCanStamina_Recovery;
 
 
-
-
-
 #pragma region Legacy - Draw Debug
 
 	// Draw Debug
@@ -108,6 +105,8 @@ public:
 	FTimerHandle HP_RecoveryCheckHandle;
 
 	FTimerHandle Stamina_RecoveryCheckHandle;
+
+	FTimerHandle HitCheckHandle;
 
 	//Attack
 	UFUNCTION()

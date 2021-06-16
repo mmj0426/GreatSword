@@ -34,6 +34,16 @@ void AGSHUD::BeginPlay()
 			BossStatBar->AddToViewport();
 		}
 	}
+
+	if (GothicStatWidget)
+	{
+		GothicStatBar = CreateWidget<UWidget_StatBar>(GetWorld(), GothicStatWidget);
+
+		if (GothicStatBar)
+		{
+			GothicStatBar->AddToViewport();
+		}
+	}
 }
 
 UWidget_StatBar* AGSHUD::GetWidget_PlayerStatBar()
@@ -44,4 +54,9 @@ UWidget_StatBar* AGSHUD::GetWidget_PlayerStatBar()
 UWidget_StatBar* AGSHUD::GetWidget_BossStatBar()
 {
 	return BossStatBar;
+}
+
+UWidget_StatBar* AGSHUD::GetWidget_GothicStatBar()
+{
+	return GothicStatBar;
 }

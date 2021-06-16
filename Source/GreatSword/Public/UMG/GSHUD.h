@@ -24,6 +24,7 @@ public:
 public:
 	UWidget_StatBar* GetWidget_PlayerStatBar();
 	UWidget_StatBar* GetWidget_BossStatBar();
+	UWidget_StatBar* GetWidget_GothicStatBar();
 
 	UPROPERTY(EditDefaultsOnly, Category = UI)
 	TSubclassOf<UWidget_StatBar> PlayerStatWidget;
@@ -32,11 +33,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = UI)
 	TSubclassOf<UWidget_StatBar> BossStatWidget;
 
+	UPROPERTY(EditDefaultsOnly, Category = UI)
+	TSubclassOf<UWidget_StatBar> GothicStatWidget;
+
 private:
 	UPROPERTY()
 		class UWidget_StatBar* PlayerStatBar;
 
 	UPROPERTY()
 		class UWidget_StatBar* BossStatBar;
+
+	UPROPERTY()
+	class UWidget_StatBar* GothicStatBar;
 
 };
