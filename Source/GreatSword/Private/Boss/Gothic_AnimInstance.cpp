@@ -72,7 +72,16 @@ void UGothic_AnimInstance::PlayAttackMontage(int32 MontageIndex)
 	if (!Montage_IsPlaying((AttackMontages[MontageIndex])))
 	{
 		Montage_Play(AttackMontages[MontageIndex],1.f);
-		CurrentState = EGothicState::Attacking;
 	}
 
+}
+
+void UGothic_AnimInstance::AnimNotify_AttackStart()
+{
+	CurrentState = EGothicState::Attacking;
+}
+
+void UGothic_AnimInstance::AnimNotify_AttackEnd()
+{
+	CurrentState = EGothicState::Idle;
 }

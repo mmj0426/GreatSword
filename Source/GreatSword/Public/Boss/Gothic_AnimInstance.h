@@ -6,12 +6,12 @@
 #include "Animation/AnimInstance.h"
 #include "Gothic_AnimInstance.generated.h"
 
-UENUM(Category = State)
+UENUM(BlueprintType)
 enum class EGothicState : uint8
 {
-	Idle, 
-	Attacking,
-	Death
+	Idle UMETA(DisplayName = "Idle"),
+	Attacking UMETA(DisplayName = "Attacking"),
+	Death UMETA(DisplayName = "Death")
 };
 /**
  * 
@@ -27,6 +27,12 @@ public :
 
 	void PlayAttackMontage(int32 MontageIndex);
 
+	UFUNCTION()
+	void AnimNotify_AttackEnd();
+
+	UFUNCTION()
+	void AnimNotify_AttackStart();
+
 private : 
 	UPROPERTY(VisibleAnywhere, Category = Attack)
 	TArray<UAnimMontage*> AttackMontages;
@@ -37,7 +43,7 @@ private :
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pawn, Meta = (AllowPrivateAccess = true))
 	float CurrentPawnHP;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = State, Meta = (AllowPrivateAccess = true))
 	EGothicState CurrentState;
 
 private : 
@@ -62,4 +68,5 @@ private :
 
 public : 
 	void SetCurrentState(EGothicState newState) { CurrentState = newState; }
+	EGothicState GetCurrentState(){return CurrentState;}
 };

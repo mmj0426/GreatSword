@@ -40,6 +40,7 @@ void AGothic::PostInitializeComponents()
 	CurrentHP = MaxHP;
 
 	GothicAnim = Cast<UGothic_AnimInstance>(GetMesh()->GetAnimInstance());
+	GothicAnim->SetCurrentState(EGothicState::Idle);
 	GSCHECK(GothicAnim != nullptr);
 
 	GothicAnim->OnMontageEnded.AddDynamic(this, &AGothic::MontageEnded);
@@ -50,13 +51,16 @@ void AGothic::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//GSLOG(Warning, TEXT("Gothic Begin Play"));
+
 	GetWorld()->GetTimerManager().SetTimer(WidgetInitHandle, [&]()
 		{
-			/*auto playerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-			auto Widget = Cast<AGSHUD>(playerController->GetHUD())->GetWidget_BossStatBar();
+			auto playerController = Cast<APlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+			auto Widget = Cast<AGSHUD>(playerController->GetHUD())->GetWidget_GothicStatBar();
 
-			Widget->SetBossHPPercent(FMath::Clamp(MaxHP / MaxHP, 0.f, 1.f));*/
+			//Widget->SetBossHPPercent(FMath::Clamp(MaxHP / MaxHP, 0.f, 1.f));
 
+			Widget->AddToViewport();
 			SetCurrentHP(0.f);
 
 			GetWorld()->GetTimerManager().ClearTimer(WidgetInitHandle);

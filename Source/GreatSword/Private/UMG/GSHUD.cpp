@@ -29,20 +29,20 @@ void AGSHUD::BeginPlay()
 	{
 		BossStatBar = CreateWidget<UWidget_StatBar>(GetWorld(), BossStatWidget);
 
-		if (BossStatBar)
-		{
-			BossStatBar->AddToViewport();
-		}
+		//if (BossStatBar)
+		//{
+		//	BossStatBar->AddToViewport();
+		//}
 	}
 
 	if (GothicStatWidget)
 	{
 		GothicStatBar = CreateWidget<UWidget_StatBar>(GetWorld(), GothicStatWidget);
 
-		if (GothicStatBar)
-		{
-			GothicStatBar->AddToViewport();
-		}
+		//if (GothicStatBar)
+		//{
+		//	GothicStatBar->AddToViewport();
+		//}
 	}
 }
 

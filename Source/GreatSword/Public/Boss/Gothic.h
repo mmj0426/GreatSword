@@ -6,6 +6,9 @@
 #include "GameFramework/Character.h"
 #include "Gothic.generated.h"
 
+
+
+
 DECLARE_MULTICAST_DELEGATE(FOnAttackEndDelegate);
 
 UCLASS()
@@ -45,7 +48,7 @@ public:
 	void MontageEnded(UAnimMontage* Montage, bool bInterrupeted);
 
 	// AnimInstance
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Animation)
 	class UGothic_AnimInstance* GothicAnim;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stat)
