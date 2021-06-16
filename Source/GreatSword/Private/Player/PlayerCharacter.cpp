@@ -20,6 +20,9 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/WidgetComponent.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 
 
 // Sets default values
@@ -117,6 +120,38 @@ APlayerCharacter::APlayerCharacter()
 
 	bCanHP_Recovery = false;
 	bCanStamina_Recovery = false;	
+
+	// Sound Cue
+
+	static ConstructorHelpers::FObjectFinder<USoundCue> 
+	GothicHitSoundObject(TEXT("/Game/Weapons_woosh/Cues/Impact_01_Cue.Impact_01_Cue"));
+	if (GothicHitSoundObject.Succeeded())
+	{
+		GothicHitSound = GothicHitSoundObject.Object;
+
+		GothicHitSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("GothicHitSoundComp"));
+		GothicHitSoundComp->SetupAttachment(RootComponent);
+		
+	}
+
+	static ConstructorHelpers::FObjectFinder<USoundCue>
+		BossHitSoudObject(TEXT("/Game/Object_Destruction_Sounds/Cues/Rocks_Destroy_03_Cue.Rocks_Destroy_03_Cue"));
+	if (BossHitSoudObject.Succeeded())
+	{
+		BossHitSound = BossHitSoudObject.Object;
+
+		BossHitSoundComp = CreateDefaultSubobject<UAudioComponent>(TEXT("BossHitSoundComnp"));
+		BossHitSoundComp->SetupAttachment(RootComponent);
+
+	}
+
+
+	//static ConstructorHelpers::FObjectFinder<USoundCue> 
+	//GothicHit_Sound(TEXT("/Game/Weapons_woosh/Cues/Impact_01_Cue.Impact_01_Cue"));
+	//if (GothicHit_Sound.Succeeded())
+	//{
+	//	GothicHitSound = GothicHit_Sound.Object;
+	//}
 }
 
 void APlayerCharacter::AttackStartComboState()
@@ -207,6 +242,8 @@ void APlayerCharacter::PostInitializeComponents()
 		{
 			PlayerAnim->SetIsDead();
 			SetActorEnableCollision(false);
+			//TODO : 죽었을 시 Widget
+			//UWidgetBlueprintLibrary::SetInputMode_UIOnly(GetController(), /* UWidget*/ , false);
 			//UnPossessed();
 		});
 }
@@ -215,7 +252,10 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	if (GothicHitSoundComp && GothicHitSound)
+	{
+		GothicHitSoundComp->SetSound(GothicHitSound);
+	}
 }
 
 void APlayerCharacter::Tick(float DeltaSeconds)
@@ -527,6 +567,11 @@ void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 
 		//GSLOG(Warning, TEXT("Hit Damage : %f "), HitDamage);
 
+		if (BossHitSoundComp && BossHitSound)
+		{
+			BossHitSoundComp->Play(0.f);
+		}
+
 		//데미지 적용
 		UGameplayStatics::ApplyDamage(HitBoss, HitDamage, NULL, GetController(), NULL);
 	}
@@ -536,6 +581,12 @@ void APlayerCharacter::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 		float HitDamage = CharacterStat->GetDamage() * (GSGameInstance->GetPlayerATKRateTable(PlayerAnim->GetCurrentAttackIndex(), PlayerAnim->GetCurrentSectionIndex())) / 100.0f;
 
 		//GSLOG(Warning, TEXT("Hit Damage : %f "), HitDamage);
+		//GothicHitAudioComp = UGameplayStatics::SpawnSound2D(this, GothicHitSound);
+
+		if (GothicHitSoundComp && GothicHitSound)
+		{
+			GothicHitSoundComp->Play(0.f);
+		}
 
 		//데미지 적용
 		UGameplayStatics::ApplyDamage(HitGothic, HitDamage, NULL, GetController(), NULL);

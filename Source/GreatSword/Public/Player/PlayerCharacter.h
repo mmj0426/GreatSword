@@ -88,6 +88,17 @@ private:
 	bool bCanHP_Recovery;
 	bool bCanStamina_Recovery;
 
+	// Sound 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Audio, meta = (AllowPrivateAccess = "true"))
+	class USoundCue* GothicHitSound;
+
+	UAudioComponent* GothicHitSoundComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Audio, meta = (AllowPrivateAccess = "true"))
+	class USoundCue* BossHitSound;
+
+	UAudioComponent* BossHitSoundComp;
+
 
 #pragma region Legacy - Draw Debug
 
