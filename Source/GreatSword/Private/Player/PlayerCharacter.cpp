@@ -258,6 +258,25 @@ void APlayerCharacter::BeginPlay()
 	}
 }
 
+void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (GetWorldTimerManager().IsTimerActive(HP_RecoveryCheckHandle))
+	{
+		GetWorldTimerManager().ClearTimer(HP_RecoveryCheckHandle);
+	}
+
+	if (GetWorldTimerManager().IsTimerActive(Stamina_RecoveryCheckHandle))
+	{
+		GetWorldTimerManager().ClearTimer(Stamina_RecoveryCheckHandle);
+	}
+
+	if (GetWorldTimerManager().IsTimerActive(HitCheckHandle))
+	{
+		GetWorldTimerManager().ClearTimer(HitCheckHandle);
+	}
+
+}
+
 void APlayerCharacter::Tick(float DeltaSeconds)
 {
 	// 플레이어가 달리는지 검사

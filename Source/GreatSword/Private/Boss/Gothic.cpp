@@ -68,6 +68,19 @@ void AGothic::BeginPlay()
 
 }
 
+void AGothic::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (GetWorldTimerManager().IsTimerActive(DelayHandle))
+	{
+		GetWorldTimerManager().ClearTimer(DelayHandle);
+	}
+
+	if (GetWorldTimerManager().IsTimerActive(WidgetInitHandle))
+	{
+		GetWorldTimerManager().ClearTimer(WidgetInitHandle);
+	}
+}
+
 void AGothic::GothicAttack()
 {
 	int32 index = DecideAttack();

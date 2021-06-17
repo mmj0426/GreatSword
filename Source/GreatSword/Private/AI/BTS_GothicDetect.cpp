@@ -45,10 +45,10 @@ void UBTS_GothicDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 			{
 				
 				OwnerComp.GetBlackboardComponent()->SetValueAsObject(AGothic_AIController::TargetKey, Player_Character);
-				DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Green, false, 0.2f);
+				//DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Green, false, 0.2f);
 
-				DrawDebugPoint(World, Player_Character->GetActorLocation(), 10.0f, FColor::Blue, false, 0.2f);
-				DrawDebugLine(World, ControllingPawn->GetActorLocation(), Player_Character->GetActorLocation(), FColor::Blue, false, 0.27f);
+				//DrawDebugPoint(World, Player_Character->GetActorLocation(), 10.0f, FColor::Blue, false, 0.2f);
+				//DrawDebugLine(World, ControllingPawn->GetActorLocation(), Player_Character->GetActorLocation(), FColor::Blue, false, 0.27f);
 				return;
 			}
 		}
@@ -61,6 +61,6 @@ void UBTS_GothicDetect::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	}
 
 	OwnerComp.GetBlackboardComponent()->SetValueAsObject(AGothic_AIController::TargetKey, nullptr);
-	DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Red, false, 0.2f);
+	//DrawDebugSphere(World, Center, DetectRadius, 16, FColor::Red, false, 0.2f);
 
 }

@@ -55,6 +55,14 @@ void UBossStatComponent::BeginPlay()
 		}, 0.1f, false);	
 }
 
+void UBossStatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	//if (GetWorld()->GetTimerManager().IsTimerActive(HUDInitHandle))
+	//{
+	//	GetWorld()->GetTimerManager().ClearTimer(HUDInitHandle);
+	//}
+}
+
 
 // Called every frame
 void UBossStatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

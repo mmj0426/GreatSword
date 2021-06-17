@@ -73,6 +73,7 @@ void ABoss::PostInitializeComponents()
 			IsAlive = false;
 			BossAnim->SetDeadAnim();
 			SetActorEnableCollision(false); 
+			UGameplayStatics::OpenLevel(this, TEXT("Level03_2"));
 		});
 }
 
@@ -80,6 +81,11 @@ void ABoss::PostInitializeComponents()
 void ABoss::BeginPlay()
 {
 	Super::BeginPlay();
+
+}
+
+void ABoss::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
 
 }
 
