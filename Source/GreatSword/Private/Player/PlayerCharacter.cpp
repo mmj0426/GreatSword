@@ -154,17 +154,17 @@ APlayerCharacter::APlayerCharacter()
 	//	GothicHitSound = GothicHit_Sound.Object;
 	//}
 
-	DieWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("DieWidget"));
+	//DieWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("DieWidget"));
 
-	DieWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	//DieWidget->SetWidgetSpace(EWidgetSpace::Screen);
 
-	static ConstructorHelpers::FClassFinder<UUserWidget>
-	Die_Widget(TEXT("/Game/UI/UI/DIE.DIE_C"));
-	if (Die_Widget.Succeeded())
-	{
-		DieWidget->SetWidgetClass(Die_Widget.Class);
-		DieWidget->SetVisibility(false);
-	}
+	//static ConstructorHelpers::FClassFinder<UUserWidget>
+	//Die_Widget(TEXT("/Game/UI/UI/DIE.DIE_C"));
+	//if (Die_Widget.Succeeded())
+	//{
+	//	DieWidget->SetWidgetClass(Die_Widget.Class);
+	//	DieWidget->SetVisibility(false);
+	//}
 }
 
 void APlayerCharacter::AttackStartComboState()
@@ -258,7 +258,7 @@ void APlayerCharacter::PostInitializeComponents()
 			auto controller = Cast<APlayerController>(GetController());
 
 			//UWidgetBlueprintLibrary::SetInputMode_UIOnly(controller);
-			DieWidget->SetVisibility(true);
+			//DieWidget->SetVisibility(true);
 			//TODO : Á×¾úÀ» ½Ã Widget
 			//UWidgetBlueprintLibrary::SetInputMode_UIOnly(GetController(), /* UWidget*/ , false);
 			//UnPossessed();
@@ -277,7 +277,7 @@ void APlayerCharacter::BeginPlay()
 
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	DieWidget->SetVisibility(false);
+	//DieWidget->SetVisibility(false);
 	if (GetWorldTimerManager().IsTimerActive(HP_RecoveryCheckHandle))
 	{
 		GetWorldTimerManager().ClearTimer(HP_RecoveryCheckHandle);
