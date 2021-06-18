@@ -23,7 +23,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void InitializeComponent() override;
 	virtual void PostInitProperties() override;
+	#if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	#endif
 
 public : 
 

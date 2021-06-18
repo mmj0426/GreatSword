@@ -49,6 +49,9 @@ public:
 
 	UPlayerCharacterStatComponent* GetCharacterStat(){return CharacterStat;}
 
+	UPROPERTY(VisibleAnywhere, Category = UI)
+	class UWidgetComponent* DieWidget;
+
 private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = State, Meta = (AllowPrivateAccess = true))
